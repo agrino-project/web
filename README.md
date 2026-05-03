@@ -236,6 +236,36 @@ This single command handles everything:
 
 > **Note:** `matrix-js-sdk` is pulled directly from the `develop` branch on GitHub, so the install step also fetches and builds that dependency. This may take a bit longer than a typical npm registry install.
 
+## Building the shared-components package manually
+
+The root app depends on `@element-hq/web-shared-components` (a local package at `packages/shared-components`). It is built automatically during `yarn install` via its `prepare` script, but if you need to rebuild it manually (e.g. after changing shared component source files), run from the **project root**:
+
+```bash
+# 1. Copy static resources (i18n strings, themes, etc.) into webapp/
+yarn build:res
+
+# 2. Gather translation keys into a TypeScript type definition
+yarn --cwd packages/shared-components ts-node scripts/gatherTranslationKeys.ts
+
+# 3. Run the Vite library build → outputs to packages/shared-components/dist/
+yarn --cwd packages/shared-components vite build
+```
+
+Or as a single command that does all three (the package's `prepare` script):
+
+```bash
+yarn --cwd packages/shared-components prepare
+```
+
+The build produces these files in `packages/shared-components/dist/`:
+
+| File | Purpose |
+|------|---------|
+| `element-web-shared-components.mjs` | ES module build |
+| `element-web-shared-components.umd.js` | UMD build |
+| `element-web-shared-components.css` | Bundled styles |
+| `element-web-shared-components.d.ts` | TypeScript type definitions |
+
 ## Run the development server
 
 ```bash
