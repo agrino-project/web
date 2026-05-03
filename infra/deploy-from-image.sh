@@ -23,14 +23,14 @@
 #
 # Defaults (matched to the docker-compose `element-web` service):
 #   container name : element-web
-#   network        : synapse-network
+#   network        : matrixdocker_synapse-network
 #   exposed port   : 80   (no host publish unless --publish is passed)
 #   config mount   : /root/web/config.json -> /app/config.json:ro
 #   restart policy : unless-stopped
 #
 # So the typical server invocation is just:
 #   ./infra/deploy-from-image.sh ./images/agrino-web-YYYYMMDD.tar
-# (a reverse-proxy such as Synapse/Caddy on synapse-network can then reach
+# (a reverse-proxy such as Synapse/Caddy on matrixdocker_synapse-network can then reach
 #  it as element-web:80.) Pass --no-config to skip the host config mount,
 #  or --publish 8080 to bind it to the host instead.
 # ===========================================
@@ -39,7 +39,7 @@ set -euo pipefail
 
 # --- Defaults (mirror docker-compose service `element-web`) ---
 DEFAULT_NAME="element-web"
-DEFAULT_NETWORK="synapse-network"
+DEFAULT_NETWORK="matrixdocker_synapse-network"
 DEFAULT_PORT=80
 DEFAULT_CONFIG_FILE="/root/web/config.json"
 
