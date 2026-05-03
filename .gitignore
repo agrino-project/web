@@ -38,3 +38,4 @@ storybook-static
 /packages/shared-components/dist
 /packages/shared-components/src/i18nKeys.d.ts
 logs
+images
