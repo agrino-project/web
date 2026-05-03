@@ -21,19 +21,27 @@
 #   ./infra/deploy-from-image.sh agrino/web:latest --config /etc/agrino/config.json
 #   ./infra/deploy-from-image.sh agrino/web:latest --env-file infra/.env.production
 #
-# Behavior:
-#   - By default the container is attached to a Docker network (shared-network)
-#     and the web port is only --expose'd, so a reverse-proxy on the same
-#     network (e.g. Caddy / nginx) can reach it. Use --publish to bind the port
-#     to the host instead.
+# Defaults (matched to the docker-compose `element-web` service):
+#   container name : element-web
+#   network        : synapse-network
+#   exposed port   : 80   (no host publish unless --publish is passed)
+#   config mount   : /root/web/config.json -> /app/config.json:ro
+#   restart policy : unless-stopped
+#
+# So the typical server invocation is just:
+#   ./infra/deploy-from-image.sh ./images/agrino-web-YYYYMMDD.tar
+# (a reverse-proxy such as Synapse/Caddy on synapse-network can then reach
+#  it as element-web:80.) Pass --no-config to skip the host config mount,
+#  or --publish 8080 to bind it to the host instead.
 # ===========================================
 
 set -euo pipefail
 
-# --- Defaults ---
-DEFAULT_NAME="agrino-web"
-DEFAULT_NETWORK="shared-network"
+# --- Defaults (mirror docker-compose service `element-web`) ---
+DEFAULT_NAME="element-web"
+DEFAULT_NETWORK="synapse-network"
 DEFAULT_PORT=80
+DEFAULT_CONFIG_FILE="/root/web/config.json"
 
 # --- Parse arguments ---
 if [ $# -lt 1 ]; then
@@ -54,6 +62,8 @@ Options:
                            Examples: --publish 8080  ->  -p 8080:80
                                      --publish 127.0.0.1:8080:80
   --config FILE            Mount a host config.json over /app/config.json
+                           (default: $DEFAULT_CONFIG_FILE)
+  --no-config              Do not mount any host config.json (use the one baked into the image)
   --modules DIR            Mount a host directory at /modules (for runtime modules)
   --env-file FILE          Pass an env file to the container
   --no-pull                Skip 'docker pull' even when source is a registry image
@@ -72,7 +82,7 @@ APP_NAME="$DEFAULT_NAME"
 NETWORK_NAME="$DEFAULT_NETWORK"
 CONTAINER_PORT="$DEFAULT_PORT"
 PUBLISH_SPEC=""
-CONFIG_FILE=""
+CONFIG_FILE="$DEFAULT_CONFIG_FILE"
 MODULES_DIR=""
 ENV_FILE=""
 NO_PULL=false
@@ -85,6 +95,7 @@ while [[ $# -gt 0 ]]; do
     --port)        CONTAINER_PORT="$2"; shift 2 ;;
     --publish)     PUBLISH_SPEC="$2"; shift 2 ;;
     --config)      CONFIG_FILE="$2"; shift 2 ;;
+    --no-config)   CONFIG_FILE=""; shift ;;
     --modules)     MODULES_DIR="$2"; shift 2 ;;
     --env-file)    ENV_FILE="$2"; shift 2 ;;
     --no-pull)     NO_PULL=true; shift ;;
