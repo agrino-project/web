@@ -1,10 +1,15 @@
 # syntax=docker.io/docker/dockerfile:1.19-labs@sha256:dce1c693ef318bca08c964ba3122ae6248e45a1b96d65c4563c8dc6fe80349a2
 
-# Use ARG for registry to support mirrors (e.g., docker.arvancloud.ir)
-ARG DOCKER_REGISTRY=hub.hamdocker.ir
+# Registries are split so each FROM can use a mirror that actually has the image:
+#   BUILDER_REGISTRY hosts library/node (hub.hamdocker.ir mirrors only library/*).
+#   APP_REGISTRY     hosts nginxinc/nginx-unprivileged (needs a full Docker Hub mirror).
+# Override either at build time, e.g.
+#   --build-arg APP_REGISTRY=docker.io
+ARG BUILDER_REGISTRY=docker.io
+ARG APP_REGISTRY=docker.io
 
 # Builder
-FROM --platform=$BUILDPLATFORM ${DOCKER_REGISTRY}/library/node:24-bullseye AS builder
+FROM --platform=$BUILDPLATFORM ${BUILDER_REGISTRY}/library/node:24-bullseye AS builder
 
 # Support custom branch of the js-sdk. This also helps us build images of element-web develop.
 ARG USE_CUSTOM_SDKS=false
@@ -23,8 +28,8 @@ RUN /src/scripts/docker-package.sh
 RUN cp /src/config.sample.json /src/webapp/config.json
 
 # App
-ARG DOCKER_REGISTRY=docker.io
-FROM ${DOCKER_REGISTRY}/nginxinc/nginx-unprivileged:alpine-slim
+ARG APP_REGISTRY
+FROM ${APP_REGISTRY}/nginxinc/nginx-unprivileged:alpine-slim
 
 # Need root user to install packages & manipulate the usr directory
 USER root

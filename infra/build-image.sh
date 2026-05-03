@@ -39,7 +39,7 @@ readonly PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 readonly TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 readonly LOG_DIR="${SCRIPT_DIR}/logs"
 readonly LOG_FILE="${LOG_DIR}/build_${TIMESTAMP}.log"
-readonly DEFAULT_BRANCH="main"
+readonly DEFAULT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)"
 readonly DEFAULT_DOCKERFILE="Dockerfile"
 readonly DEFAULT_IMAGE_NAME="agrino/web"
 readonly DEFAULT_TAG="latest"
@@ -195,11 +195,24 @@ update_git() {
         return
     fi
 
+    local current_branch
+    current_branch=$(git -C "$PROJECT_ROOT" rev-parse --abbrev-ref HEAD)
+
+    # Only switch branches if the user explicitly asked for a different one.
+    # Building on the wrong branch silently is worse than skipping the pull.
+    if [ "$current_branch" != "$GIT_BRANCH" ]; then
+        log_warn "Current branch ($current_branch) != requested ($GIT_BRANCH). Skipping checkout to avoid losing local state — pass -s to silence, or check out '$GIT_BRANCH' manually."
+        return
+    fi
+
+    if ! git -C "$PROJECT_ROOT" diff --quiet || ! git -C "$PROJECT_ROOT" diff --cached --quiet; then
+        log_warn "Working tree has uncommitted changes — skipping git pull."
+        return
+    fi
+
     log "Pulling latest changes from branch: $GIT_BRANCH"
-    git -C "$PROJECT_ROOT" fetch origin
-    git -C "$PROJECT_ROOT" checkout "$GIT_BRANCH"
-    git -C "$PROJECT_ROOT" pull origin "$GIT_BRANCH"
-    log_success "Git updated to $(git -C "$PROJECT_ROOT" rev-parse --short HEAD)"
+    git -C "$PROJECT_ROOT" pull --ff-only origin "$GIT_BRANCH" || log_warn "git pull failed (non-fatal); building from current HEAD"
+    log_success "Building from $(git -C "$PROJECT_ROOT" rev-parse --short HEAD)"
 }
 
 # --- Build image ---
