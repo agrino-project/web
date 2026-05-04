@@ -252,15 +252,15 @@ const AgriculturePage: React.FC = () => {
                 {/* Bottom Row - Two Cards */}
                 <div className="mx_AgriculturePage_row mx_AgriculturePage_row_bottom">
                     <AgricultureCard
-                        title="تعامل با سازمان‌ها"
-                        subtitle="برای جامعه‌های کشاورزی ایران"
+                        title={_t("custom_panels|interaction_with_organizations")}
+                        subtitle={_t("custom_panels|for_iranian_agricultural_communities")}
                         icon={OrganizationIcon}
                         disabled={true}
                         variant="large"
                     />
                     <AgricultureCard
-                        title="تالار گفتگو"
-                        subtitle="محلی کشاورزی برای یکدیگر"
+                        title={_t("custom_panels|discussion_forum")}
+                        subtitle={_t("custom_panels|local_agriculture_for_each_other")}
                         icon={ConsultantIcon}
                         disabled={true}
                         variant="large"
@@ -269,25 +269,23 @@ const AgriculturePage: React.FC = () => {
 
                 {/* Final Row - Three Cards */}
                 <div className="mx_AgriculturePage_row mx_AgriculturePage_row_final">
-                    <AgricultureCard title="بازار محصولات" icon={BazaarIcon} disabled={true} variant="small" />
-                    <AgricultureCard title="کتاب کشاورزی" icon={EducationIcon} disabled={true} variant="small" />
-                    <AgricultureCard title="خدمات بانکی" icon={MarketIcon} disabled={true} variant="small" />
+                    <AgricultureCard title={_t("custom_panels|product_market")} icon={BazaarIcon} disabled={true} variant="small" />
+                    <AgricultureCard title={_t("custom_panels|agriculture_book")} icon={EducationIcon} disabled={true} variant="small" />
+                    <AgricultureCard title={_t("custom_panels|banking_services")} icon={MarketIcon} disabled={true} variant="small" />
                 </div>
 
                 {/* Personalized Section */}
-                <h3 className="mx_AgriculturePage_personalized_title">مخصوص شما</h3>
+                <h3 className="mx_AgriculturePage_personalized_title">{_t("custom_panels|for_you")}</h3>
                 <div className="mx_AgriculturePage_personalized">
                     <div className="mx_AgriculturePage_personalized_icon">+</div>
-                    <p className="mx_AgriculturePage_personalized_description">
-                        برای یک فضای شخصی‌سازی شده اطلاعات محصولات و یا دام خود را وارد کنید.
-                    </p>
+                    <p className="mx_AgriculturePage_personalized_description">{_t("custom_panels|enter_product")}</p>
                 </div>
 
                 {/* Articles Section */}
                 <div className="mx_AgriculturePage_section">
                     <div className="mx_AgriculturePage_section_header">
-                        <h3 className="mx_AgriculturePage_section_title_main">آخرین مقالات کوتاه</h3>
-                        <button className="mx_AgriculturePage_section_more">مشاهده همه</button>
+                        <h3 className="mx_AgriculturePage_section_title_main">{_t("custom_panels|articles")}</h3>
+                        <button className="mx_AgriculturePage_section_more">{_t("custom_panels|show_all")}</button>
                     </div>
                     <div className="mx_AgriculturePage_articles">
                         {articles.map((article, index) => (
@@ -303,7 +301,7 @@ const AgriculturePage: React.FC = () => {
 
                 {/* Support Section */}
                 <div className="mx_AgriculturePage_support">
-                    <h3 className="mx_AgriculturePage_support_title">پشتیبانی</h3>
+                    <h3 className="mx_AgriculturePage_support_title">{_t("custom_panels|support")}</h3>
                     <div className="mx_AgriculturePage_support_cards">
                         <div className="mx_AgriculturePage_support_card">
                             <div className="mx_AgriculturePage_support_icon">
@@ -324,7 +322,7 @@ const AgriculturePage: React.FC = () => {
                                     />
                                 </svg>
                             </div>
-                            <h4 className="mx_AgriculturePage_support_card_title">بازارگاه</h4>
+                            <h4 className="mx_AgriculturePage_support_card_title">{_t("custom_panels|Marketplace")}</h4>
                         </div>
 
                         <div className="mx_AgriculturePage_support_card">
@@ -334,7 +332,7 @@ const AgriculturePage: React.FC = () => {
                                     <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
                                 </svg>
                             </div>
-                            <h4 className="mx_AgriculturePage_support_card_title">باشگاه آگرینو</h4>
+                            <h4 className="mx_AgriculturePage_support_card_title">{_t("custom_panels|Club")}</h4>
                         </div>
 
                         <div className="mx_AgriculturePage_support_card">
@@ -354,7 +352,7 @@ const AgriculturePage: React.FC = () => {
                                     />
                                 </svg>
                             </div>
-                            <h4 className="mx_AgriculturePage_support_card_title">آب و هوا</h4>
+                            <h4 className="mx_AgriculturePage_support_card_title">{_t("custom_panels|Weather")}</h4>
                         </div>
                     </div>
                 </div>
