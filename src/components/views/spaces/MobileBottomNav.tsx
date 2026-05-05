@@ -63,18 +63,18 @@ const MobileBottomNav: React.FC = () => {
     return (
         <nav className="mx_MobileBottomNav">
             <button
-                className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "chat" })}
-                onClick={() => navigate("chatList")}
-            >
-                <div className="mx_MobileBottomNav_icon mx_MobileBottomNav_icon_chat" />
-                <span className="mx_MobileBottomNav_label">{_t("common|social" as TranslationKey)}</span>
-            </button>
-            <button
                 className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "agriculture" })}
                 onClick={() => navigate("agriculture")}
             >
                 <div className="mx_MobileBottomNav_icon mx_MobileBottomNav_icon_agriculture" />
                 <span className="mx_MobileBottomNav_label">{_t("custom_panels|agriculture")}</span>
+            </button>
+            <button
+                className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "chat" })}
+                onClick={() => navigate("chatList")}
+            >
+                <div className="mx_MobileBottomNav_icon mx_MobileBottomNav_icon_chat" />
+                <span className="mx_MobileBottomNav_label">{_t("common|social" as TranslationKey)}</span>
             </button>
             <button
                 className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "services" })}
@@ -101,7 +101,13 @@ const MobileBottomNav: React.FC = () => {
                             </div>
                         </div>
                         <div className="mx_MobileBottomNav_menuDivider" />
-                        <button className="mx_MobileBottomNav_menuItem" onClick={() => { setMoreOpen(false); defaultDispatcher.dispatch({ action: Action.ViewHomePage }); }}>
+                        <button
+                            className="mx_MobileBottomNav_menuItem"
+                            onClick={() => {
+                                setMoreOpen(false);
+                                defaultDispatcher.dispatch({ action: Action.ViewHomePage });
+                            }}
+                        >
                             <div className="mx_MobileBottomNav_menuIcon mx_MobileBottomNav_menuIcon_home" />
                             <span>{_t("common|home")}</span>
                         </button>
@@ -109,7 +115,10 @@ const MobileBottomNav: React.FC = () => {
                             <div className="mx_MobileBottomNav_menuIcon mx_MobileBottomNav_menuIcon_settings" />
                             <span>{_t("common|settings")}</span>
                         </button>
-                        <button className="mx_MobileBottomNav_menuItem" onClick={() => openSettings(UserTab.Notifications)}>
+                        <button
+                            className="mx_MobileBottomNav_menuItem"
+                            onClick={() => openSettings(UserTab.Notifications)}
+                        >
                             <div className="mx_MobileBottomNav_menuIcon mx_MobileBottomNav_menuIcon_notifications" />
                             <span>{_t("notifications|enable_prompt_toast_title")}</span>
                         </button>
@@ -118,7 +127,10 @@ const MobileBottomNav: React.FC = () => {
                             <span>{_t("room_settings|security|title")}</span>
                         </button>
                         <div className="mx_MobileBottomNav_menuDivider" />
-                        <button className="mx_MobileBottomNav_menuItem mx_MobileBottomNav_menuItem--danger" onClick={onSignOut}>
+                        <button
+                            className="mx_MobileBottomNav_menuItem mx_MobileBottomNav_menuItem--danger"
+                            onClick={onSignOut}
+                        >
                             <div className="mx_MobileBottomNav_menuIcon mx_MobileBottomNav_menuIcon_signout" />
                             <span>{_t("action|sign_out")}</span>
                         </button>

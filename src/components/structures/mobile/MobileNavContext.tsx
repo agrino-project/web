@@ -62,7 +62,7 @@ function rootPageForTab(tab: MobileTab): MobilePage {
 }
 
 export const MobileNavProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [currentPage, setCurrentPage] = useState<MobilePage>("chatList");
+    const [currentPage, setCurrentPage] = useState<MobilePage>("agriculture");
     // Track which tab the user was on before navigating to a sub-page
     const parentTabRef = useRef<MobileTab>("chat");
 

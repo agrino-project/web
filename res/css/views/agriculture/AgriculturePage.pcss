@@ -5,7 +5,7 @@
     width: 100%;
     overflow-x: hidden;
     overflow-y: auto;
-    background-color: #e8ebe4;
+    background-color: #f3fcf2;
 }
 
 .mx_AgriculturePage_container {
@@ -43,12 +43,12 @@
 .mx_AgriculturePage_section_title {
     font-size: 16px;
     font-weight: bold;
-    margin: 45px 0 8px;
+    margin: 36px 0 10px;
 }
 
 /* Card Base */
 .mx_AgriculturePage_card {
-    background: linear-gradient(135deg, #3d3d3d 0%, #2a2a2a 100%);
+    background: linear-gradient(135deg, #4a7c2c 0%, #3d6624 100%);
     border-radius: 16px;
     padding: 20px;
     display: flex;
@@ -74,8 +74,18 @@
 
 /* Large Variant */
 .mx_AgriculturePage_card_large {
-    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
     min-height: 140px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.mx_AgriculturePage_card_large:hover {
+    border-color: #4caf50;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
+    transform: translateY(-2px);
 }
 
 .mx_AgriculturePage_card_large .mx_AgriculturePage_card_icon_svg {
@@ -92,9 +102,17 @@
 
 /* Small Variant */
 .mx_AgriculturePage_card_small {
-    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-    padding: 16px 8px;
-    min-height: 100px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.mx_AgriculturePage_card_small:hover {
+    border-color: #4caf50;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
+    transform: translateY(-2px);
 }
 
 .mx_AgriculturePage_card_small .mx_AgriculturePage_card_icon {
