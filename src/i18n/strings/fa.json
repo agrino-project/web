@@ -816,7 +816,11 @@
         "bill_type_label": "نوع قبض:",
         "bill_id_label": "شناسه قبض:",
         "bill_amount_label": "مبلغ:",
-        "bill_tracking": "شماره پیگیری:"
+        "bill_tracking": "شماره پیگیری:",
+        "buy_internet_package": "خرید بسته اینترنت",
+        "financial_consulting": "مشاوره مالی",
+        "click_here": "کلیک کنید!",
+        "recent_transactions_summary": "خلاصه تراکنش‌های اخیر"
     },
     "create_space": {
         "add_details_prompt": "چند جزئیات اضافه کنید تا به مردم کمک کند آن را شناسایی کنند.",

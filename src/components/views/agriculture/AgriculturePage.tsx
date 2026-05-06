@@ -106,21 +106,29 @@ const AgriculturePage: React.FC = () => {
 
     const scrollToSlide = (index: number) => {
         if (bannerScrollRef.current) {
-            const slideWidth = bannerScrollRef.current.offsetWidth;
-            bannerScrollRef.current.scrollTo({
-                left: slideWidth * index,
-                behavior: "smooth",
-            });
+            const slideElement = bannerScrollRef.current.children[index] as HTMLElement;
+
+            if (slideElement) {
+                slideElement.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                    inline: "center",
+                });
+            }
             setActiveSlide(index);
         }
     };
 
     const handleScroll = () => {
         if (bannerScrollRef.current) {
-            const scrollLeft = bannerScrollRef.current.scrollLeft;
-            const slideWidth = bannerScrollRef.current.offsetWidth;
+            const scrollLeft = Math.abs(bannerScrollRef.current.scrollLeft);
+            const slideWidth = bannerScrollRef.current.clientWidth; 
+
             const newIndex = Math.round(scrollLeft / slideWidth);
-            setActiveSlide(newIndex);
+
+            if (newIndex >= 0 && newIndex < bannerSlides.length) {
+                setActiveSlide(newIndex);
+            }
         }
     };
 
@@ -269,9 +277,24 @@ const AgriculturePage: React.FC = () => {
 
                 {/* Final Row - Three Cards */}
                 <div className="mx_AgriculturePage_row mx_AgriculturePage_row_final">
-                    <AgricultureCard title={_t("custom_panels|product_market")} icon={BazaarIcon} disabled={true} variant="small" />
-                    <AgricultureCard title={_t("custom_panels|agriculture_book")} icon={EducationIcon} disabled={true} variant="small" />
-                    <AgricultureCard title={_t("custom_panels|banking_services")} icon={MarketIcon} disabled={true} variant="small" />
+                    <AgricultureCard
+                        title={_t("custom_panels|product_market")}
+                        icon={BazaarIcon}
+                        disabled={true}
+                        variant="small"
+                    />
+                    <AgricultureCard
+                        title={_t("custom_panels|agriculture_book")}
+                        icon={EducationIcon}
+                        disabled={true}
+                        variant="small"
+                    />
+                    <AgricultureCard
+                        title={_t("custom_panels|banking_services")}
+                        icon={MarketIcon}
+                        disabled={true}
+                        variant="small"
+                    />
                 </div>
 
                 {/* Personalized Section */}

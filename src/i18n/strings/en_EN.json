@@ -773,10 +773,9 @@
         "for_you": "For You",
         "enter_product": "For a personalized space, enter your product or livestock information.",
         "articles": "Latest short articles",
-        "show_all": "View all",
-        "support": "Support",
-        "Marketplace": "Marketplace",
-        "Club": "Agrino Club",
+        "show_all": "View allBuy Internet PackageSupport",
+        "Marketplace": "Financial Consulting",
+        "Club": "AClick Here!",
         "Weather": "Weather",
         "interaction_with_organizations": "Interaction with Organizations",
         "for_iranian_agricultural_communities": "For Iranian Agricultural Communities",
@@ -866,7 +865,11 @@
         "bill_type_label": "Bill type:",
         "bill_id_label": "Bill ID:",
         "bill_amount_label": "Amount:",
-        "bill_tracking": "Tracking number:"
+        "bill_tracking": "Tracking number:",
+        "buy_internet_package": "Buy Internet Package",
+        "financial_consulting": "Financial Consulting",
+        "click_here": "Click Here!",
+        "recent_transactions_summary": "Recent Transactions Summary"
     },
     "decline_invitation_dialog": {
         "confirm": "Are you sure you want to decline the invitation to join \"%(roomName)s\"?",

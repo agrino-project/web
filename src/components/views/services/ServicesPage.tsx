@@ -133,39 +133,54 @@ const ServicesPage: React.FC = () => {
                 <div className="mx_ServicesPage_header">
                     <h1 className="mx_ServicesPage_title">{_t("custom_panels|services_title")}</h1>
                     <div className="mx_ServicesPage_title_underline"></div>
-                </div>
 
-                {/* Services Grid - Only 3 active cards */}
-                <div className="mx_ServicesPage_grid">
-                    <div className="mx_ServicesPage_grid_row mx_ServicesPage_grid_row--top">
-                        <ServiceCard
-                            title={_t("custom_panels|card_to_card")}
-                            description={_t("custom_panels|card_to_card_desc")}
-                            icon={LinkIcon}
-                            onClick={onCardToCardClick}
-                            variant="large"
-                        />
-                    </div>
+                    {/* Services Grid - Only 3 active cards */}
+                    <div className="mx_ServicesPage_grid">
+                        <div className="mx_ServicesPage_grid_row mx_ServicesPage_grid_row--top">
+                            <ServiceCard
+                                title={_t("custom_panels|card_to_card")}
+                                description={_t("custom_panels|card_to_card_desc")}
+                                icon={LinkIcon}
+                                onClick={onCardToCardClick}
+                                variant="large"
+                            />
+                        </div>
 
-                    <div className="mx_ServicesPage_grid_row mx_ServicesPage_grid_row--middle">
-                        <ServiceCard
-                            title={_t("custom_panels|bill_payment")}
-                            description={_t("custom_panels|bill_payment_desc")}
-                            icon={BillIcon}
-                            onClick={onBillPaymentClick}
-                        />
-                        <ServiceCard
-                            title={_t("custom_panels|charge_purchase")}
-                            description={_t("custom_panels|charge_purchase_desc")}
-                            icon={ChargeIcon}
-                            onClick={onChargePurchaseClick}
-                        />
-                        <ServiceCard title="خرید بسته اینترنت" icon={ChargeIcon} onClick={() => {}} disabled />
-                    </div>
+                        <div className="mx_ServicesPage_grid_row mx_ServicesPage_grid_row--middle">
+                            <ServiceCard
+                                title={_t("custom_panels|bill_payment")}
+                                description={_t("custom_panels|bill_payment_desc")}
+                                icon={BillIcon}
+                                onClick={onBillPaymentClick}
+                            />
+                            <ServiceCard
+                                title={_t("custom_panels|charge_purchase")}
+                                description={_t("custom_panels|charge_purchase_desc")}
+                                icon={ChargeIcon}
+                                onClick={onChargePurchaseClick}
+                            />
+                            <ServiceCard
+                                title={_t("custom_panels|buy_internet_package")}
+                                icon={ChargeIcon}
+                                onClick={() => {}}
+                                disabled
+                            />
+                        </div>
 
-                    <div className="mx_ServicesPage_grid_row mx_ServicesPage_grid_row--bottom">
-                        <ServiceCard title="مشاوره مالی" icon={ConsultantIcon} onClick={() => {}} disabled />
-                        <ServiceCard title="پشتیبانی" icon={ChargeIcon} onClick={() => {}} disabled />
+                        <div className="mx_ServicesPage_grid_row mx_ServicesPage_grid_row--bottom">
+                            <ServiceCard
+                                title={_t("custom_panels|financial_consulting")}
+                                icon={ConsultantIcon}
+                                onClick={() => {}}
+                                disabled
+                            />
+                            <ServiceCard
+                                title={_t("custom_panels|support")}
+                                icon={ChargeIcon}
+                                onClick={() => {}}
+                                disabled
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -173,7 +188,7 @@ const ServicesPage: React.FC = () => {
                 <div className="mx_ServicesPage_banner">
                     <div className="mx_ServicesPage_banner_content">
                         <h2 className="mx_ServicesPage_banner_title">تسهیلات تا سقف ۶۰۰ میلیون تومان</h2>
-                        <p className="mx_ServicesPage_banner_subtitle">کلیک کنید!</p>
+                        <p className="mx_ServicesPage_banner_subtitle">{_t("custom_panels|click_here")}</p>
                     </div>
                     <div className="mx_ServicesPage_banner_image">
                         <img src="../../../../res/img/safe-vault.png" alt="Safe" />
@@ -183,7 +198,9 @@ const ServicesPage: React.FC = () => {
                 {/* Transactions Section */}
                 <div className="mx_ServicesPage_transactions">
                     <div className="mx_ServicesPage_transactions_header">
-                        <h2 className="mx_ServicesPage_transactions_title">خلاصه تراکنش‌های اخیر</h2>
+                        <h2 className="mx_ServicesPage_transactions_title">
+                            {_t("custom_panels|recent_transactions_summary")}
+                        </h2>
                         <div className="mx_ServicesPage_transactions_underline"></div>
                     </div>
                     <div className="mx_ServicesPage_transactions_list">
