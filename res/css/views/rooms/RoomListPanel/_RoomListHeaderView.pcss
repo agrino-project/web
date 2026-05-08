@@ -6,34 +6,208 @@
  */
 
 .mx_RoomListHeaderView {
-    flex: 0 0 60px;
-    padding: 0 var(--cpd-space-3x);
+    padding: var(--cpd-space-4x) var(--cpd-space-4x);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, rgba(5, 150, 105, 0.02) 100%);
+    border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+    backdrop-filter: blur(10px);
 
     .mx_RoomListHeaderView_title {
         min-width: 0;
+        flex: 1;
 
         h1 {
             all: unset;
-            font: var(--cpd-font-heading-sm-semibold);
+            font: var(--cpd-font-heading-md-semibold);
+            letter-spacing: -0.02em;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    }
+
+    .mx_SpaceMenu_button,
+    .mx_ComposeMenu_button,
+    .mx_RoomListHeaderView_composeButton {
+        position: relative;
+        background: rgba(16, 185, 129, 0.08);
+        border-radius: 12px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(16, 185, 129, 0.15);
+
+        svg {
+            color: #10b981;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.1));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        &:hover {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+
+            &::before {
+                opacity: 1;
+            }
+
+            svg {
+                color: #059669;
+                transform: scale(1.01);
+            }
+        }
+
+        &:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15);
         }
     }
 
     .mx_SpaceMenu_button {
         svg {
-            transition: transform 0.1s linear;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-    }
 
-    .mx_SpaceMenu_button[aria-expanded="true"] {
-        svg {
-            transform: rotate(180deg);
+        &[aria-expanded="true"] {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+
+            svg {
+                transform: rotate(180deg);
+                color: #059669;
+            }
         }
     }
 
     .mx_RoomListHeaderView_ReleaseAnnouncementAnchor {
         display: inline-flex;
+    }
+}
+
+/* Modern Menu Styles */
+[role="menu"] {
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    border: 1px solid rgba(16, 185, 129, 0.15) !important;
+    border-radius: 16px !important;
+    padding: var(--cpd-space-2x) !important;
+    animation: menuSlideIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes menuSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.mx_SpaceMenu_item,
+.mx_ComposeMenu_item {
+    border-radius: 10px !important;
+    margin: var(--cpd-space-1x) 0 !important;
+    padding: var(--cpd-space-2x) var(--cpd-space-x) !important;
+    padding-block: 8px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 0;
+        background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+        border-radius: 0 2px 2px 0;
+        transition: height 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    svg {
+        color: #374151 !important;
+        transition: all 0.2s ease !important;
+        width: 18px;
+        height: 18px;
+    }
+
+    span {
+        font-weight: 500 !important;
+        color: #374151 !important;
+        transition: all 0.2s ease !important;
+    }
+
+    &:hover {
+        transform: translateX(-4px);
+        padding-right: var(--cpd-space-4x) !important;
+
+        &::before {
+            height: 60%;
+        }
+
+        svg {
+            color: #10b981 !important;
+            transform: scale(1.1);
+        }
+
+        span {
+            color: #059669 !important;
+        }
+    }
+
+    &:active {
+        transform: translateX(2px);
+        background: rgba(16, 185, 129, 0.12) !important;
+    }
+}
+
+[role="menu"] {
+    direction: rtl !important;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .mx_RoomListHeaderView {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.03) 100%);
+        border-bottom-color: rgba(16, 185, 129, 0.15);
+    }
+
+    [role="menu"] {
+        border-color: rgba(16, 185, 129, 0.2) !important;
+    }
+
+    .mx_SpaceMenu_item,
+    .mx_ComposeMenu_item {
+        &:hover {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.08) 100%) !important;
+
+            svg {
+                color: #10b981 !important;
+            }
+
+            span {
+                color: #10b981 !important;
+            }
+        }
     }
 }

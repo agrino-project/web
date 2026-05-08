@@ -69,8 +69,8 @@ export const RoomListPanel: React.FC<RoomListPanelProps> = ({ activeSpace }) => 
             onBlur={onBlur}
             onKeyDown={onKeyDown}
         >
-            {displayRoomSearch && <RoomListSearch activeSpace={activeSpace} />}
             <RoomListHeaderView />
+            {displayRoomSearch && <RoomListSearch activeSpace={activeSpace} />}
             <RoomListView />
         </Flex>
     );

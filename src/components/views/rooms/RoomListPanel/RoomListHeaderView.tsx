@@ -41,11 +41,11 @@ export function RoomListHeaderView(): JSX.Element {
             align="center"
             data-testid="room-list-header"
         >
-            <Flex className="mx_RoomListHeaderView_title" align="center" gap="var(--cpd-space-1x)">
-                <h1 title={vm.title}>{vm.title}</h1>
+            <Flex className="mx_RoomListHeaderView_title" align="center" gap="var(--cpd-space-2x)">
+                <h1 title={vm.title}>آگرینو</h1>
                 {vm.displaySpaceMenu && <SpaceMenu vm={vm} />}
             </Flex>
-            <Flex align="center" gap="var(--cpd-space-2x)">
+            <Flex align="center" gap="var(--cpd-space-3x)">
                 <ReleaseAnnouncement
                     feature="newRoomList_sort"
                     header={_t("room_list|release_announcement|sort|title")}
@@ -70,10 +70,11 @@ export function RoomListHeaderView(): JSX.Element {
                             <ComposeMenu vm={vm} />
                         ) : (
                             <IconButton
+                                className="mx_RoomListHeaderView_composeButton"
                                 aria-label={_t("action|start_chat")}
                                 onClick={(e) => vm.createChatRoom(e.nativeEvent)}
                             >
-                                <ComposeIcon color="var(--cpd-color-icon-secondary)" />
+                                <ComposeIcon />
                             </IconButton>
                         )}
                     </div>
@@ -101,11 +102,16 @@ function SpaceMenu({ vm }: SpaceMenuProps): JSX.Element {
             open={open}
             onOpenChange={setOpen}
             title={vm.title}
-            side="right"
+            side="bottom"
             align="start"
             trigger={
-                <IconButton className="mx_SpaceMenu_button" aria-label={_t("room_list|open_space_menu")} size="20px">
-                    <ChevronDownIcon color="var(--cpd-color-icon-secondary)" />
+                <IconButton
+                    className="mx_SpaceMenu_button"
+                    aria-label={_t("room_list|open_space_menu")}
+                    size="24px"
+                    aria-expanded={open}
+                >
+                    <ChevronDownIcon />
                 </IconButton>
             }
         >
@@ -114,6 +120,7 @@ function SpaceMenu({ vm }: SpaceMenuProps): JSX.Element {
                 label={_t("room_list|space_menu|home")}
                 onSelect={vm.openSpaceHome}
                 hideChevron={true}
+                className="mx_SpaceMenu_item"
             />
             {vm.canInviteInSpace && (
                 <MenuItem
@@ -121,6 +128,7 @@ function SpaceMenu({ vm }: SpaceMenuProps): JSX.Element {
                     label={_t("action|invite")}
                     onSelect={vm.inviteInSpace}
                     hideChevron={true}
+                    className="mx_SpaceMenu_item"
                 />
             )}
             <MenuItem
@@ -128,6 +136,7 @@ function SpaceMenu({ vm }: SpaceMenuProps): JSX.Element {
                 label={_t("common|preferences")}
                 onSelect={vm.openSpacePreferences}
                 hideChevron={true}
+                className="mx_SpaceMenu_item"
             />
             {vm.canAccessSpaceSettings && (
                 <MenuItem
@@ -135,6 +144,7 @@ function SpaceMenu({ vm }: SpaceMenuProps): JSX.Element {
                     label={_t("room_list|space_menu|space_settings")}
                     onSelect={vm.openSpaceSettings}
                     hideChevron={true}
+                    className="mx_SpaceMenu_item"
                 />
             )}
         </Menu>
@@ -160,17 +170,29 @@ function ComposeMenu({ vm }: ComposeMenuProps): JSX.Element {
             onOpenChange={setOpen}
             showTitle={false}
             title={_t("action|open_menu")}
-            side="right"
-            align="start"
+            side="bottom"
+            align="end"
             trigger={
-                <IconButton aria-label={_t("action|add")}>
-                    <ComposeIcon color="var(--cpd-color-icon-secondary)" />
+                <IconButton className="mx_ComposeMenu_button" aria-label={_t("action|add")} aria-expanded={open}>
+                    <ComposeIcon />
                 </IconButton>
             }
         >
-            <MenuItem Icon={ChatIcon} label={_t("action|start_chat")} onSelect={vm.createChatRoom} hideChevron={true} />
+            <MenuItem
+                Icon={ChatIcon}
+                label={_t("action|start_chat")}
+                onSelect={vm.createChatRoom}
+                hideChevron={true}
+                className="mx_ComposeMenu_item"
+            />
             {vm.canCreateRoom && (
-                <MenuItem Icon={RoomIcon} label={_t("action|new_room")} onSelect={vm.createRoom} hideChevron={true} />
+                <MenuItem
+                    Icon={RoomIcon}
+                    label={_t("action|new_room")}
+                    onSelect={vm.createRoom}
+                    hideChevron={true}
+                    className="mx_ComposeMenu_item"
+                />
             )}
             {vm.canCreateVideoRoom && (
                 <MenuItem
@@ -178,6 +200,7 @@ function ComposeMenu({ vm }: ComposeMenuProps): JSX.Element {
                     label={_t("action|new_video_room")}
                     onSelect={vm.createVideoRoom}
                     hideChevron={true}
+                    className="mx_ComposeMenu_item"
                 />
             )}
         </Menu>
