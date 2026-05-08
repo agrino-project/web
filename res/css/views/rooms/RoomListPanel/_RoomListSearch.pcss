@@ -12,34 +12,61 @@
     border-bottom: var(--cpd-border-width-1) solid var(--cpd-color-bg-subtle-primary);
     padding: 0 var(--cpd-space-3x);
 
-    .mx_RoomListSearch_search {
-        /* The search button should take all the remaining space */
+    .mx_RoomListSearch_inputWrapper {
+        position: relative;
         flex: 1;
-        font: var(--cpd-font-body-md-regular);
-        color: var(--cpd-color-text-secondary);
+        display: flex;
+        align-items: center;
+        border: 1px solid #d9d9d9;
+        border-radius: 12px;
         min-width: 0;
+        padding: 4px 8px;
+        height: 36px;
+    }
+
+    .mx_RoomListSearch_closeButton {
+        flex-shrink: 0;
+        color: var(--cpd-color-icon-secondary);
+        margin-inline-end: 4px;
 
         svg {
             fill: var(--cpd-color-icon-secondary);
+            width: 18px;
+            height: 18px;
+        }
+    }
+
+    .mx_RoomListSearch_input {
+        flex: 1;
+        border: none !important;
+        background: transparent;
+        outline: none;
+        padding: 0 !important;
+        margin: 0 !important;
+        padding-inline-end: 8px !important;
+        padding-inline-start: 4px !important;
+        font-size: 14px;
+        color: var(--cpd-color-text-primary) !important;
+        min-width: 0;
+
+        &::placeholder {
+            color: var(--cpd-color-text-secondary);
         }
 
-        span {
-            flex: 1;
+        &:focus {
+            outline: none;
+        }
+    }
 
-            kbd {
-                font-family: inherit;
-            }
+    .mx_RoomListSearch_searchIcon {
+        flex-shrink: 0;
+        color: var(--cpd-color-icon-secondary);
+        margin-inline-start: 4px;
 
-            /* Shrink and truncate the search text */
-            white-space: nowrap;
-            overflow: hidden;
-            .mx_RoomListSearch_search_text {
-                min-width: 0;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                text-align: start;
-            }
+        svg {
+            fill: var(--cpd-color-icon-secondary);
+            width: 18px;
+            height: 18px;
         }
     }
 }
