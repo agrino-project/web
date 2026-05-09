@@ -59,6 +59,75 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         this.calculateUrlPreview();
     }
 
+    private renderInteractiveQuestion(content: any): JSX.Element {
+        const field = content.custom_meta_data?.data?.field;
+        const progress = content.custom_meta_data?.data?.progress;
+
+        return (
+            <div className="mx_BotQuestion">
+                <div className="mx_BotQuestion_header">
+                    <div className="mx_BotQuestion_progress">
+                        {progress?.current} / {progress?.total}
+                    </div>
+
+                    <div className="mx_BotQuestion_title">{field?.name}</div>
+                </div>
+
+                {/* OPTIONS */}
+                {field?.options?.length > 0 && (
+                    <div className="mx_BotQuestion_options">
+                        {field.options.map((option: string, index: number) => (
+                            <button key={index} className="mx_BotQuestion_option">
+                                {option}
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                {/* PHONE INPUT */}
+                {field?.ui_type === "phone_input" && (
+                    <div className="mx_BotQuestion_inputWrapper">
+                        <input className="mx_BotQuestion_input" placeholder="09123456789" />
+
+                        <button className="mx_BotQuestion_submit">ارسال</button>
+                    </div>
+                )}
+
+                {/* NUMBER INPUT */}
+                {field?.ui_type === "number_input" && (
+                    <div className="mx_BotQuestion_inputWrapper">
+                        <input type="number" className="mx_BotQuestion_input" placeholder="عدد وارد کنید" />
+
+                        <button className="mx_BotQuestion_submit">ارسال</button>
+                    </div>
+                )}
+
+                {/* TEXT INPUT */}
+                {field?.ui_type === "text_input" && (!field?.options || field.options.length === 0) && (
+                    <div className="mx_BotQuestion_inputWrapper">
+                        <input className="mx_BotQuestion_input" placeholder="پاسخ خود را بنویسید" />
+
+                        <button className="mx_BotQuestion_submit">ارسال</button>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    private renderCategoryMenu(content: any): JSX.Element {
+        const categories = content.custom_meta_data?.data?.categories || [];
+
+        return (
+            <div className="mx_CategoryMenu">
+                {categories.map((cat: any) => (
+                    <button key={cat.id} className="mx_CategoryMenu_item">
+                        {cat.index}. {cat.name}
+                    </button>
+                ))}
+            </div>
+        );
+    }
+
     public componentDidUpdate(prevProps: Readonly<IBodyProps>): void {
         if (!this.props.editState) {
             const stoppedEditing = prevProps.editState && !this.props.editState;
@@ -313,6 +382,11 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         const mxEvent = this.props.mxEvent;
         const content = mxEvent.getContent();
+        console.log("CONTENT:", mxEvent.getContent());
+        const metadata = content.custom_meta_data;
+        const type = metadata?.type;
+        const field = metadata?.data?.field;
+
         const isNotice = content.msgtype === MsgType.Notice;
         const isEmote = content.msgtype === MsgType.Emote;
         const isCaption = [MsgType.Image, MsgType.File, MsgType.Audio, MsgType.Video].includes(
@@ -323,6 +397,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             this.props.replacingEventId || this.props.isSeeingThroughMessageHiddenForModeration || isEmote;
         // only strip reply if this is the original replying event, edits thereafter do not have the fallback
         const stripReply = !mxEvent.replacingEvent() && !!getParentEventId(mxEvent);
+        if (type === "question") {
+            return this.renderInteractiveQuestion(content);
+        }
+        if (type === "category_menu") {
+            return this.renderCategoryMenu(content);
+        }
         let body = (
             <EventContentBody
                 as={willHaveWrapper ? "span" : "div"}
