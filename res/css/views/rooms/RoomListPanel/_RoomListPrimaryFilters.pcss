@@ -1,14 +1,16 @@
 .mx_RoomListPrimaryFilters {
     display: flex;
     gap: var(--cpd-space-2x);
-    padding: 4px var(--cpd-space-3x);
-    padding-bottom: 6px;
     overflow-x: auto;
     overflow-y: hidden;
-    scrollbar-width: none; /* Firefox */
-
+    padding-inline: var(--cpd-space-2x);
+    padding-bottom: 6px;
+    scroll-behavior: smooth;
+    scroll-padding-inline: var(--cpd-space-3x);
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
     &::-webkit-scrollbar {
-        display: none; /* Chrome, Safari */
+        display: none;
     }
 }
 
@@ -42,4 +44,48 @@
     &:hover {
         background: #3d6a4a;
     }
+}
+
+.mx_RoomListPrimaryFilters_wrapper {
+    position: relative;
+}
+
+.mx_RoomListPrimaryFilters {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.mx_RoomListPrimaryFilters_arrow {
+    position: absolute;
+    top: 45%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    border: none;
+    border-radius: 999px;
+    background: #326430;
+    color: white;
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+}
+
+.mx_RoomListPrimaryFilters_arrow:hover {
+    opacity: 0.9;
+}
+
+.mx_RoomListPrimaryFilters_arrowStart {
+    inset-inline-start: 2px;
+}
+
+.mx_RoomListPrimaryFilters_arrowEnd {
+    inset-inline-end: 2px;
 }
