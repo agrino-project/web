@@ -7,8 +7,6 @@ Please see LICENSE files in the repository root for full details.
 */
 
 import React, { type JSX, createRef, type SyntheticEvent, type MouseEvent } from "react";
-import { MsgType } from "matrix-js-sdk/src/matrix";
-
 import EventContentBody from "./EventContentBody.tsx";
 import { formatDate } from "../../../DateUtils";
 import Modal from "../../../Modal";
@@ -29,6 +27,8 @@ import { options as linkifyOpts } from "../../../linkify-matrix";
 import { getParentEventId } from "../../../utils/Reply";
 import { EditWysiwygComposer } from "../rooms/wysiwyg_composer";
 import { type IEventTileOps } from "../rooms/EventTile";
+import { MatrixClientPeg } from "../../../MatrixClientPeg";
+import { EventType, MsgType } from "matrix-js-sdk/src/matrix";
 
 interface IState {
     // the URLs (if any) to be previewed with a LinkPreviewWidget inside this TextualBody.
@@ -40,6 +40,9 @@ interface IState {
 
 export default class TextualBody extends React.Component<IBodyProps, IState> {
     private readonly contentRef = createRef<HTMLDivElement>();
+    private phoneInput: HTMLInputElement | null = null;
+    private numberInput: HTMLInputElement | null = null;
+    private textInput: HTMLInputElement | null = null;
 
     public static contextType = RoomContext;
     declare public context: React.ContextType<typeof RoomContext>;
@@ -59,6 +62,17 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         this.calculateUrlPreview();
     }
 
+    private sendBotAnswer = async (answer: string): Promise<void> => {
+        const roomId = this.props.mxEvent.getRoomId();
+
+        if (!roomId) return;
+
+        await MatrixClientPeg.safeGet().sendEvent(roomId, EventType.RoomMessage, {
+            msgtype: MsgType.Text,
+            body: answer,
+        });
+    };
+
     private renderInteractiveQuestion(content: any): JSX.Element {
         const field = content.custom_meta_data?.data?.field;
         const progress = content.custom_meta_data?.data?.progress;
@@ -77,7 +91,11 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 {field?.options?.length > 0 && (
                     <div className="mx_BotQuestion_options">
                         {field.options.map((option: string, index: number) => (
-                            <button key={index} className="mx_BotQuestion_option">
+                            <button
+                                key={index}
+                                className="mx_BotQuestion_option"
+                                onClick={() => this.sendBotAnswer(option)}
+                            >
                                 {option}
                             </button>
                         ))}
@@ -87,27 +105,81 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 {/* PHONE INPUT */}
                 {field?.ui_type === "phone_input" && (
                     <div className="mx_BotQuestion_inputWrapper">
-                        <input className="mx_BotQuestion_input" placeholder="09123456789" />
+                        <input
+                            ref={(el) => {
+                                this.phoneInput = el;
+                            }}
+                            className="mx_BotQuestion_input"
+                            placeholder="09123456789"
+                        />
 
-                        <button className="mx_BotQuestion_submit">ارسال</button>
+                        <button
+                            className="mx_BotQuestion_submit"
+                            onClick={() => {
+                                const value = this.phoneInput?.value?.trim();
+                                if (!value) return;
+
+                                this.sendBotAnswer(value);
+                                this.phoneInput && (this.phoneInput.value = "");
+                            }}
+                        >
+                            ارسال
+                        </button>
                     </div>
                 )}
 
                 {/* NUMBER INPUT */}
                 {field?.ui_type === "number_input" && (
                     <div className="mx_BotQuestion_inputWrapper">
-                        <input type="number" className="mx_BotQuestion_input" placeholder="عدد وارد کنید" />
+                        <input
+                            ref={(el) => {
+                                this.numberInput = el;
+                            }}
+                            type="number"
+                            className="mx_BotQuestion_input"
+                            placeholder="عدد وارد کنید"
+                        />
 
-                        <button className="mx_BotQuestion_submit">ارسال</button>
+                        <button
+                            className="mx_BotQuestion_submit"
+                            onClick={() => {
+                                const value = this.numberInput?.value?.trim();
+
+                                if (!value) return;
+
+                                this.sendBotAnswer(value);
+                                this.numberInput && (this.numberInput.value = "");
+                            }}
+                        >
+                            ارسال
+                        </button>
                     </div>
                 )}
 
                 {/* TEXT INPUT */}
                 {field?.ui_type === "text_input" && (!field?.options || field.options.length === 0) && (
                     <div className="mx_BotQuestion_inputWrapper">
-                        <input className="mx_BotQuestion_input" placeholder="پاسخ خود را بنویسید" />
+                        <input
+                            ref={(el) => {
+                                this.textInput = el;
+                            }}
+                            className="mx_BotQuestion_input"
+                            placeholder="پاسخ خود را بنویسید"
+                        />
 
-                        <button className="mx_BotQuestion_submit">ارسال</button>
+                        <button
+                            className="mx_BotQuestion_submit"
+                            onClick={() => {
+                                const value = this.textInput?.value?.trim();
+
+                                if (!value) return;
+
+                                this.sendBotAnswer(value);
+                                this.textInput && (this.textInput.value = "");
+                            }}
+                        >
+                            ارسال
+                        </button>
                     </div>
                 )}
             </div>
@@ -120,7 +192,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         return (
             <div className="mx_CategoryMenu">
                 {categories.map((cat: any) => (
-                    <button key={cat.id} className="mx_CategoryMenu_item">
+                    <button key={cat.id} className="mx_CategoryMenu_item" onClick={() => this.sendBotAnswer(cat.name)}>
                         {cat.index}. {cat.name}
                     </button>
                 ))}
