@@ -57,6 +57,8 @@ export const RoomListItemView = memo(function RoomListItemView({
 }: RoomListItemViewProps): JSX.Element {
     const ref = useRef<HTMLButtonElement>(null);
     const vm = useRoomListItemViewModel(room);
+    console.log(vm);
+
     const [isHover, setHover] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     // The compound menu in RoomListItemMenuView needs to be rendered when the hover menu is shown
@@ -109,17 +111,21 @@ export const RoomListItemView = memo(function RoomListItemView({
                 align="center"
                 justify="space-between"
             >
-                {/* We truncate the room name when too long. Title here is to show the full name on hover */}
-                <div className="mx_RoomListItemView_text">
-                    <div className="mx_RoomListItemView_roomName" title={vm.name}>
-                        {vm.name}
-                    </div>
-                    {vm.messagePreview && (
-                        <div className="mx_RoomListItemView_messagePreview" title={vm.messagePreview}>
-                            {vm.messagePreview}
-                        </div>
-                    )}
-                </div>
+                <Flex className="mx_RoomListItemView_meta" direction="column" justify="center">
+                    <Flex justify="space-between" align="center" className="mx_RoomListItemView_roomWrap">
+                        <div className="mx_RoomListItemView_roomName">{vm.name}</div>
+
+                        {!showHoverMenu && <span className="mx_RoomListItemView_time">۱۲:۴۸</span>}
+                    </Flex>
+
+                    <Flex justify="space-between" align="center" className="mx_RoomListItemView_roomWrap">
+                        <div className="mx_RoomListItemView_messagePreview">{vm.messagePreview}</div>
+
+                        {!showHoverMenu && vm.notificationState?.count > 0 && (
+                            <div className="mx_RoomListItemView_badge">{vm.notificationState.count}۲</div>
+                        )}
+                    </Flex>
+                </Flex>
                 {showHoverMenu ? (
                     <RoomListItemMenuView
                         room={room}

@@ -454,7 +454,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         const mxEvent = this.props.mxEvent;
         const content = mxEvent.getContent();
-        console.log("CONTENT:", mxEvent.getContent());
         const metadata = content.custom_meta_data;
         const type = metadata?.type;
         const field = metadata?.data?.field;
