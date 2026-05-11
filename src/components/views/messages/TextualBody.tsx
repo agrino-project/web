@@ -43,6 +43,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     private phoneInput: HTMLInputElement | null = null;
     private numberInput: HTMLInputElement | null = null;
     private textInput: HTMLInputElement | null = null;
+    private selectedOptions: string[] = [];
 
     public static contextType = RoomContext;
     declare public context: React.ContextType<typeof RoomContext>;
@@ -73,6 +74,20 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         });
     };
 
+    private sendNullAnswer = (): void => {
+        this.sendBotAnswer("null");
+    };
+
+    private toggleOption = (option: string): void => {
+        if (this.selectedOptions.includes(option)) {
+            this.selectedOptions = this.selectedOptions.filter((o) => o !== option);
+        } else {
+            this.selectedOptions.push(option);
+        }
+
+        this.forceUpdate();
+    };
+
     private renderInteractiveQuestion(content: any): JSX.Element {
         const field = content.custom_meta_data?.data?.field;
         const progress = content.custom_meta_data?.data?.progress;
@@ -90,15 +105,47 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 {/* OPTIONS */}
                 {field?.options?.length > 0 && (
                     <div className="mx_BotQuestion_options">
-                        {field.options.map((option: string, index: number) => (
+                        {field.options.map((option: string, index: number) => {
+                            const selected = this.selectedOptions.includes(option);
+
+                            return (
+                                <button
+                                    key={index}
+                                    className={`mx_BotQuestion_option ${selected ? "selected" : ""}`}
+                                    onClick={() => {
+                                        if (field.multiple) {
+                                            this.toggleOption(option);
+                                        } else {
+                                            this.sendBotAnswer(option);
+                                        }
+                                    }}
+                                >
+                                    {option}
+                                </button>
+                            );
+                        })}
+
+                        {field.multiple && (
                             <button
-                                key={index}
-                                className="mx_BotQuestion_option"
-                                onClick={() => this.sendBotAnswer(option)}
+                                className="mx_BotQuestion_submit"
+                                onClick={() => {
+                                    if (!this.selectedOptions.length) return;
+
+                                    this.sendBotAnswer(this.selectedOptions.join(","));
+
+                                    this.selectedOptions = [];
+
+                                    this.forceUpdate();
+                                }}
                             >
-                                {option}
+                                ارسال
                             </button>
-                        ))}
+                        )}
+                        {field?.required === false && (
+                            <button className="mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
+                                بعدی
+                            </button>
+                        )}
                     </div>
                 )}
 
@@ -125,6 +172,11 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         >
                             ارسال
                         </button>
+                        {field?.required === false && (
+                            <button className="mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
+                                بعدی
+                            </button>
+                        )}
                     </div>
                 )}
 
@@ -153,6 +205,11 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         >
                             ارسال
                         </button>
+                        {field?.required === false && (
+                            <button className="mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
+                                بعدی
+                            </button>
+                        )}
                     </div>
                 )}
 
@@ -180,6 +237,55 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         >
                             ارسال
                         </button>
+                        {field?.required === false && (
+                            <button className="mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
+                                بعدی
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {/* DATE INPUT */}
+                {field?.ui_type === "date_input" && (
+                    <div className="mx_BotQuestion_inputWrapper">
+                        <input
+                            ref={(el) => {
+                                this.textInput = el;
+                            }}
+                            type="date"
+                            min={field?.date_min}
+                            max={field?.date_max}
+                            className="mx_BotQuestion_input"
+                        />
+
+                        <button
+                            className="mx_BotQuestion_submit"
+                            onClick={() => {
+                                const value = this.textInput?.value?.trim();
+
+                                if (!value) {
+                                    if (field.required === false) {
+                                        this.sendNullAnswer();
+                                    }
+
+                                    return;
+                                }
+
+                                this.sendBotAnswer(value);
+
+                                if (this.textInput) {
+                                    this.textInput.value = "";
+                                }
+                            }}
+                        >
+                            ارسال
+                        </button>
+
+                        {field?.required === false && (
+                            <button className="mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
+                                بعدی
+                            </button>
+                        )}
                     </div>
                 )}
             </div>
@@ -198,6 +304,10 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 ))}
             </div>
         );
+    }
+
+    private renderError(content: any): JSX.Element {
+        return <div className="mx_BotQuestion_error">{content.body}</div>;
     }
 
     public componentDidUpdate(prevProps: Readonly<IBodyProps>): void {
@@ -454,10 +564,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         const mxEvent = this.props.mxEvent;
         const content = mxEvent.getContent();
+
         const metadata = content.custom_meta_data;
         const type = metadata?.type;
-        const field = metadata?.data?.field;
-
         const isNotice = content.msgtype === MsgType.Notice;
         const isEmote = content.msgtype === MsgType.Emote;
         const isCaption = [MsgType.Image, MsgType.File, MsgType.Audio, MsgType.Video].includes(
@@ -473,6 +582,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (type === "category_menu") {
             return this.renderCategoryMenu(content);
+        }
+        if (type === "validation_error") {
+            return this.renderError(content);
         }
         let body = (
             <EventContentBody

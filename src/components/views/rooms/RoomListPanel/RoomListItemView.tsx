@@ -57,7 +57,6 @@ export const RoomListItemView = memo(function RoomListItemView({
 }: RoomListItemViewProps): JSX.Element {
     const ref = useRef<HTMLButtonElement>(null);
     const vm = useRoomListItemViewModel(room);
-    console.log(vm);
 
     const [isHover, setHover] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -122,7 +121,7 @@ export const RoomListItemView = memo(function RoomListItemView({
                         <div className="mx_RoomListItemView_messagePreview">{vm.messagePreview}</div>
 
                         {!showHoverMenu && vm.notificationState?.count > 0 && (
-                            <div className="mx_RoomListItemView_badge">{vm.notificationState.count}۲</div>
+                            <div className="mx_RoomListItemView_badge">{vm.notificationState.count}</div>
                         )}
                     </Flex>
                 </Flex>
