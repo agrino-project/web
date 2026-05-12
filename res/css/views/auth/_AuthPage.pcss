@@ -1,41 +1,49 @@
-/*
-Copyright 2019-2024 New Vector Ltd.
-
-SPDX-License-Identifier: AGPL-3.0-only OR GPL-3.0-only OR LicenseRef-Element-Commercial
-Please see LICENSE files in the repository root for full details.
-*/
-
 .mx_AuthPage {
     width: 100%;
-    min-height: 100%;
     display: flex;
-    flex-direction: column;
-    background-color: $authpage-bg-color;
-    height: 100vh;
-    overflow: auto;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    @media only screen and (max-width: 768px) {
+        padding: 25px;
+    }
 }
 
 .mx_AuthPage_modal {
     display: flex;
-    margin: 100px auto auto;
-    border-radius: 4px;
-    background-color: $authpage-modal-bg-color;
+    width: 100%;
+    border-radius: 8px;
 
-    @media only screen and (max-height: 768px) {
-        margin-top: 50px;
-    }
-
-    @media only screen and (max-width: 480px) {
-        margin-top: 0;
-    }
-
-    /* Apply a blurred shadow around the modal */
-    &.mx_AuthPage_modal_withBlur {
-        box-shadow: 0 2px 4px 0 rgb(0, 0, 0, 0.33);
+    @media only screen and (max-width: 768px) {
+        flex-direction: column;
     }
 }
 
-/* RTL support for auth pages */
+.mx_AuthPage_imageSection {
+    flex: 1;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    @media only screen and (max-width: 768px) {
+        min-height: 250px;
+        border-radius: 8px;
+    }
+}
+
+.mx_AuthPage_formSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 [dir="rtl"] .mx_AuthPage_modal {
-    /* RTL modal layout adjustments if needed */
+    flex-direction: row-reverse;
+
+    @media only screen and (max-width: 768px) {
+        flex-direction: column;
+    }
 }

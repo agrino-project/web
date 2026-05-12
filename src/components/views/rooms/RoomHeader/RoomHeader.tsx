@@ -259,7 +259,7 @@ function RoomHeaderButtons({
             ) : (
                 <>
                     {/* {!isVideoRoom && videoCallButton} */}
-                    {!useElementCallExclusively && !isVideoRoom && voiceCallButton}
+                    {false && !useElementCallExclusively && !isVideoRoom && voiceCallButton}
                 </>
             )}
 
