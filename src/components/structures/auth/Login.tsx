@@ -175,7 +175,7 @@ export default class LoginComponent extends React.PureComponent<IProps, IState> 
             try {
                 await AutoDiscoveryUtils.validateServerConfigWithStaticUrls(
                     this.props.serverConfig.hsUrl,
-                    this.props.serverConfig.isUrl,
+                    // this.props.serverConfig.isUrl,
                 );
                 this.setState({ serverIsAlive: true, errorText: "" });
             } catch (e) {
@@ -319,13 +319,10 @@ export default class LoginComponent extends React.PureComponent<IProps, IState> 
         }
     };
 
-    private async checkServerLiveliness({
-        hsUrl,
-        isUrl,
-    }: Pick<ValidatedServerConfig, "hsUrl" | "isUrl">): Promise<void> {
+    private async checkServerLiveliness({ hsUrl }: Pick<ValidatedServerConfig, "hsUrl">): Promise<void> {
         // Do a quick liveliness check on the URLs
         try {
-            const { warning } = await AutoDiscoveryUtils.validateServerConfigWithStaticUrls(hsUrl, isUrl);
+            const { warning } = await AutoDiscoveryUtils.validateServerConfigWithStaticUrls(hsUrl);
             if (warning) {
                 this.setState({
                     ...AutoDiscoveryUtils.authComponentStateForError(warning),
@@ -362,7 +359,7 @@ export default class LoginComponent extends React.PureComponent<IProps, IState> 
             loginIncorrect: false,
         });
 
-        await this.checkServerLiveliness({ hsUrl, isUrl });
+        await this.checkServerLiveliness({ hsUrl });
 
         const loginLogic = new Login(hsUrl, isUrl, fallbackHsUrl, {
             defaultDeviceDisplayName: this.props.defaultDeviceDisplayName,
@@ -667,12 +664,17 @@ export default class LoginComponent extends React.PureComponent<IProps, IState> 
 
         return (
             <AuthPage>
-                <AuthHeader disableLanguageSelector={this.props.isSyncing || this.state.busyLoggingIn} />
+                {/* <AuthHeader disableLanguageSelector={this.props.isSyncing || this.state.busyLoggingIn} /> */}
                 <AuthBody>
-                    <h1>
+                    {/* <h1>
                         {_t("action|sign_in")}
                         {loader}
-                    </h1>
+                    </h1> */}
+                    <h1 className="mx_AuthBody_title">به آگرینو خوش آمدید.</h1>
+
+                    <div className="mx_AuthBody_subtitle">
+                        اولین سامانه تخصصی تقویت شده با هوش مصنوعی بانک کشاورزی ایران.
+                    </div>
                     {errorTextSection}
                     {serverDeadSection}
                     {/*<ServerPicker

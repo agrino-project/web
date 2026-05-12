@@ -23,7 +23,12 @@ interface IProps {
     disableSubmit?: boolean;
     busy?: boolean;
 
-    onPasswordLogin(username: string | undefined, phoneCountry: string | undefined, phoneNumber: string | undefined, password: string): Promise<void>;
+    onPasswordLogin(
+        username: string | undefined,
+        phoneCountry: string | undefined,
+        phoneNumber: string | undefined,
+        password: string,
+    ): Promise<void>;
     onBack(): void;
     onResendOTP(): void;
 }
@@ -148,16 +153,17 @@ export default class OTPVerifyLogin extends React.Component<IProps, IState> {
                     onClick={this.onSubmit}
                     style={{ fontSize: "14px" }}
                 >
-                    {_t("auth|verify_otp")}
+                    {_t("auth|enter")}
                 </AccessibleButton>
             );
         }
 
         return (
             <div>
-                <div className="mx_AuthBody_fieldRow">
-                    <p>{_t("auth|otp_sent_to", { phoneNumber: this.props.phoneNumber })}</p>
-                </div>
+                <p style={{ margin: "0 0 2px 0" }}>{_t("auth|otp_sent_to", { phoneNumber: this.props.phoneNumber })}</p>
+                <button className="otp-change-number" onClick={this.onBackClick} disabled={verifyingOTP}>
+                    {_t("action|back")}
+                </button>
 
                 <form onSubmit={this.onSubmit}>
                     <div className="mx_AuthBody_fieldRow">
@@ -165,43 +171,25 @@ export default class OTPVerifyLogin extends React.Component<IProps, IState> {
                             name="otp"
                             ref={this.otpFieldRef}
                             type="text"
-                            label={_t("auth|otp_code_label")}
                             placeholder={_t("auth|otp_code_placeholder")}
                             value={otp}
                             onChange={this.onOTPChange}
                             disabled={verifyingOTP}
                             autoFocus
-                            dir="ltr"
                         />
                     </div>
 
-                    {errorMessage && (
-                        <div className="mx_AuthBody_error">
-                            {errorMessage}
-                        </div>
-                    )}
+                    {errorMessage && <div className="mx_AuthBody_error">{errorMessage}</div>}
 
                     <div className="mx_AuthBody_buttons">
-                        {submitButtonOrSpinner}
-
-                        <AccessibleButton
-                            kind="link"
+                        <button
                             onClick={this.onResendClick}
+                            className="otp-resend-btn"
                             disabled={resendDisabled || verifyingOTP}
                         >
-                            {resendDisabled
-                                ? _t("auth|resend_otp_in", { seconds: countdown })
-                                : _t("auth|resend_otp")
-                            }
-                        </AccessibleButton>
-
-                        <AccessibleButton
-                            kind="link"
-                            onClick={this.onBackClick}
-                            disabled={verifyingOTP}
-                        >
-                            {_t("action|back")}
-                        </AccessibleButton>
+                            {resendDisabled ? _t("auth|resend_otp_in", { seconds: countdown }) : _t("auth|resend_otp")}
+                        </button>
+                        {submitButtonOrSpinner}
                     </div>
                 </form>
             </div>

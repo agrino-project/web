@@ -126,26 +126,21 @@ export default class OTPPhoneLogin extends React.Component<IProps, IState> {
         return (
             <div>
                 <form onSubmit={this.onSubmit}>
+                    <p style={{ margin: "0 0 4px 0" }}>{_t("auth|phone_number_label")}</p>
                     <div className="mx_AuthBody_fieldRow">
                         <Field
                             name="phoneNumber"
                             ref={this.phoneNumberFieldRef}
                             type="text"
-                            label={_t("auth|phone_number_label")}
                             placeholder={_t("auth|phone_number_placeholder")}
                             value={phoneNumber}
                             onChange={this.onPhoneNumberChange}
                             disabled={requestingOTP}
                             autoFocus
-                            dir="ltr"
                         />
                     </div>
 
-                    {errorMessage && (
-                        <div className="mx_AuthBody_error">
-                            {errorMessage}
-                        </div>
-                    )}
+                    {errorMessage && <div className="mx_AuthBody_error">{errorMessage}</div>}
 
                     <div className="mx_AuthBody_buttons">
                         {/*<AccessibleButton

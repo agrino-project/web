@@ -167,7 +167,7 @@ const RoomSummaryCardView: React.FC<IProps> = ({
                 {vm.alias}
             </Text>
 
-            <Flex as="section" justify="center" gap="var(--cpd-space-2x)" className="mx_RoomSummaryCard_badges">
+            {/* <Flex as="section" justify="center" gap="var(--cpd-space-2x)" className="mx_RoomSummaryCard_badges">
                 {!vm.isDirectMessage && vm.roomJoinRule === JoinRule.Public && (
                     <Badge kind="blue">
                         <PublicIcon width="1em" color="var(--cpd-color-icon-info-primary)" />
@@ -195,7 +195,7 @@ const RoomSummaryCardView: React.FC<IProps> = ({
                         {_t("common|not_trusted")}
                     </Badge>
                 )}
-            </Flex>
+            </Flex> */}
 
             <RoomTopic room={room} />
         </header>
