@@ -142,8 +142,8 @@ export default class OTPPhoneLogin extends React.Component<IProps, IState> {
             submitButtonOrSpinner = (
                 <AccessibleButton
                     type="submit"
-                    kind="primary"
-                    style={{ fontSize: "12px" }}
+                    kind="primary_sm"
+                    style={{ fontSize: "14px" }}
                     disabled={!phoneNumberValid || this.props.disableSubmit}
                     onClick={this.onSubmit}
                 >

@@ -68,6 +68,39 @@ export default class OTPVerifyLogin extends React.Component<IProps, IState> {
         }
     }
 
+    private onOTPDigitChange = (index: number, value: string): void => {
+        if (!/^\d?$/.test(value)) return;
+
+        const otpArray = this.state.otp.split("");
+
+        while (otpArray.length < 6) {
+            otpArray.push("");
+        }
+
+        otpArray[index] = value;
+
+        const otp = otpArray.join("");
+        const otpValid = OTP_REGEX.test(otp);
+
+        this.setState({
+            otp,
+            otpValid,
+            errorMessage: undefined,
+        });
+
+        if (value && index < 5) {
+            const next = document.getElementById(`otp-${index + 1}`);
+            (next as HTMLInputElement)?.focus();
+        }
+    };
+
+    private onOTPKeyDown = (index: number, ev: React.KeyboardEvent<HTMLInputElement>): void => {
+        if (ev.key === "Backspace" && !this.state.otp[index] && index > 0) {
+            const prev = document.getElementById(`otp-${index - 1}`);
+            (prev as HTMLInputElement)?.focus();
+        }
+    };
+
     private startCountdown(): void {
         this.setState({ resendDisabled: true, countdown: 60 });
 
@@ -167,16 +200,24 @@ export default class OTPVerifyLogin extends React.Component<IProps, IState> {
 
                 <form onSubmit={this.onSubmit}>
                     <div className="mx_AuthBody_fieldRow">
-                        <Field
-                            name="otp"
-                            ref={this.otpFieldRef}
-                            type="text"
-                            placeholder={_t("auth|otp_code_placeholder")}
-                            value={otp}
-                            onChange={this.onOTPChange}
-                            disabled={verifyingOTP}
-                            autoFocus
-                        />
+                        <div className="otp-container">
+                            {[0, 1, 2, 3, 4, 5].map((index) => (
+                                <input
+                                    key={index}
+                                    id={`otp-${index}`}
+                                    type="text"
+                                    inputMode="numeric"
+                                    maxLength={1}
+                                    className="otp-input"
+                                    placeholder="-"
+                                    value={otp[index] || ""}
+                                    onChange={(e) => this.onOTPDigitChange(index, e.target.value)}
+                                    onKeyDown={(e) => this.onOTPKeyDown(index, e)}
+                                    disabled={verifyingOTP}
+                                    autoFocus={index === 0}
+                                />
+                            ))}
+                        </div>
                     </div>
 
                     {errorMessage && <div className="mx_AuthBody_error">{errorMessage}</div>}
