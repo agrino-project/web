@@ -24,8 +24,8 @@ interface RoomListPrimaryFiltersProps {
 export function RoomListPrimaryFilters({ vm }: RoomListPrimaryFiltersProps): JSX.Element {
     const scrollRef = useRef<HTMLDivElement>(null);
 
-   const [canScrollStart, setCanScrollStart] = useState(false);
-   const [canScrollEnd, setCanScrollEnd] = useState(false);
+    const [canScrollStart, setCanScrollStart] = useState(false);
+    const [canScrollEnd, setCanScrollEnd] = useState(false);
 
     const getScrollPosition = (el: HTMLDivElement) => {
         return Math.abs(el.scrollLeft);
@@ -100,7 +100,15 @@ export function RoomListPrimaryFilters({ vm }: RoomListPrimaryFiltersProps): JSX
                     className="mx_RoomListPrimaryFilters_arrow mx_RoomListPrimaryFilters_arrowStart"
                     onClick={() => scroll("start")}
                 >
-                    ‹
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path
+                            d="M9 6L15 12L9 18"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
                 </button>
             )}
 
@@ -109,7 +117,15 @@ export function RoomListPrimaryFilters({ vm }: RoomListPrimaryFiltersProps): JSX
                     className="mx_RoomListPrimaryFilters_arrow mx_RoomListPrimaryFilters_arrowEnd"
                     onClick={() => scroll("end")}
                 >
-                    ›
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path
+                            d="M15 6L9 12L15 18"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
                 </button>
             )}
 
