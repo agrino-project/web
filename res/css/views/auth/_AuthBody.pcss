@@ -267,12 +267,9 @@ Please see LICENSE files in the repository root for full details.
     margin: 1em 0;
 }
 
-@media only screen and (max-width: 480px) {
+@media only screen and (max-width: 768px) {
     .mx_AuthBody {
-        border-radius: 4px;
-        width: auto;
-        max-width: 600px;
-        padding: 10px;
+        padding: 25px 0;
     }
 }
 
@@ -340,22 +337,28 @@ Please see LICENSE files in the repository root for full details.
 
 .mx_AuthBody_title {
     font-size: 34px;
-    font-weight: 700;
+    font-weight: bold;
     margin-bottom: 8px;
-    color: #111827;
 }
 
 .mx_AuthBody_subtitle {
-    color: #6b7280;
+    color: #334155;
     line-height: 1.8;
-    margin-bottom: 32px;
+    margin-bottom: 26px;
     font-size: 15px;
 }
 
+.otp_sent_to {
+    margin: 0 0 4px 0;
+    color: #334155;
+    font-weight: 400;
+    font-size: 16px;
+}
+
 .otp-change-number {
-    color: #1976d2;
-    font-size: 13px;
-    margin-bottom: 14px;
+    color: #1e4ae9;
+    font-size: 14px;
+    margin-bottom: 18px;
     text-decoration: none;
     background: none;
     border: none;
@@ -368,17 +371,55 @@ Please see LICENSE files in the repository root for full details.
 
 .otp-resend-btn {
     font-size: 13px;
-    color: #757575;
+    color: #8f9091;
     background: none;
     border: none;
     cursor: pointer;
     text-align: start;
-}
-
-.otp-resend-btn:not(:disabled) {
-    color: #000;
+    margin-block: 4px;
 }
 
 .otp-resend-btn:disabled {
     cursor: default;
+}
+
+.otp-resend-btn:hover {
+    text-decoration: underline;
+}
+
+.mx_Login_alternativeOptions {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.mx_Login_sso_container {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    direction: rtl;
+}
+
+.mx_Login_sso_btn.mx_AccessibleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #f4faff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 10px 20px !important;
+    min-width: 140px;
+    color: #2e2f30 !important;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.mx_Login_sso_btn.mx_AccessibleButton:hover {
+    background-color: #e8f4fe !important;
+}
+
+.mx_Login_sso_icon {
+    width: 19px;
+    height: 19px;
+    object-fit: contain;
 }

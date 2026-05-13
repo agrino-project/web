@@ -160,7 +160,7 @@ export default class OTPVerifyLogin extends React.Component<IProps, IState> {
 
         return (
             <div>
-                <p style={{ margin: "0 0 2px 0" }}>{_t("auth|otp_sent_to", { phoneNumber: this.props.phoneNumber })}</p>
+                <p className="otp_sent_to">{_t("auth|otp_sent_to", { phoneNumber: this.props.phoneNumber })}</p>
                 <button className="otp-change-number" onClick={this.onBackClick} disabled={verifyingOTP}>
                     {_t("action|back")}
                 </button>

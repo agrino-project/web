@@ -103,6 +103,35 @@ export default class OTPPhoneLogin extends React.Component<IProps, IState> {
         this.props.onBack();
     };
 
+    private renderAlternativeLoginOptions = (): JSX.Element => {
+        return (
+            <div className="mx_Login_alternativeOptions">
+                <div className="mx_Login_separator">
+                    <span>{_t("auth|or")}</span>
+                </div>
+                <div className="mx_Login_sso_container">
+                    <AccessibleButton kind="primary_outline" className="mx_Login_sso_btn" onClick={() => {}}>
+                        <img
+                            src={require("../../../../res/img/mygov.png")}
+                            alt="دولت من"
+                            className="mx_Login_sso_icon"
+                        />
+                        <span>دولت من</span>
+                    </AccessibleButton>
+
+                    <AccessibleButton kind="primary_outline" className="mx_Login_sso_btn" onClick={() => {}}>
+                        <img
+                            src={require("../../../../res/img/google.svg").default}
+                            alt="Google"
+                            className="mx_Login_sso_icon"
+                        />
+                        <span>گوگل</span>
+                    </AccessibleButton>
+                </div>
+            </div>
+        );
+    };
+
     public render(): JSX.Element {
         const { phoneNumber, phoneNumberValid, requestingOTP, errorMessage } = this.state;
 
@@ -125,6 +154,11 @@ export default class OTPPhoneLogin extends React.Component<IProps, IState> {
 
         return (
             <div>
+                <h1 className="mx_AuthBody_title">به آگرینو خوش آمدید.</h1>
+
+                <div className="mx_AuthBody_subtitle">
+                    اولین سامانه تخصصی تقویت شده با هوش مصنوعی بانک کشاورزی ایران.
+                </div>
                 <form onSubmit={this.onSubmit}>
                     <p style={{ margin: "0 0 4px 0" }}>{_t("auth|phone_number_label")}</p>
                     <div className="mx_AuthBody_fieldRow">
@@ -154,6 +188,7 @@ export default class OTPPhoneLogin extends React.Component<IProps, IState> {
                         {submitButtonOrSpinner}
                     </div>
                 </form>
+                {this.renderAlternativeLoginOptions()}
             </div>
         );
     }

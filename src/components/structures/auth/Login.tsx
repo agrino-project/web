@@ -440,22 +440,22 @@ export default class LoginComponent extends React.PureComponent<IProps, IState> 
         );
     };
 
-    private renderAlternativeLoginOptions = (): JSX.Element => {
-        return (
-            <div className="mx_Login_alternativeOptions">
-                <div className="mx_Login_separator">
-                    <span>{_t("auth|or")}</span>
-                </div>
-                <AccessibleButton
-                    kind="link"
-                    onClick={() => this.setState({ currentLoginType: "m.login.password" })}
-                    disabled={this.isBusy()}
-                >
-                    {_t("auth|sign_in_with_password")}
-                </AccessibleButton>
-            </div>
-        );
-    };
+    // private renderAlternativeLoginOptions = (): JSX.Element => {
+    //     return (
+    //         <div className="mx_Login_alternativeOptions">
+    //             <div className="mx_Login_separator">
+    //                 <span>{_t("auth|or")}</span>
+    //             </div>
+    //             <AccessibleButton
+    //                 kind="link"
+    //                 onClick={() => this.setState({ currentLoginType: "m.login.password" })}
+    //                 disabled={this.isBusy()}
+    //             >
+    //                 {_t("auth|sign_in_with_password")}
+    //             </AccessibleButton>
+    //         </div>
+    //     );
+    // };
 
     private onOTPPhoneNumberChanged = (phoneNumber: string): void => {
         this.setState({ otpPhoneNumber: phoneNumber });
@@ -670,11 +670,6 @@ export default class LoginComponent extends React.PureComponent<IProps, IState> 
                         {_t("action|sign_in")}
                         {loader}
                     </h1> */}
-                    <h1 className="mx_AuthBody_title">به آگرینو خوش آمدید.</h1>
-
-                    <div className="mx_AuthBody_subtitle">
-                        اولین سامانه تخصصی تقویت شده با هوش مصنوعی بانک کشاورزی ایران.
-                    </div>
                     {errorTextSection}
                     {serverDeadSection}
                     {/*<ServerPicker
@@ -685,7 +680,7 @@ export default class LoginComponent extends React.PureComponent<IProps, IState> 
                     {this.state.currentLoginType.startsWith("otp") ? (
                         <>
                             {this.stepRendererMap[this.state.currentLoginType]()}
-                            {this.renderAlternativeLoginOptions()}
+                            {/* {this.renderAlternativeLoginOptions()} */}
                         </>
                     ) : (
                         <>
