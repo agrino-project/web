@@ -55,15 +55,15 @@
         margin: 12px 0 0;
     }
 
-    .mx_ButtonRow > * {
+    .mx_ButtonRow>* {
         margin: 0 10px;
     }
 
-    .mx_ButtonRow > *:first-child {
+    .mx_ButtonRow>*:first-child {
         margin-left: 0;
     }
 
-    .mx_ButtonRow > *:last-child {
+    .mx_ButtonRow>*:last-child {
         margin-right: 0;
     }
 
@@ -111,13 +111,21 @@
     }
 
     .mx_ButtonSignIn {
-        background-color: #368bd6;
+        background-color: #326430;
         color: white !important;
+
+        &:hover {
+            opacity: 0.9;
+        }
     }
 
     .mx_ButtonCreateAccount {
         background-color: #0dbd8b;
         color: white !important;
+
+        &:hover {
+            opacity: 0.9;
+        }
     }
 
     .mx_SecondaryButton {
@@ -128,12 +136,15 @@
     .mx_Button_iconSignIn {
         background-image: url("welcome/images/icon-sign-in.svg");
     }
+
     .mx_Button_iconCreateAccount {
         background-image: url("welcome/images/icon-create-account.svg");
     }
+
     .mx_Button_iconHelp {
         background-image: url("welcome/images/icon-help.svg");
     }
+
     .mx_Button_iconRoomDirectory {
         background-image: url("welcome/images/icon-room-directory.svg");
     }
@@ -150,7 +161,8 @@ we don't have an account and should hide them. No account == no guest account ei
     .mx_ButtonRow.mx_WelcomePage_guestFunctions {
         margin-top: 20px;
     }
-    .mx_ButtonRow.mx_WelcomePage_guestFunctions > div {
+
+    .mx_ButtonRow.mx_WelcomePage_guestFunctions>div {
         margin: 0 auto;
     }
 
@@ -159,7 +171,7 @@ we don't have an account and should hide them. No account == no guest account ei
             flex-direction: column;
         }
 
-        .mx_ButtonRow > * {
+        .mx_ButtonRow>* {
             margin: 0 0 10px 0;
         }
     }
@@ -179,28 +191,28 @@ we don't have an account and should hide them. No account == no guest account ei
         margin-right: 20px;
     }
 
-    [dir="rtl"] .mx_ButtonRow > *:first-child {
+    [dir="rtl"] .mx_ButtonRow>*:first-child {
         margin-left: 10px;
         margin-right: 0;
     }
 
-    [dir="rtl"] .mx_ButtonRow > *:last-child {
+    [dir="rtl"] .mx_ButtonRow>*:last-child {
         margin-right: 10px;
         margin-left: 0;
     }
 
     /* RTL responsive adjustments */
     @media only screen and (max-width: 480px) {
-        [dir="rtl"] .mx_ButtonRow > * {
+        [dir="rtl"] .mx_ButtonRow>* {
             margin: 0 0 10px 0;
         }
     }
 </style>
 
 <div class="mx_Parent">
-    <a href="https://element.io" target="_blank" rel="noopener">
-        <img src="$logoUrl" alt="" class="mx_Logo" />
-    </a>
+    <!-- <a href="https://element.io" target="_blank" rel="noopener"> -->
+    <img src="$logoUrl" alt="" class="mx_Logo" />
+    <!-- </a> -->
     <h1 class="mx_Header_title">_t("welcome_to_element")</h1>
     <!-- XXX: Our translations system isn't smart enough to recognize variables in the HTML, so we manually do it -->
     <!--<h4 class="mx_Header_subtitle">_t("powered_by_matrix_with_logo")</h4>-->

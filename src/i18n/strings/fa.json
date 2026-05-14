@@ -4232,7 +4232,7 @@
         "you_are_presenting": "شما در حال ارائه هستید"
     },
     "web_default_device_name": "%(appName)s: %(browserName)s در %(osName)s",
-    "welcome_to_element": "به Element خوش آمدید",
+    "welcome_to_element": "به آگرینو خوش آمدید",
     "widget": {
         "added_by": "ویجت اضافه شده توسط",
         "capabilities_dialog": {
