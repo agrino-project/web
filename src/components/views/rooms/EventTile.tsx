@@ -1119,13 +1119,7 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
 
         const showTimestamp =
             this.props.mxEvent.getTs() &&
-            !this.props.hideTimestamp &&
-            (this.props.alwaysShowTimestamps ||
-                this.props.last ||
-                this.state.hover ||
-                this.state.focusWithin ||
-                this.state.actionBarFocused ||
-                Boolean(this.state.contextMenu));
+            !this.props.hideTimestamp;
 
         // Thread panel shows the timestamp of the last reply in that thread
         let ts =
@@ -1211,7 +1205,7 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
                     forExport={this.props.forExport}
                     permalinkCreator={this.props.permalinkCreator}
                     layout={this.props.layout}
-                    alwaysShowTimestamps={this.props.alwaysShowTimestamps || this.state.hover || this.state.focusWithin}
+                    alwaysShowTimestamps={true}
                     isQuoteExpanded={isQuoteExpanded}
                     setQuoteExpanded={this.setQuoteExpanded}
                     getRelationsForEvent={this.props.getRelationsForEvent}
@@ -1438,9 +1432,12 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
                     },
                     <>
                         {ircTimestamp}
-                        {sender}
                         {ircPadlock}
-                        {avatar}
+                        <div className="mx_EventTile_profileWrapper">
+                            {sender}
+                            {avatar}
+                        </div>
+
                         <div
                             id={this.id}
                             className={lineClasses}
