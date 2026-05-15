@@ -29,6 +29,9 @@ import { EditWysiwygComposer } from "../rooms/wysiwyg_composer";
 import { type IEventTileOps } from "../rooms/EventTile";
 import { MatrixClientPeg } from "../../../MatrixClientPeg";
 import { EventType, MsgType } from "matrix-js-sdk/src/matrix";
+import DatePicker from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
 
 interface IState {
     // the URLs (if any) to be previewed with a LinkPreviewWidget inside this TextualBody.
@@ -36,6 +39,7 @@ interface IState {
 
     // track whether the preview widget is hidden
     widgetHidden: boolean;
+    selectedDate?: string;
 }
 
 export default class TextualBody extends React.Component<IBodyProps, IState> {
@@ -48,9 +52,10 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     public static contextType = RoomContext;
     declare public context: React.ContextType<typeof RoomContext>;
 
-    public state = {
+    public state:IState = {
         links: [],
         widgetHidden: false,
+        selectedDate: "",
     };
 
     public componentDidMount(): void {
@@ -248,34 +253,39 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 {/* DATE INPUT */}
                 {field?.ui_type === "date_input" && (
                     <div className="mx_BotQuestion_inputWrapper">
-                        <input
-                            ref={(el) => {
-                                this.textInput = el;
+                        <div className="mx_BotQuestion_instruction">
+                            <small>(فرمت: DD/MM/YYYY یا DD-MM-YYYY)</small>
+                            <br />
+                            <small>(شمسی: ۱۵/۰۳/۱۴۰۳ — میلادی: ۱۵/۰۳/۲۰۲۴)</small>
+                        </div>
+
+                        <DatePicker
+                            calendar={persian}
+                            locale={persian_fa}
+                            format="YYYY/MM/DD"
+                            calendarPosition="bottom-right"
+                            inputClass="mx_BotQuestion_input mx_PersianDateInput"
+                            onChange={(date: any) => {
+                                const value = date?.format?.("YYYY/MM/DD");
+                                this.setState({ selectedDate: value });
                             }}
-                            type="date"
-                            min={field?.date_min}
-                            max={field?.date_max}
-                            className="mx_BotQuestion_input"
+                            placeholder="مثال: 1403/03/15"
                         />
+
+                        {field?.date_min || field?.date_max ? (
+                            <div className="mx_BotQuestion_range">
+                                📅 محدوده مجاز:
+                                {field.date_min && ` از: ${field.date_min}`}
+                                {field.date_max && ` | تا: ${field.date_max}`}
+                            </div>
+                        ) : null}
 
                         <button
                             className="mx_BotQuestion_submit"
                             onClick={() => {
-                                const value = this.textInput?.value?.trim();
-
-                                if (!value) {
-                                    if (field.required === false) {
-                                        this.sendNullAnswer();
-                                    }
-
-                                    return;
-                                }
-
-                                this.sendBotAnswer(value);
-
-                                if (this.textInput) {
-                                    this.textInput.value = "";
-                                }
+                                if (!this.state.selectedDate) return;
+                                this.sendBotAnswer(this.state.selectedDate);
+                                this.setState({ selectedDate: "" });
                             }}
                         >
                             ارسال
