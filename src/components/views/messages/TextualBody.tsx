@@ -142,7 +142,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             </button>
                         )}
                         {field?.required === false && (
-                            <button className="mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
+                            <button className="mx_BotQuestion_submit" onClick={this.sendNullAnswer}>
                                 بعدی
                             </button>
                         )}
@@ -173,7 +173,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             ارسال
                         </button>
                         {field?.required === false && (
-                            <button className="mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
+                            <button className="mx_BotQuestion_submit" onClick={this.sendNullAnswer}>
                                 بعدی
                             </button>
                         )}
@@ -206,7 +206,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             ارسال
                         </button>
                         {field?.required === false && (
-                            <button className="mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
+                            <button className="mx_BotQuestion_submit" onClick={this.sendNullAnswer}>
                                 بعدی
                             </button>
                         )}
@@ -238,7 +238,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             ارسال
                         </button>
                         {field?.required === false && (
-                            <button className="mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
+                            <button className="mx_BotQuestion_submit" onClick={this.sendNullAnswer}>
                                 بعدی
                             </button>
                         )}
@@ -282,7 +282,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         </button>
 
                         {field?.required === false && (
-                            <button className="mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
+                            <button className="mx_BotQuestion_submit" onClick={this.sendNullAnswer}>
                                 بعدی
                             </button>
                         )}
