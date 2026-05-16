@@ -1465,10 +1465,6 @@ $left-gutter: 64px;
     .mx_EventTile_avatar {
         display: none;
     }
-
-    .mx_DisambiguatedProfile {
-        display: none;
-    }
 }
 
 .mx_EventTile[data-self="true"] {
@@ -1623,6 +1619,27 @@ $left-gutter: 64px;
     border-radius: 14px;
     color: #000 !important;
     border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Chrome, Edge, Safari */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.mx_BotQuestion_range {
+    font-size: 12px;
+    padding: 7px 12px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    border-right: 3px solid #8883;
+    color: #666;
 }
 
 .mx_CategoryMenu_item {

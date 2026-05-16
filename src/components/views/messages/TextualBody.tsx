@@ -52,7 +52,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     public static contextType = RoomContext;
     declare public context: React.ContextType<typeof RoomContext>;
 
-    public state:IState = {
+    public state: IState = {
         links: [],
         widgetHidden: false,
         selectedDate: "",
@@ -195,7 +195,30 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             type="number"
                             className="mx_BotQuestion_input"
                             placeholder="عدد وارد کنید"
+                            min={field?.min}
+                            max={field?.max}
+                            onInput={(e: any) => {
+                                const min = field?.min;
+                                const max = field?.max;
+                                let value = e.target.value;
+                                value = value.replace(/[^0-9]/g, "");
+                                e.target.value = value;
+
+                                if (!value) return;
+
+                                const num = Number(value);
+
+                                if (min != null && num < min) e.target.value = min.toString();
+                                if (max != null && num > max) e.target.value = max.toString();
+                            }}
                         />
+                        {(field?.min !== null || field?.max !== null) && (
+                            <div className="mx_BotQuestion_range">
+                                🔢 محدوده مجاز:
+                                {field.min !== null && ` از ${field.min}`}
+                                {field.max !== null && ` تا ${field.max}`}
+                            </div>
+                        )}
 
                         <button
                             className="mx_BotQuestion_submit"
@@ -262,14 +285,14 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         <DatePicker
                             calendar={persian}
                             locale={persian_fa}
-                            format="YYYY/MM/DD"
+                            format="DD/MM/YYYY"
                             calendarPosition="bottom-right"
                             inputClass="mx_BotQuestion_input mx_PersianDateInput"
                             onChange={(date: any) => {
-                                const value = date?.format?.("YYYY/MM/DD");
+                                const value = date?.format?.("DD/MM/YYYY");
                                 this.setState({ selectedDate: value });
                             }}
-                            placeholder="مثال: 1403/03/15"
+                            placeholder="مثال: 15/03/1403"
                         />
 
                         {field?.date_min || field?.date_max ? (
