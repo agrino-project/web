@@ -1445,6 +1445,7 @@ $left-gutter: 64px;
     background-color: #ffffff !important;
     border-radius: 18px 18px 18px 2px !important;
     border: 1px solid #e0e0e0;
+    margin-inline-end: 42px;
 }
 
 /* Sent messages (own): dark green bubble with white text */
@@ -1459,12 +1460,6 @@ $left-gutter: 64px;
     margin-bottom: 4px;
     display: inline-block !important;
     max-width: 85%;
-}
-
-.mx_EventTile[data-layout="group"][data-self="true"] {
-    .mx_EventTile_avatar {
-        display: none;
-    }
 }
 
 .mx_EventTile[data-self="true"] {
@@ -1525,6 +1520,10 @@ $left-gutter: 64px;
     gap: 8px;
     align-items: center;
     margin-bottom: 8px;
+}
+
+.mx_EventTile[data-self="true"] .mx_EventTile_profileWrapper {
+    display: none;
 }
 
 /* Ensure links in sent messages are visible */

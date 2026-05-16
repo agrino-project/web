@@ -1055,7 +1055,7 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
             avatarSize = "20px";
             needsSenderProfile = true;
         } else {
-            avatarSize = "30px";
+            avatarSize = "40px";
             needsSenderProfile = true;
         }
 
@@ -1076,7 +1076,7 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
                     this.context.timelineRenderingType,
                 );
             avatar = (
-                <div className="mx_EventTile_avatar">
+                <div className="mx_EventTile_avatar" style={{ marginBottom: "-16px" }}>
                     <MemberAvatar
                         member={member}
                         size={avatarSize}
@@ -1117,9 +1117,7 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
             />
         ) : undefined;
 
-        const showTimestamp =
-            this.props.mxEvent.getTs() &&
-            !this.props.hideTimestamp;
+        const showTimestamp = this.props.mxEvent.getTs() && !this.props.hideTimestamp;
 
         // Thread panel shows the timestamp of the last reply in that thread
         let ts =
