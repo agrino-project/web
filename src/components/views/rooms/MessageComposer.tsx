@@ -673,7 +673,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                             permalinkCreator={this.props.permalinkCreator}
                         />
                         <div className="mx_MessageComposer_row">
-                            {leftIcon}
+                            {/* {leftIcon} */}
                             {composer}
                             <div className="mx_MessageComposer_actions">
                                 {controls}

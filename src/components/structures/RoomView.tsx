@@ -136,6 +136,7 @@ import { DeclineAndBlockInviteDialog } from "../views/dialogs/DeclineAndBlockInv
 import { type FocusMessageSearchPayload } from "../../dispatcher/payloads/FocusMessageSearchPayload.ts";
 import { isRoomEncrypted } from "../../hooks/useIsEncrypted";
 import { type RoomViewStore } from "../../stores/RoomViewStore.tsx";
+import { createPortal } from "react-dom";
 
 const DEBUG = false;
 const PREVENT_MULTIPLE_JITSI_WITHIN = 30_000;
@@ -2558,29 +2559,31 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
         }
 
         const showRightPanel = !isRoomEncryptionLoading && this.state.room && this.state.showRightPanel;
-
-        // تغییر اول: کپسوله کردن پنل راست درون یک Wrapper برای ساختار مودال/اورلی
-        const rightPanelModal = showRightPanel ? (
-            <div
-                className="mx_RightPanel_ModalOverlay"
-                onClick={() => {
-                    // اختیاری: اگر خواستید با کلیک روی فضای خالی بیرون مودال، پنل بسته شود:
-                    // RightPanelStore.instance.togglePanel(this.state.room.roomId);
-                }}
-            >
-                <div className="mx_RightPanel_ModalContent" onClick={(e) => e.stopPropagation()}>
-                    <RightPanel
-                        room={this.state.room}
-                        resizeNotifier={this.context.resizeNotifier}
-                        permalinkCreator={this.permalinkCreator}
-                        e2eStatus={this.state.e2eStatus}
-                        onSearchChange={this.onSearchChange}
-                        onSearchCancel={this.onCancelSearchClick}
-                        searchTerm={this.state.search?.term ?? ""}
-                    />
-                </div>
-            </div>
-        ) : undefined;
+        const rightPanelModal = showRightPanel
+            ? createPortal(
+                  <div
+                      className="mx_RightPanel_ModalOverlay"
+                      onClick={() => {
+                          if (this.state.room?.roomId) {
+                              RightPanelStore.instance.togglePanel(this.state.room.roomId);
+                          }
+                      }}
+                  >
+                      <div className="mx_RightPanel_ModalContent" onClick={(e) => e.stopPropagation()}>
+                          <RightPanel
+                              room={this.state.room}
+                              resizeNotifier={this.context.resizeNotifier}
+                              permalinkCreator={this.permalinkCreator}
+                              e2eStatus={this.state.e2eStatus}
+                              onSearchChange={this.onSearchChange}
+                              onSearchCancel={this.onCancelSearchClick}
+                              searchTerm={this.state.search?.term ?? ""}
+                          />
+                      </div>
+                  </div>,
+                  document.body,
+              )
+            : undefined;
 
         const timelineClasses = classNames("mx_RoomView_timeline", {
             mx_RoomView_timeline_rr_enabled: this.state.showReadReceipts,
@@ -2675,7 +2678,7 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
                     )}
                     <ErrorBoundary>
                         <MainSplit
-                            panel={undefined} // تغییر دوم: پاس دادن undefined تا لایه‌بندی چت فشرده نشود
+                            panel={undefined}
                             sizeKey={sizeKey}
                             defaultSize={defaultSize}
                             analyticsRoomType={analyticsRoomType}
