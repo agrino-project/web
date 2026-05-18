@@ -2559,16 +2559,27 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
 
         const showRightPanel = !isRoomEncryptionLoading && this.state.room && this.state.showRightPanel;
 
-        const rightPanel = showRightPanel ? (
-            <RightPanel
-                room={this.state.room}
-                resizeNotifier={this.context.resizeNotifier}
-                permalinkCreator={this.permalinkCreator}
-                e2eStatus={this.state.e2eStatus}
-                onSearchChange={this.onSearchChange}
-                onSearchCancel={this.onCancelSearchClick}
-                searchTerm={this.state.search?.term ?? ""}
-            />
+        // تغییر اول: کپسوله کردن پنل راست درون یک Wrapper برای ساختار مودال/اورلی
+        const rightPanelModal = showRightPanel ? (
+            <div
+                className="mx_RightPanel_ModalOverlay"
+                onClick={() => {
+                    // اختیاری: اگر خواستید با کلیک روی فضای خالی بیرون مودال، پنل بسته شود:
+                    // RightPanelStore.instance.togglePanel(this.state.room.roomId);
+                }}
+            >
+                <div className="mx_RightPanel_ModalContent" onClick={(e) => e.stopPropagation()}>
+                    <RightPanel
+                        room={this.state.room}
+                        resizeNotifier={this.context.resizeNotifier}
+                        permalinkCreator={this.permalinkCreator}
+                        e2eStatus={this.state.e2eStatus}
+                        onSearchChange={this.onSearchChange}
+                        onSearchCancel={this.onCancelSearchClick}
+                        searchTerm={this.state.search?.term ?? ""}
+                    />
+                </div>
+            </div>
         ) : undefined;
 
         const timelineClasses = classNames("mx_RoomView_timeline", {
@@ -2577,7 +2588,6 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
 
         let { mainSplitContentType } = this.state;
         if (this.state.search) {
-            // When in the middle of a search force the main split content type to timeline
             mainSplitContentType = MainSplitContentType.Timeline;
         }
 
@@ -2590,7 +2600,7 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
 
         let mainSplitBody: JSX.Element | undefined;
         let mainSplitContentClassName: string | undefined;
-        // Decide what to show in the main split
+
         switch (mainSplitContentType) {
             case MainSplitContentType.Timeline:
                 mainSplitContentClassName = "mx_MainSplit_timeline";
@@ -2651,7 +2661,6 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
         let defaultSize: number | undefined;
         let analyticsRoomType: ComponentProps<typeof MainSplit>["analyticsRoomType"] = "other_room";
         if (this.state.mainSplitContentType !== MainSplitContentType.Timeline) {
-            // Override defaults for video rooms where more space is needed for the chat timeline
             sizeKey = "wide";
             defaultSize = 420;
             analyticsRoomType =
@@ -2666,7 +2675,7 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
                     )}
                     <ErrorBoundary>
                         <MainSplit
-                            panel={rightPanel}
+                            panel={undefined} // تغییر دوم: پاس دادن undefined تا لایه‌بندی چت فشرده نشود
                             sizeKey={sizeKey}
                             defaultSize={defaultSize}
                             analyticsRoomType={analyticsRoomType}
@@ -2686,6 +2695,7 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
                             </div>
                         </MainSplit>
                     </ErrorBoundary>
+                    {rightPanelModal}
                 </div>
             </ScopedRoomContextProvider>
         );

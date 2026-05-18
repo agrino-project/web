@@ -251,3 +251,41 @@ Please see LICENSE files in the repository root for full details.
         margin-left: 12px;
     }
 }
+
+.mx_RightPanel_ModalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    justify-content: flex-end;
+    transition: all 0.2s ease-in-out;
+}
+
+.mx_RightPanel_ModalContent {
+    width: 360px;
+    height: 100vh;
+    background: var(--background); 
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.2s ease-out;
+
+    .mx_RightPanel {
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
