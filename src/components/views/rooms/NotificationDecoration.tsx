@@ -72,7 +72,7 @@ export function NotificationDecoration({
             {hasVideoCall && <VideoCallIcon width="20px" height="20px" fill="var(--cpd-color-icon-accent-primary)" />}
             {invited && <EmailIcon width="20px" height="20px" fill="var(--cpd-color-icon-accent-primary)" />}
             {isMention && <MentionIcon width="20px" height="20px" fill="var(--cpd-color-icon-accent-primary)" />}
-            {(isMention || isNotification) && <UnreadCounter count={count || null} />}
+            {/* {(isMention || isNotification) && <UnreadCounter count={count || null} />} */}
             {isActivityNotification && <Unread />}
             {muted && <NotificationOffIcon width="20px" height="20px" fill="var(--cpd-color-icon-tertiary)" />}
         </Flex>

@@ -99,9 +99,9 @@ const GenericEventListSummary: React.FC<IProps> = ({
         body = (
             <div className="mx_EventTile_line">
                 <div className="mx_EventTile_info">
-                    <span className="mx_GenericEventListSummary_avatars" onClick={toggleExpanded}>
+                    {/* <span className="mx_GenericEventListSummary_avatars" onClick={toggleExpanded}>
                         {avatars}
-                    </span>
+                    </span> */}
                     <span className="mx_TextualEvent mx_GenericEventListSummary_summary">{summaryText}</span>
                 </div>
             </div>
