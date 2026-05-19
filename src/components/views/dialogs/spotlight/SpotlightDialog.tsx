@@ -99,10 +99,10 @@ const AVATAR_SIZE = "24px";
  */
 function extractPhoneNumber(userId: string): string {
     // Remove @ and split by : to get localpart
-    const localpart = userId.startsWith('@') ? userId.substring(1).split(':')[0] : userId.split(':')[0];
+    const localpart = userId.startsWith("@") ? userId.substring(1).split(":")[0] : userId.split(":")[0];
 
     // Remove 'u' prefix if present to get just the phone number
-    if (localpart.startsWith('u')) {
+    if (localpart.startsWith("u")) {
         return localpart.substring(1);
     }
 
@@ -118,7 +118,7 @@ function transformInviteLinkForDisplay(inviteLink: string, userId: string): stri
     let displayLink = inviteLink;
 
     // Replace "atrix" with "agridemo"
-    displayLink = displayLink.replace(/atrix/g, 'agridemo');
+    displayLink = displayLink.replace(/atrix/g, "agridemo");
 
     // Extract phone number from userId and replace the full userId in the link
     const phoneNumber = extractPhoneNumber(userId);
@@ -537,10 +537,32 @@ const SpotlightDialog: React.FC<IProps> = ({ initialText = "", initialFilter = n
     const activeSpace = SpaceStore.instance.activeSpaceRoom;
     const [spaceResults, spaceResultsLoading] = useSpaceResults(activeSpace ?? undefined, query);
 
+    function buildUserIdFromPhone(phone: string, domain: string): string {
+        const clean = phone.replace(/\D/g, "");
+        return `@u${clean}:${domain}`;
+    }
+    
     const setQuery = (e: ChangeEvent<HTMLInputElement>): void => {
-        const newQuery = transformSearchTerm(e.currentTarget.value);
-        _setQuery(newQuery);
+        let value = transformSearchTerm(e.currentTarget.value);
+
+        if (filter === Filter.People) {
+            const digitsOnly = value.replace(/\D/g, "");
+
+            if (digitsOnly.length >= 7) {
+                const cli = MatrixClientPeg.safeGet();
+                if (!cli) return;
+
+                const userId = cli.getUserId();
+                if (!userId) return;
+
+                const domain = userId.split(":")[1];
+                value = buildUserIdFromPhone(digitsOnly, domain);
+            }
+        }
+
+        _setQuery(value);
     };
+
     useEffect(() => {
         setTimeout(() => {
             const node = rovingContext.state.nodes[0];
@@ -925,8 +947,8 @@ const SpotlightDialog: React.FC<IProps> = ({ initialText = "", initialFilter = n
                                         url={
                                             room.avatar_url
                                                 ? mediaFromMxc(room.avatar_url).getSquareThumbnailHttp(
-                                                    parseInt(AVATAR_SIZE, 10),
-                                                )
+                                                      parseInt(AVATAR_SIZE, 10),
+                                                  )
                                                 : null
                                         }
                                         size={AVATAR_SIZE}
@@ -985,9 +1007,7 @@ const SpotlightDialog: React.FC<IProps> = ({ initialText = "", initialFilter = n
                         {_t("spotlight_dialog|cant_find_person_helpful_hint")}
                     </div>
                     <div className="mx_SpotlightDialog_inviteLinkContainer">
-                        <div className="mx_SpotlightDialog_inviteLinkDisplay">
-                            {ownInviteLinkDisplay}
-                        </div>
+                        <div className="mx_SpotlightDialog_inviteLinkDisplay">{ownInviteLinkDisplay}</div>
                         <TooltipOption
                             id="mx_SpotlightDialog_button_inviteLink"
                             className="mx_SpotlightDialog_inviteLink"
