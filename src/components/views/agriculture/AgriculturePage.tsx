@@ -6,14 +6,16 @@ Please see LICENSE files in the repository root for full details.
 */
 
 import React, { useContext, useCallback, useRef, useState, useEffect } from "react";
-import { Icon as ConsultantIcon } from "../../../../res/img/element-icons/agriculture-consultant.svg";
+import { Icon as ConsultantIcon } from "../../../../res/img/element-icons/agriculture-consultant2.svg";
 import { Icon as OrganizationIcon } from "../../../../res/img/element-icons/agriculture-organization.svg";
 import { Icon as MarketIcon } from "../../../../res/img/element-icons/agriculture-market.svg";
 import { Icon as EducationIcon } from "../../../../res/img/element-icons/agriculture-education.svg";
 import { Icon as ClimateIcon } from "../../../../res/img/element-icons/agriculture-climate.svg";
 import { Icon as ClubIcon } from "../../../../res/img/element-icons/agriculture-club.svg";
 import { Icon as InsuranceIcon } from "../../../../res/img/element-icons/agriculture-insurance.svg";
-import { Icon as BazaarIcon } from "../../../../res/img/element-icons/agriculture-bazaar.svg";
+import { Icon as BazaarIcon } from "../../../../res/img/element-icons/agriculture-bazaar2.svg";
+import bazaarBackground from "../../../../res/img/element-icons/bazaarBackground.svg";
+import secondBackground from "../../../../res/img/element-icons/secondBackground.svg";
 
 import "../../../../res/css/views/agriculture/AgriculturePage.pcss";
 import MatrixClientContext from "../../../contexts/MatrixClientContext";
@@ -25,6 +27,7 @@ interface AgricultureCardProps {
     title: string;
     subtitle?: string;
     icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    background?: string;
     disabled?: boolean;
     onClick?: () => void;
     variant?: "default" | "large" | "small" | "wide";
@@ -34,6 +37,7 @@ const AgricultureCard: React.FC<AgricultureCardProps> = ({
     title,
     subtitle,
     icon: Icon,
+    background,
     disabled = false,
     onClick,
     variant = "default",
@@ -44,6 +48,13 @@ const AgricultureCard: React.FC<AgricultureCardProps> = ({
             onClick={disabled ? undefined : onClick}
             role={disabled ? undefined : "button"}
             tabIndex={disabled ? undefined : 0}
+            style={
+                background
+                    ? {
+                          background: `url(${background}) center/cover no-repeat`,
+                      }
+                    : undefined
+            }
         >
             <div className="mx_AgriculturePage_card_icon">
                 <Icon className="mx_AgriculturePage_card_icon_svg" />
@@ -122,7 +133,7 @@ const AgriculturePage: React.FC = () => {
     const handleScroll = () => {
         if (bannerScrollRef.current) {
             const scrollLeft = Math.abs(bannerScrollRef.current.scrollLeft);
-            const slideWidth = bannerScrollRef.current.clientWidth; 
+            const slideWidth = bannerScrollRef.current.clientWidth;
 
             const newIndex = Math.round(scrollLeft / slideWidth);
 
@@ -187,12 +198,14 @@ const AgriculturePage: React.FC = () => {
                     <AgricultureCard
                         title={_t("custom_panels|agriculture_bazaar")}
                         icon={BazaarIcon}
+                        background={bazaarBackground}
                         disabled={true}
                         variant="default"
                     />
                     <AgricultureCard
                         title={_t("custom_panels|agriculture_market")}
-                        icon={MarketIcon}
+                        icon={BazaarIcon}
+                        background={secondBackground}
                         onClick={() => handleMarketClick("@advertisebot:agridemo.ir")}
                         variant="default"
                     />
