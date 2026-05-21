@@ -9,11 +9,16 @@ import React from "react";
 import AccessibleButton from "../elements/AccessibleButton";
 import RightPanelStore from "../../../stores/right-panel/RightPanelStore";
 import { RightPanelPhases } from "../../../stores/right-panel/RightPanelStorePhases";
-import LinkIcon from "@vector-im/compound-design-tokens/assets/web/icons/link";
-import { Icon as ChargeIcon } from "../../../../res/img/element-icons/charge.svg";
-import { Icon as BillIcon } from "../../../../res/img/element-icons/bill.svg";
-import { Icon as ConsultantIcon } from "../../../../res/img/element-icons/agriculture-consultant.svg";
-// import { Icon as SupportIcon } from "../../../../res/img/element-icons/support.svg";
+// import LinkIcon from "@vector-im/compound-design-tokens/assets/web/icons/link";
+// import { Icon as ChargeIcon } from "../../../../res/img/element-icons/charge.svg";
+// import { Icon as BillIcon } from "../../../../res/img/element-icons/bill.svg";
+import { Icon as BillIcon } from "../../../../res/img/element-icons/Bill2.svg";
+import { Icon as cardToCardIcon } from "../../../../res/img/element-icons/cardToCard.svg";
+import { Icon as creditFLowIcon } from "../../../../res/img/element-icons/creditFLow.svg";
+import { Icon as payChargeIcon } from "../../../../res/img/element-icons/payCharge.svg";
+import { Icon as PenIcon } from "../../../../res/img/element-icons/Pen.svg";
+import { Icon as supportIcon } from "../../../../res/img/element-icons/support.svg";
+import { Icon as CoinIcon } from "../../../../res/img/element-icons/coin.svg";
 import { _t } from "../../../languageHandler";
 
 import "../../../../res/css/views/services/ServicesPage.pcss";
@@ -140,7 +145,7 @@ const ServicesPage: React.FC = () => {
                             <ServiceCard
                                 title={_t("custom_panels|card_to_card")}
                                 description={_t("custom_panels|card_to_card_desc")}
-                                icon={LinkIcon}
+                                icon={cardToCardIcon}
                                 onClick={onCardToCardClick}
                                 variant="large"
                             />
@@ -154,29 +159,29 @@ const ServicesPage: React.FC = () => {
                                 onClick={onBillPaymentClick}
                             />
                             <ServiceCard
-                                title={_t("custom_panels|charge_purchase")}
-                                description={_t("custom_panels|charge_purchase_desc")}
-                                icon={ChargeIcon}
-                                onClick={onChargePurchaseClick}
-                            />
-                            <ServiceCard
-                                title={_t("custom_panels|buy_internet_package")}
-                                icon={ChargeIcon}
+                                title={_t("custom_panels|creditFLow")}
+                                icon={creditFLowIcon}
                                 onClick={() => {}}
                                 disabled
+                            />
+                            <ServiceCard
+                                title={_t("custom_panels|charge_purchase")}
+                                description={_t("custom_panels|charge_purchase_desc")}
+                                icon={payChargeIcon}
+                                onClick={onChargePurchaseClick}
                             />
                         </div>
 
                         <div className="mx_ServicesPage_grid_row mx_ServicesPage_grid_row--bottom">
                             <ServiceCard
-                                title={_t("custom_panels|financial_consulting")}
-                                icon={ConsultantIcon}
+                                title={_t("custom_panels|support")}
+                                icon={supportIcon}
                                 onClick={() => {}}
                                 disabled
                             />
                             <ServiceCard
-                                title={_t("custom_panels|support")}
-                                icon={ChargeIcon}
+                                title={_t("custom_panels|financial_consulting")}
+                                icon={PenIcon}
                                 onClick={() => {}}
                                 disabled
                             />
@@ -191,7 +196,7 @@ const ServicesPage: React.FC = () => {
                         <p className="mx_ServicesPage_banner_subtitle">{_t("custom_panels|click_here")}</p>
                     </div>
                     <div className="mx_ServicesPage_banner_image">
-                        <img src="../../../../res/img/safe-vault.png" alt="Safe" />
+                        <CoinIcon />
                     </div>
                 </div>
 

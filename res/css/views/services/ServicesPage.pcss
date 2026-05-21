@@ -108,7 +108,6 @@
 .mx_ServicesPage_card--large .mx_ServicesPage_card_icon {
     width: 52px;
     height: 52px;
-    border-radius: 50%;
     background: #e8f5e9;
     margin: 0 0 0 16px;
 }
@@ -136,10 +135,6 @@
 
 .mx_ServicesPage_card:not(.mx_ServicesPage_card--disabled):hover {
     transform: translateY(-4px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-}
-
-.mx_ServicesPage_card--large:not(.mx_ServicesPage_card--disabled):hover {
     box-shadow: 0 8px 20px rgba(67, 160, 71, 0.3);
 }
 
@@ -157,7 +152,7 @@
 .mx_ServicesPage_card_icon_svg {
     width: 26px;
     height: 26px;
-    color: #43a047;
+    color: #234622;
 }
 
 .mx_ServicesPage_card_content {
@@ -198,18 +193,18 @@
 
 /* Banner Section */
 .mx_ServicesPage_banner {
-    background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);
-    border-radius: 20px;
-    padding: 24px;
+    flex: 0 0 calc(100% - 24px);
+    scroll-snap-align: center;
+    background: linear-gradient(90deg, #326430 0%, #09a702 100%);
+    border-radius: 18px;
+    padding: 0 20px;
     margin-bottom: 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(67, 160, 71, 0.25);
+    transition: transform 0.2s ease;
 }
 
 .mx_ServicesPage_banner:hover {
@@ -223,33 +218,32 @@
 }
 
 .mx_ServicesPage_banner_title {
-    font-size: 19px;
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: bold;
     color: #ffffff;
-    margin: 0 0 8px 0;
-    line-height: 1.5;
+    margin: 0 0 6px 0;
 }
 
 .mx_ServicesPage_banner_subtitle {
-    font-size: 15px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.95);
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
     margin: 0;
 }
 
 .mx_ServicesPage_banner_image {
-    width: 110px;
-    height: 110px;
+    height: 140px;
+    border-radius: 12px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    margin-inline-end: -20px;
 }
 
-.mx_ServicesPage_banner_image img {
+.mx_ServicesPage_banner_image svg {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    border-radius: 14px;
 }
 
 /* Transactions Section */
@@ -340,6 +334,12 @@
     margin-right: 4px;
 }
 
+@media (max-width: 768px) {
+    .mx_ServicesPage_banner_image {
+        height: 120px;
+    }
+}
+
 @media (max-width: 480px) {
     .mx_ServicesPage_banner {
         padding: 20px;
@@ -347,8 +347,7 @@
     }
 
     .mx_ServicesPage_banner_image {
-        width: 90px;
-        height: 90px;
+        height: 100px;
     }
 
     .mx_ServicesPage_banner_title {
