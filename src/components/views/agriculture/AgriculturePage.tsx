@@ -210,7 +210,7 @@ const AgriculturePage: React.FC = () => {
                         variant="default"
                     />
                     <AgricultureCard
-                        title={_t("custom_panels|agriculture_market")}
+                        title={_t("custom_panels|agriculture_bazaar")}
                         icon={BazaarGrediantIcon}
                         background={GroceryBackground}
                         onClick={() => handleMarketClick("@advertisebot:agridemo.ir")}

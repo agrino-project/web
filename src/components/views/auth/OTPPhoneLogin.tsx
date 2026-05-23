@@ -16,7 +16,13 @@ import Spinner from "../elements/Spinner";
 import { OTPAuth, type OTPRequestResponse } from "../../../utils/OTPAuth";
 
 // For validating phone numbers without country codes
-const PHONE_NUMBER_REGEX = /^[0-9+\-\s()]*$/;
+const PHONE_NUMBER_REGEX = /^[0-9۰-۹٠-٩+\-\s()]*$/;
+
+const normalizeNumbers = (value: string): string => {
+    return value
+        .replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d).toString())
+        .replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d).toString());
+};
 
 interface IProps {
     serverConfig: ValidatedServerConfig;
@@ -49,7 +55,7 @@ export default class OTPPhoneLogin extends React.Component<IProps, IState> {
     }
 
     private onPhoneNumberChange = (ev: SyntheticEvent<HTMLInputElement>): void => {
-        const phoneNumber = ev.currentTarget.value;
+        const phoneNumber = normalizeNumbers(ev.currentTarget.value);
         const phoneNumberValid = PHONE_NUMBER_REGEX.test(phoneNumber) && phoneNumber.length > 0;
 
         this.setState({
@@ -76,11 +82,11 @@ export default class OTPPhoneLogin extends React.Component<IProps, IState> {
         try {
             const response: OTPRequestResponse = await OTPAuth.requestOTP(
                 this.props.serverConfig.hsUrl,
-                this.state.phoneNumber,
+                normalizeNumbers(this.state.phoneNumber),
             );
 
             if (response.success) {
-                this.props.onOTPRequested(this.state.phoneNumber);
+                this.props.onOTPRequested(normalizeNumbers(this.state.phoneNumber));
             } else {
                 this.setState({
                     errorMessage: response.message || _t("auth|otp_request_failed"),
@@ -188,7 +194,7 @@ export default class OTPPhoneLogin extends React.Component<IProps, IState> {
                         {submitButtonOrSpinner}
                     </div>
                 </form>
-                {this.renderAlternativeLoginOptions()}
+                {/* {this.renderAlternativeLoginOptions()} */}
             </div>
         );
     }

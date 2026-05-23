@@ -104,7 +104,7 @@ export function RoomListPrimaryFilters({ vm }: RoomListPrimaryFiltersProps): JSX
                         <path
                             d="M9 6L15 12L9 18"
                             stroke="currentColor"
-                            strokeWidth="2.5"
+                            strokeWidth="3"
                             strokeLinecap="round"
                             strokeLinejoin="round"
                         />
@@ -121,7 +121,7 @@ export function RoomListPrimaryFilters({ vm }: RoomListPrimaryFiltersProps): JSX
                         <path
                             d="M15 6L9 12L15 18"
                             stroke="currentColor"
-                            strokeWidth="2.5"
+                            strokeWidth="3"
                             strokeLinecap="round"
                             strokeLinejoin="round"
                         />

@@ -15,7 +15,12 @@ import Field from "../elements/Field";
 import Spinner from "../elements/Spinner";
 
 // For validating OTP codes (typically 4-6 digits)
-const OTP_REGEX = /^[0-9]{4,6}$/;
+const OTP_REGEX = /^[0-9۰-۹٠-٩]{4,6}$/;
+const normalizeNumbers = (value: string): string => {
+    return value
+        .replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d).toString())
+        .replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d).toString());
+};
 
 interface IProps {
     serverConfig: ValidatedServerConfig;
@@ -69,7 +74,7 @@ export default class OTPVerifyLogin extends React.Component<IProps, IState> {
     }
 
     private onOTPDigitChange = (index: number, value: string): void => {
-        if (!/^\d?$/.test(value)) return;
+        if (!/^[0-9۰-۹٠-٩]?$/.test(value)) return;
 
         const otpArray = this.state.otp.split("");
 
@@ -77,7 +82,7 @@ export default class OTPVerifyLogin extends React.Component<IProps, IState> {
             otpArray.push("");
         }
 
-        otpArray[index] = value;
+        otpArray[index] = normalizeNumbers(value);
 
         const otp = otpArray.join("");
         const otpValid = OTP_REGEX.test(otp);
@@ -142,7 +147,7 @@ export default class OTPVerifyLogin extends React.Component<IProps, IState> {
 
         try {
             // Use phone number as username with "u" prefix and hardcoded password "123456"
-            const username = `u${this.props.phoneNumber}`;
+            const username = `u${normalizeNumbers(this.props.phoneNumber)}`;
             const password = "123456";
 
             await this.props.onPasswordLogin(username, undefined, undefined, password);
