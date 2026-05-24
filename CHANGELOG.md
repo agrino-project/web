@@ -23,7 +23,7 @@ Changes in [1.13.0](https://github.com/agrino-project/web/releases/tag/v1.13.0) 
 * Fix multiple UI inconsistencies in bot interaction components.
 * Fix several chat layout and message styling issues.
 
-Changes in [1.14.0](https://github.com/agrino-project/web/releases/tag/v1.14.0) (2026-05-21)
+Changes in [1.14.1](https://github.com/agrino-project/web/releases/tag/v1.14.0) (2026-05-21)
 ================================================================================================
 
 ## ✨ Features
@@ -37,6 +37,11 @@ Changes in [1.14.0](https://github.com/agrino-project/web/releases/tag/v1.14.0) 
 * Remove unnecessary top spacing above the chat area.
 * Improve user search behavior and automatically include required entries.
 * Improve display and resolve overlap with the message "seen" timestamp in chat.
+* Change the favicon to Agrino.
+* Support login with a Persian keyboard layout.
+* Align the profile section in the panel menu.
+* Update the filter arrow to a new size.
+* Fix several naming issues.
 
 ## 🐛 Bug Fixes
 
