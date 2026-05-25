@@ -43,6 +43,8 @@ interface IProps {
     isMinimized: boolean;
     pageType: PageType;
     resizeNotifier: ResizeNotifier;
+    /** Active Great Shop sub-page id, or null when showing the default room view. */
+    greatShopPage: string | null;
 }
 
 enum BreadcrumbsMode {
@@ -391,7 +393,10 @@ export default class LeftPanel extends React.Component<IProps, IState> {
             return (
                 <div className={containerClasses}>
                     <div className="mx_LeftPanel_roomListContainer">
-                        <RoomListPanel activeSpace={this.state.activeSpace} />
+                        <RoomListPanel
+                            activeSpace={this.state.activeSpace}
+                            greatShopPage={this.props.greatShopPage}
+                        />
                     </div>
                 </div>
             );

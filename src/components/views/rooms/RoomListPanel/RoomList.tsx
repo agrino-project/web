@@ -18,13 +18,13 @@ import { type FilterKey } from "../../../../stores/room-list-v3/skip-list/filter
 import { getKeyBindingsManager } from "../../../../KeyBindingsManager";
 import { KeyBindingAction } from "../../../../accessibility/KeyboardShortcuts";
 import { Landmark, LandmarkNavigation } from "../../../../accessibility/LandmarkNavigation";
-import dis from "../../../../dispatcher/dispatcher";
-
 interface RoomListProps {
     /**
      * The view model state for the room list.
      */
     vm: RoomListViewState;
+    /** Active Great Shop sub-page id, or null when showing the default room view. */
+    greatShopPage: string | null;
 }
 /**
  * Height of a single room list item
@@ -41,7 +41,7 @@ const EXTENDED_VIEWPORT_HEIGHT = 25 * ROOM_LIST_ITEM_HEIGHT;
 /**
  * A virtualized list of rooms.
  */
-export function RoomList({ vm: { roomsResult, activeIndex } }: RoomListProps): JSX.Element {
+export function RoomList({ vm: { roomsResult, activeIndex }, greatShopPage }: RoomListProps): JSX.Element {
     const lastSpaceId = useRef<string | undefined>(undefined);
     const lastFilterKeys = useRef<FilterKey[] | undefined>(undefined);
     const roomCount = roomsResult.rooms.length;
@@ -121,7 +121,7 @@ export function RoomList({ vm: { roomsResult, activeIndex } }: RoomListProps): J
             context={{
                 spaceId: roomsResult.spaceId,
                 filterKeys: roomsResult.filterKeys,
-                greatShopPage: (window as any).greatShopPage,
+                greatShopPage,
             }}
             scrollIntoViewOnChange={scrollIntoViewOnChange}
             initialTopMostItemIndex={activeIndex}

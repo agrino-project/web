@@ -16,10 +16,15 @@ import { ReleaseAnnouncement } from "../../../structures/ReleaseAnnouncement";
 import { FilterKey } from "../../../../stores/room-list-v3/skip-list/filters";
 import { GreatShopsView } from "./GreatShopsView";
 
+type RoomListViewProps = {
+    /** Active Great Shop sub-page id, or null when showing the default room view. */
+    greatShopPage: string | null;
+};
+
 /**
  * Host the room list and the (future) room filters
  */
-export function RoomListView(): JSX.Element {
+export function RoomListView({ greatShopPage }: RoomListViewProps): JSX.Element {
     const vm = useRoomListViewModel();
     const isRoomListEmpty = vm.roomsResult.rooms.length === 0;
     const isGreatShops = vm.activePrimaryFilter?.key === FilterKey.GreatShops;
@@ -31,7 +36,7 @@ export function RoomListView(): JSX.Element {
     } else if (isRoomListEmpty) {
         listBody = <EmptyRoomList vm={vm} />;
     } else {
-        listBody = <RoomList vm={vm} />;
+        listBody = <RoomList vm={vm} greatShopPage={greatShopPage} />;
     }
     return (
         <>

@@ -250,7 +250,6 @@ class LoggedInView extends React.Component<IProps, IState> {
         }
 
         if (nextProps.currentRoomId !== this.props.currentRoomId) {
-            (window as any).greatShopPage = false;
             this.setState({ greatShopPage: null });
         }
 
@@ -767,7 +766,6 @@ class LoggedInView extends React.Component<IProps, IState> {
 
     private onDispatcher = (payload: any): void => {
         if (payload.action === Action.ViewGreatShopPage) {
-            (window as any).greatShopPage = true;
             this.setState({
                 greatShopPage: payload.page,
             });
@@ -886,6 +884,7 @@ class LoggedInView extends React.Component<IProps, IState> {
                             pageType={this.props.page_type as PageTypes}
                             isMinimized={false}
                             resizeNotifier={this.context.resizeNotifier}
+                            greatShopPage={this.state.greatShopPage}
                         />
                     </div>
                 </div>
@@ -917,6 +916,7 @@ class LoggedInView extends React.Component<IProps, IState> {
                                         pageType={this.props.page_type as PageTypes}
                                         isMinimized={shouldUseMinimizedUI || false}
                                         resizeNotifier={this.context.resizeNotifier}
+                                        greatShopPage={this.state.greatShopPage}
                                     />
                                 </div>
                             )}

@@ -31,6 +31,8 @@ import MatrixClientContext from "../../../contexts/MatrixClientContext";
 import { DirectoryMember, startDmOnFirstMessage } from "../../../utils/direct-messages";
 import { _t } from "../../../languageHandler";
 import { useMobileNav } from "../../structures/mobile/MobileNavContext";
+import RightPanelStore from "../../../stores/right-panel/RightPanelStore";
+import { RightPanelPhases } from "../../../stores/right-panel/RightPanelStorePhases";
 
 interface AgricultureCardProps {
     title: string;
@@ -169,6 +171,11 @@ const AgriculturePage: React.FC = () => {
         [cli, navigate],
     );
 
+    const handleBankingServicesClick = useCallback((): void => {
+        RightPanelStore.instance.setCard({ phase: RightPanelPhases.Services }, true, undefined);
+        navigate("services");
+    }, [navigate]);
+
     const bannerSlides = [
         {
             title: "بهترین قیمت نهاده‌ها در آگرینو",
@@ -206,7 +213,7 @@ const AgriculturePage: React.FC = () => {
                         title={_t("custom_panels|banking_services")}
                         icon={BankGredientIcon}
                         background={ATMBackground}
-                        disabled={true}
+                        onClick={handleBankingServicesClick}
                         variant="default"
                     />
                     <AgricultureCard
