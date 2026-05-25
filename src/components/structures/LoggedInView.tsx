@@ -78,6 +78,7 @@ import { MatrixClientContextProvider } from "./MatrixClientContextProvider";
 import { Landmark, LandmarkNavigation } from "../../accessibility/LandmarkNavigation";
 import { ModuleApi } from "../../modules/Api.ts";
 import { SDKContext } from "../../contexts/SDKContext.ts";
+import { GreatShopsView } from "../views/rooms/RoomListPanel/GreatShopsView.tsx";
 
 // We need to fetch each pinned message individually (if we don't already have it)
 // so each pinned message may trigger a request. Limit the number per room for sanity.
@@ -113,12 +114,12 @@ interface IProps {
 
 /** What the main content area shows on desktop */
 type DesktopPage =
-    | "default"       // Normal chat view (room list + room view / home page)
-    | "services"      // Services grid
-    | "agriculture"   // Agriculture grid
-    | "cardToCard"    // Card to card form
+    | "default" // Normal chat view (room list + room view / home page)
+    | "services" // Services grid
+    | "agriculture" // Agriculture grid
+    | "cardToCard" // Card to card form
     | "chargePurchase" // Charge purchase form
-    | "billPayment";  // Bill payment form
+    | "billPayment"; // Bill payment form
 
 interface IState {
     syncErrorData?: SyncStateData;
@@ -130,6 +131,7 @@ interface IState {
     backgroundImage?: string;
     /** What the desktop main content area currently shows */
     desktopPage: DesktopPage;
+    greatShopPage: string | null;
 }
 
 const NEW_ROOM_LIST_MIN_WIDTH = 224;
@@ -168,6 +170,7 @@ class LoggedInView extends React.Component<IProps, IState> {
             usageLimitDismissed: false,
             activeCalls: LegacyCallHandler.instance.getAllActiveCalls(),
             desktopPage: "default",
+            greatShopPage: null,
         };
 
         // stash the MatrixClient in case we log out before we are unmounted
@@ -218,6 +221,8 @@ class LoggedInView extends React.Component<IProps, IState> {
 
         RightPanelStore.instance.on(UPDATE_EVENT, this.onRightPanelStoreUpdate);
         this.onRightPanelStoreUpdate();
+
+        dis.register(this.onDispatcher);
     }
 
     /**
@@ -242,6 +247,15 @@ class LoggedInView extends React.Component<IProps, IState> {
         const isDefault = this.state.desktopPage === "default";
         if (wasNonDefault && isDefault) {
             setTimeout(() => this.loadResizer(), 0);
+        }
+
+        if (nextProps.currentRoomId !== this.props.currentRoomId) {
+            (window as any).greatShopPage = false;
+            this.setState({ greatShopPage: null });
+        }
+
+        if (nextProps.page_type !== this.props.page_type) {
+            this.setState({ greatShopPage: null });
         }
     }
 
@@ -731,14 +745,33 @@ class LoggedInView extends React.Component<IProps, IState> {
         let desktopPage: DesktopPage = "default";
         if (isOpen) {
             switch (currentCard.phase) {
-                case RightPanelPhases.Services: desktopPage = "services"; break;
-                case RightPanelPhases.Agriculture: desktopPage = "agriculture"; break;
-                case RightPanelPhases.CardToCard: desktopPage = "cardToCard"; break;
-                case RightPanelPhases.ChargePurchase: desktopPage = "chargePurchase"; break;
-                case RightPanelPhases.BillPayment: desktopPage = "billPayment"; break;
+                case RightPanelPhases.Services:
+                    desktopPage = "services";
+                    break;
+                case RightPanelPhases.Agriculture:
+                    desktopPage = "agriculture";
+                    break;
+                case RightPanelPhases.CardToCard:
+                    desktopPage = "cardToCard";
+                    break;
+                case RightPanelPhases.ChargePurchase:
+                    desktopPage = "chargePurchase";
+                    break;
+                case RightPanelPhases.BillPayment:
+                    desktopPage = "billPayment";
+                    break;
             }
         }
         this.setState({ desktopPage });
+    };
+
+    private onDispatcher = (payload: any): void => {
+        if (payload.action === Action.ViewGreatShopPage) {
+            (window as any).greatShopPage = true;
+            this.setState({
+                greatShopPage: payload.page,
+            });
+        }
     };
 
     public render(): React.ReactNode {
@@ -750,17 +783,52 @@ class LoggedInView extends React.Component<IProps, IState> {
 
         switch (this.props.page_type) {
             case PageTypes.RoomView:
-                pageElement = (
-                    <RoomView
-                        ref={this._roomView}
-                        onRegistered={this.props.onRegistered}
-                        threepidInvite={this.props.threepidInvite}
-                        oobData={this.props.roomOobData}
-                        key={this.props.currentRoomId || "roomview"}
-                        justCreatedOpts={this.props.roomJustCreatedOpts}
-                        forceTimeline={this.props.forceTimeline}
-                    />
-                );
+                if (this.state.greatShopPage) {
+                    switch (this.state.greatShopPage) {
+                        case "farmer_room":
+                            pageElement = <div>👨‍🌾 صفحه اتاق کار کشاورز</div>;
+                            break;
+
+                        case "management_rozhin":
+                            pageElement = <div>🍎 صفحه مدیریت امور روژین</div>;
+                            break;
+
+                        case "finance":
+                            pageElement = <div>💰 صفحه مدیریت مالی</div>;
+                            break;
+
+                        case "consulting":
+                            pageElement = <div>🌾 صفحه مشاوره کشاورزی</div>;
+                            break;
+
+                        case "notifications":
+                            pageElement = <div>🔔 صفحه اطلاع‌رسانی</div>;
+                            break;
+
+                        case "education":
+                            pageElement = <div>👨‍🏫 صفحه آموزش و ترویج</div>;
+                            break;
+
+                        case "weather":
+                            pageElement = <div>🌤️ صفحه هواشناسی</div>;
+                            break;
+
+                        default:
+                            pageElement = <GreatShopsView />;
+                    }
+                } else {
+                    pageElement = (
+                        <RoomView
+                            ref={this._roomView}
+                            onRegistered={this.props.onRegistered}
+                            threepidInvite={this.props.threepidInvite}
+                            oobData={this.props.roomOobData}
+                            key={this.props.currentRoomId || "roomview"}
+                            justCreatedOpts={this.props.roomJustCreatedOpts}
+                            forceTimeline={this.props.forceTimeline}
+                        />
+                    );
+                }
                 break;
 
             case PageTypes.HomePage:
@@ -825,11 +893,7 @@ class LoggedInView extends React.Component<IProps, IState> {
         );
 
         // Chat room / main content
-        const chatRoomElement = (
-            <div className="mx_RoomView_wrapper mx_MobileLayout_roomView">
-                {pageElement}
-            </div>
-        );
+        const chatRoomElement = <div className="mx_RoomView_wrapper mx_MobileLayout_roomView">{pageElement}</div>;
 
         // Desktop layout (the original full layout)
         const desktopLayout = (
@@ -865,12 +929,18 @@ class LoggedInView extends React.Component<IProps, IState> {
                         {(() => {
                             const onClose = (): void => RightPanelStore.instance.togglePanel(null);
                             switch (this.state.desktopPage) {
-                                case "services": return <ServicesPage />;
-                                case "agriculture": return <AgriculturePage />;
-                                case "cardToCard": return <CardToCardCard onClose={onClose} />;
-                                case "chargePurchase": return <ChargePurchaseCard onClose={onClose} />;
-                                case "billPayment": return <BillPaymentCard onClose={onClose} />;
-                                default: return pageElement;
+                                case "services":
+                                    return <ServicesPage />;
+                                case "agriculture":
+                                    return <AgriculturePage />;
+                                case "cardToCard":
+                                    return <CardToCardCard onClose={onClose} />;
+                                case "chargePurchase":
+                                    return <ChargePurchaseCard onClose={onClose} />;
+                                case "billPayment":
+                                    return <BillPaymentCard onClose={onClose} />;
+                                default:
+                                    return pageElement;
                             }
                         })()}
                     </div>

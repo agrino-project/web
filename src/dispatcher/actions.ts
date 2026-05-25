@@ -380,4 +380,9 @@ export enum Action {
      * Open the create room dialog
      */
     CreateRoom = "view_create_room",
+
+    /**
+     * Open the great shops page
+     */
+    ViewGreatShopPage = "view_greatshop_page",
 }

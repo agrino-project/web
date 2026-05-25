@@ -18,6 +18,7 @@ import { type FilterKey } from "../../../../stores/room-list-v3/skip-list/filter
 import { getKeyBindingsManager } from "../../../../KeyBindingsManager";
 import { KeyBindingAction } from "../../../../accessibility/KeyboardShortcuts";
 import { Landmark, LandmarkNavigation } from "../../../../accessibility/LandmarkNavigation";
+import dis from "../../../../dispatcher/dispatcher";
 
 interface RoomListProps {
     /**
@@ -44,6 +45,7 @@ export function RoomList({ vm: { roomsResult, activeIndex } }: RoomListProps): J
     const lastSpaceId = useRef<string | undefined>(undefined);
     const lastFilterKeys = useRef<FilterKey[] | undefined>(undefined);
     const roomCount = roomsResult.rooms.length;
+
     const getItemComponent = useCallback(
         (
             index: number,
@@ -51,13 +53,14 @@ export function RoomList({ vm: { roomsResult, activeIndex } }: RoomListProps): J
             context: ListContext<{
                 spaceId: string;
                 filterKeys: FilterKey[] | undefined;
+                greatShopPage: string | null;
             }>,
             onFocus: (item: Room, e: React.FocusEvent) => void,
         ): JSX.Element => {
             const itemKey = item.roomId;
             const isRovingItem = itemKey === context.tabIndexKey;
             const isFocused = isRovingItem && context.focused;
-            const isSelected = activeIndex === index;
+            const isSelected = !context.context.greatShopPage && activeIndex === index;
             return (
                 <RoomListItemView
                     room={item}
@@ -115,7 +118,11 @@ export function RoomList({ vm: { roomsResult, activeIndex } }: RoomListProps): J
 
     return (
         <ListView
-            context={{ spaceId: roomsResult.spaceId, filterKeys: roomsResult.filterKeys }}
+            context={{
+                spaceId: roomsResult.spaceId,
+                filterKeys: roomsResult.filterKeys,
+                greatShopPage: (window as any).greatShopPage,
+            }}
             scrollIntoViewOnChange={scrollIntoViewOnChange}
             initialTopMostItemIndex={activeIndex}
             data-testid="room-list"

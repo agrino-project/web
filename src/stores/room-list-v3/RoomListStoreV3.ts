@@ -35,6 +35,7 @@ import { SettingLevel } from "../../settings/SettingLevel";
 import { MARKED_UNREAD_TYPE_STABLE, MARKED_UNREAD_TYPE_UNSTABLE } from "../../utils/notifications";
 import { getChangedOverrideRoomMutePushRules } from "../room-list/utils/roomMute";
 import { Action } from "../../dispatcher/actions";
+import { GreatShopsFilter } from "./skip-list/filters/GreatShopsFilter";
 
 /**
  * These are the filters passed to the room skip list.
@@ -47,6 +48,7 @@ const FILTERS = [
     new InvitesFilter(),
     new MentionsFilter(),
     new LowPriorityFilter(),
+    new GreatShopsFilter(),
 ];
 
 export enum RoomListStoreV3Event {

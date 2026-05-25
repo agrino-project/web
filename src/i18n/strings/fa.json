@@ -2306,7 +2306,8 @@
             "mentions": "ذکرها",
             "people": "افراد",
             "rooms": "گروه‌ها",
-            "unread": "خوانده‌نشده‌ها"
+            "unread": "خوانده‌نشده‌ها",
+            "GreatShops": "کلان کسب و کار ها"
         },
         "home_menu_label": "گزینه‌های خانه",
         "join_public_room_label": "پیوستن به گروه عمومی",
