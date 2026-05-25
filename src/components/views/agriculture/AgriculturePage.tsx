@@ -160,15 +160,24 @@ const AgriculturePage: React.FC = () => {
         }
     }, []);
 
+    const exitAgricultureView = useCallback((): void => {
+        const store = RightPanelStore.instance;
+        if (store.isOpen && store.currentCard.phase === RightPanelPhases.Agriculture) {
+            store.hide(null);
+        }
+    }, []);
+
     const handleMarketClick = useCallback(
         async (userId: string): Promise<void> => {
-            const advertiseBot = new DirectoryMember({
+            const target = new DirectoryMember({
                 user_id: userId,
             });
-            await startDmOnFirstMessage(cli, [advertiseBot]);
+            // Close agriculture overlay so RoomView can replace AgriculturePage (desktop + mobile sync).
+            exitAgricultureView();
+            await startDmOnFirstMessage(cli, [target]);
             navigate("chatRoom");
         },
-        [cli, navigate],
+        [cli, navigate, exitAgricultureView],
     );
 
     const handleBankingServicesClick = useCallback((): void => {

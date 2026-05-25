@@ -15,6 +15,8 @@ import RoomListStoreV3, {
     type RoomsResult,
 } from "../../../stores/room-list-v3/RoomListStoreV3";
 import { useEventEmitter } from "../../../hooks/useEventEmitter";
+import dispatcher from "../../../dispatcher/dispatcher";
+import { Action } from "../../../dispatcher/actions";
 
 /**
  * Provides information about a primary filter.
@@ -105,6 +107,9 @@ export function useFilteredRooms(): FilteredRooms {
                 toggle: () => {
                     setPrimaryFilter((currentFilter) => {
                         const filter = currentFilter === key ? undefined : key;
+                        if (currentFilter === FilterKey.GreatShops) {
+                            dispatcher.dispatch({ action: Action.ClearGreatShopPage });
+                        }
                         updateRoomsFromStore(filterUndefined([filter]));
                         return filter;
                     });

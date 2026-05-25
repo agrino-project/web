@@ -769,6 +769,14 @@ class LoggedInView extends React.Component<IProps, IState> {
             this.setState({
                 greatShopPage: payload.page,
             });
+            return;
+        }
+
+        if (
+            this.state.greatShopPage &&
+            (payload.action === Action.ViewRoom || payload.action === Action.ClearGreatShopPage)
+        ) {
+            this.setState({ greatShopPage: null });
         }
     };
 

@@ -385,4 +385,9 @@ export enum Action {
      * Open the great shops page
      */
     ViewGreatShopPage = "view_greatshop_page",
+
+    /**
+     * Leave the great shops overlay and return to the active room view.
+     */
+    ClearGreatShopPage = "clear_greatshop_page",
 }
