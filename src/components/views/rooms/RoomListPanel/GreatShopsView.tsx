@@ -1,37 +1,31 @@
 import React, { JSX } from "react";
 import dis from "../../../../dispatcher/dispatcher";
 import { Action } from "../../../../dispatcher/actions";
+import kallehLogo from "../../../../../res/img/great-shops/kalleh.png";
+import rozhinLogo from "../../../../../res/img/great-shops/rozhin.png";
+import harazLogo from "../../../../../res/img/great-shops/haraz.png";
+import pegahLogo from "../../../../../res/img/great-shops/pegah.png";
 
 const shopItems = [
     {
-        id: "kalleh",
-        title: "کاله",
-        image: "/images/kalleh.png",
-    },
-    {
         id: "rozhin",
         title: "روژین",
-        image: "/images/rozhin.png",
+        image: rozhinLogo,
+    },
+    {
+        id: "kalleh",
+        title: "کاله",
+        image: kallehLogo,
     },
     {
         id: "haraz",
         title: "هراز",
-        image: "/images/haraz.png",
+        image: harazLogo,
     },
     {
         id: "pegah",
         title: "پگاه",
-        image: "/images/pegah.png",
-    },
-    {
-        id: "rozhin-2",
-        title: "روژین",
-        image: "/images/rozhin.png",
-    },
-    {
-        id: "haraz-2",
-        title: "هراز",
-        image: "/images/haraz.png",
+        image: pegahLogo,
     },
 ];
 
@@ -41,7 +35,7 @@ export function GreatShopsView(): JSX.Element {
             style={{
                 height: "100%",
                 overflowY: "auto",
-                padding: "12px",
+                paddingInline: "16px",
                 boxSizing: "border-box",
             }}
         >
@@ -62,7 +56,6 @@ export function GreatShopsView(): JSX.Element {
                             });
                         }}
                         style={{
-                            background: "#fff",
                             borderRadius: "14px",
                             height: "150px",
                             cursor: "pointer",
@@ -74,6 +67,8 @@ export function GreatShopsView(): JSX.Element {
                             justifyContent: "center",
                             transition: "all 0.2s ease",
                         }}
+                        onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.15)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)")}
                     >
                         {/* Logo */}
                         <div

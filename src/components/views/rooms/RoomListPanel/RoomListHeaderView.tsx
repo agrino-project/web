@@ -70,7 +70,6 @@ export function RoomListHeaderView(): JSX.Element {
                             <ComposeMenu vm={vm} />
                         ) : (
                             <IconButton
-                                className="mx_RoomListHeaderView_composeButton"
                                 aria-label={_t("action|start_chat")}
                                 onClick={(e) => vm.createChatRoom(e.nativeEvent)}
                             >

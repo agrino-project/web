@@ -6,7 +6,8 @@
  */
 
 .mx_RoomListHeaderView {
-    padding: var(--cpd-space-4x) var(--cpd-space-4x);
+    padding: 0 var(--cpd-space-4x);
+    height: 88px;
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, rgba(5, 150, 105, 0.02) 100%);
     border-bottom: 1px solid rgba(16, 185, 129, 0.1);
     backdrop-filter: blur(10px);
@@ -26,56 +27,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-        }
-    }
-
-    .mx_SpaceMenu_button,
-    .mx_ComposeMenu_button,
-    .mx_RoomListHeaderView_composeButton {
-        position: relative;
-        background: rgba(16, 185, 129, 0.08);
-        border-radius: 12px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid rgba(16, 185, 129, 0.15);
-
-        svg {
-            color: #10b981;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        &::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 12px;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.1));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        &:hover {
-            background: rgba(16, 185, 129, 0.15);
-            border-color: rgba(16, 185, 129, 0.3);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-
-            &::before {
-                opacity: 1;
-            }
-
-            svg {
-                color: #059669;
-                transform: scale(1.01);
-            }
-        }
-
-        &:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15);
         }
     }
 
@@ -132,7 +83,7 @@
     overflow: hidden;
 
     &::before {
-        content: '';
+        content: "";
         position: absolute;
         right: 0;
         top: 50%;

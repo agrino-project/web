@@ -79,6 +79,7 @@ import { Landmark, LandmarkNavigation } from "../../accessibility/LandmarkNaviga
 import { ModuleApi } from "../../modules/Api.ts";
 import { SDKContext } from "../../contexts/SDKContext.ts";
 import { GreatShopsView } from "../views/rooms/RoomListPanel/GreatShopsView.tsx";
+import { GreatShopsForm } from "../views/rooms/RoomListPanel/GreatShopsForm.tsx";
 
 // We need to fetch each pinned message individually (if we don't already have it)
 // so each pinned message may trigger a request. Limit the number per room for sanity.
@@ -790,38 +791,7 @@ class LoggedInView extends React.Component<IProps, IState> {
         switch (this.props.page_type) {
             case PageTypes.RoomView:
                 if (this.state.greatShopPage) {
-                    switch (this.state.greatShopPage) {
-                        case "farmer_room":
-                            pageElement = <div>👨‍🌾 صفحه اتاق کار کشاورز</div>;
-                            break;
-
-                        case "management_rozhin":
-                            pageElement = <div>🍎 صفحه مدیریت امور روژین</div>;
-                            break;
-
-                        case "finance":
-                            pageElement = <div>💰 صفحه مدیریت مالی</div>;
-                            break;
-
-                        case "consulting":
-                            pageElement = <div>🌾 صفحه مشاوره کشاورزی</div>;
-                            break;
-
-                        case "notifications":
-                            pageElement = <div>🔔 صفحه اطلاع‌رسانی</div>;
-                            break;
-
-                        case "education":
-                            pageElement = <div>👨‍🏫 صفحه آموزش و ترویج</div>;
-                            break;
-
-                        case "weather":
-                            pageElement = <div>🌤️ صفحه هواشناسی</div>;
-                            break;
-
-                        default:
-                            pageElement = <GreatShopsView />;
-                    }
+                    pageElement = <GreatShopsForm page={this.state.greatShopPage} />;
                 } else {
                     pageElement = (
                         <RoomView
