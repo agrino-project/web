@@ -7,6 +7,7 @@ Please see LICENSE files in the repository root for full details.
 
 import React, { useContext, useCallback, useRef, useState, useEffect } from "react";
 import { Icon as ConsultantIcon } from "../../../../res/img/element-icons/agriculture-consultant2.svg";
+import { Icon as GreatShopsIcon } from "../../../../res/img/element-icons/greatShops.svg";
 // import { Icon as OrganizationIcon } from "../../../../res/img/element-icons/agriculture-organization.svg";
 // import { Icon as MarketIcon } from "../../../../res/img/element-icons/agriculture-market.svg";
 import { Icon as EducationIcon } from "../../../../res/img/element-icons/agriculture-education2.svg";
@@ -235,12 +236,18 @@ const AgriculturePage: React.FC = () => {
                 </div>
 
                 {/* Consultant Card - Full Width */}
-                <div className="mx_AgriculturePage_row">
+                <div className="mx_AgriculturePage_row mx_AgriculturePage_row_top">
+                    <AgricultureCard
+                        title={_t("custom_panels|greatShops")}
+                        icon={GreatShopsIcon}
+                        onClick={() => handleMarketClick("@useller:agridemo.ir")}
+                        variant="default"
+                    />
                     <AgricultureCard
                         title={_t("custom_panels|agriculture_consultant")}
                         icon={ConsultantIcon}
                         onClick={() => handleMarketClick("@useller:agridemo.ir")}
-                        variant="wide"
+                        variant="default"
                     />
                 </div>
 
