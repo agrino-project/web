@@ -1004,6 +1004,7 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
             mx_EventTile_clamp:
                 this.context.timelineRenderingType === TimelineRenderingType.ThreadsList || isRenderingNotification,
             mx_EventTile_noBubble: noBubbleEvent,
+            mx_EventTile_system: isInfoMessage,
         });
 
         // If the tile is in the Sending state, don't speak the message.

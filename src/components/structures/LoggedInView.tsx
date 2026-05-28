@@ -60,7 +60,6 @@ import { type OpenToTabPayload } from "../../dispatcher/payloads/OpenToTabPayloa
 import RightPanelStore from "../../stores/right-panel/RightPanelStore";
 import { RightPanelPhases } from "../../stores/right-panel/RightPanelStorePhases";
 import { TimelineRenderingType } from "../../contexts/RoomContext";
-import RightPanel from "./RightPanel";
 import CardToCardCard from "../views/right_panel/CardToCardCard";
 import ChargePurchaseCard from "../views/right_panel/ChargePurchaseCard";
 import BillPaymentCard from "../views/right_panel/BillPaymentCard";
@@ -78,7 +77,6 @@ import { MatrixClientContextProvider } from "./MatrixClientContextProvider";
 import { Landmark, LandmarkNavigation } from "../../accessibility/LandmarkNavigation";
 import { ModuleApi } from "../../modules/Api.ts";
 import { SDKContext } from "../../contexts/SDKContext.ts";
-import { GreatShopsView } from "../views/rooms/RoomListPanel/GreatShopsView.tsx";
 import { GreatShopsForm } from "../views/rooms/RoomListPanel/GreatShopsForm.tsx";
 
 // We need to fetch each pinned message individually (if we don't already have it)
@@ -809,7 +807,7 @@ class LoggedInView extends React.Component<IProps, IState> {
 
             case PageTypes.HomePage:
                 if (this.state.greatShopPage) {
-                    pageElement = <GreatShopsView />;
+                    pageElement = <GreatShopsForm page={this.state.greatShopPage} />;
                 } else {
                     pageElement = <HomePage justRegistered={this.props.justRegistered} />;
                 }

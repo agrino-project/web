@@ -96,9 +96,11 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     private renderInteractiveQuestion(content: any): JSX.Element {
         const field = content.custom_meta_data?.data?.field;
         const progress = content.custom_meta_data?.data?.progress;
+        const error = content.custom_meta_data?.error;
 
         return (
             <div className="mx_BotQuestion">
+                {error?.message && <div className="mx_BotQuestion_error">{error.message}</div>}
                 <div className="mx_BotQuestion_header">
                     <div className="mx_BotQuestion_progress">
                         {progress?.current} / {progress?.total}
@@ -327,9 +329,10 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
 
     private renderCategoryMenu(content: any): JSX.Element {
         const categories = content.custom_meta_data?.data?.categories || [];
-
+        const error = content.custom_meta_data?.error;
         return (
             <div className="mx_CategoryMenu">
+                {error?.message && <div className="mx_BotQuestion_error">{error.message}</div>}
                 {categories.map((cat: any) => (
                     <button key={cat.id} className="mx_CategoryMenu_item" onClick={() => this.sendBotAnswer(cat.name)}>
                         {cat.index}. {cat.name}

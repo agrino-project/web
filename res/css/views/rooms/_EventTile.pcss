@@ -463,7 +463,8 @@ $left-gutter: 64px;
         }
 
         .mx_EventTile_e2eIcon {
-            inset: 0 0 0 44px;
+            inset: 0;
+            inset-inline-start: -17px;
 
             /* Keep height equal to text for alignment */
             height: var(--EventTile_group_line-line-height);
@@ -542,7 +543,7 @@ $left-gutter: 64px;
                 padding-block: $spacing-block-start $spacing-block-end;
                 /* 20px: avatar area */
                 padding-inline-start: calc(var(--EventTile_group_line-spacing-inline-start) + 20px);
-
+                background: transparent !important;
                 .mx_MessageTimestamp {
                     bottom: 6px;
                     left: 2px;
@@ -1482,11 +1483,6 @@ $left-gutter: 64px;
     text-align: start;
 }
 
-.mx_EventTile[data-layout="group"] {
-    padding-inline-start: 10px !important;
-    padding-inline-end: 10px !important;
-}
-
 .mx_EventTile::before {
     display: none !important;
 }
@@ -1699,8 +1695,14 @@ input[type="number"] {
 }
 
 .mx_BotQuestion_error {
-    color: #d60000;
+    color: #d60000 !important;
+    background: rgba(214, 0, 0, 0.08);
+    border: 1px solid rgba(214, 0, 0, 0.35);
     border-radius: 12px;
+    padding: 10px 12px;
+    margin-block: 4px;
+    font-size: 13px;
+    line-height: 1.5;
     white-space: pre-wrap;
 }
 
@@ -1715,4 +1717,91 @@ input[type="number"] {
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 14px;
+}
+
+/* ROOT */
+
+.mx_EventTile_system {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+
+    width: 100% !important;
+
+    padding: 8px 0 !important;
+
+    background: transparent !important;
+    border: none !important;
+}
+
+/* REMOVE MATRIX MESSAGE STYLE */
+
+.mx_EventTile_system .mx_EventTile_line {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* REAL GLASS BUBBLE */
+
+.mx_EventTile_system .mx_TextualEvent {
+    display: inline-flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 8px 18px !important;
+
+    border-radius: 999px !important;
+
+    background: rgba(30, 30, 30, 0.42) !important;
+
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+
+    backdrop-filter: blur(18px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(180%) !important;
+
+    color: rgba(255, 255, 255, 0.9) !important;
+
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* KILL HOVER */
+
+.mx_EventTile_system:hover,
+.mx_EventTile_system:hover .mx_EventTile_line,
+.mx_EventTile_system:hover .mx_TextualEvent {
+    background-color: transparent !important;
+}
+
+/* FORCE GLASS ON HOVER */
+
+.mx_EventTile_system:hover .mx_TextualEvent {
+    background: rgba(30, 30, 30, 0.42) !important;
+}
+
+/* REMOVE TIMESTAMP */
+
+.mx_EventTile_system .mx_MessageTimestamp {
+    display: none !important;
+}
+
+/* REMOVE EXTRA UI */
+
+.mx_EventTile_system .mx_EventTile_profileWrapper,
+.mx_EventTile_system .mx_MessageActionBar,
+.mx_EventTile_system .mx_EventTile_msgOption {
+    display: none !important;
+}
+
+.mx_EventTile_system[data-self="true"]:hover .mx_EventTile_line,
+.mx_EventTile_system[data-self="false"]:hover .mx_EventTile_line {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
 }
