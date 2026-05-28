@@ -80,7 +80,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     };
 
     private sendNullAnswer = (): void => {
-        this.sendBotAnswer("null");
+        this.sendBotAnswer("<<<USER_SKIPED_MESSAGE::EMPTY_INPUT::7XQ9-K2LM-P0R4>>>");
     };
 
     private toggleOption = (option: string): void => {
@@ -600,6 +600,11 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         const mxEvent = this.props.mxEvent;
         const content = mxEvent.getContent();
+        const skippedMessageToken = "<<<USER_SKIPED_MESSAGE::EMPTY_INPUT::7XQ9-K2LM-P0R4>>>";
+
+        if (content.body === skippedMessageToken) {
+            content.body = "سوال بعدی";
+        }
 
         const metadata = content.custom_meta_data;
         const type = metadata?.type;
