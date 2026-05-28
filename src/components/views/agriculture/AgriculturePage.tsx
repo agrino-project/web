@@ -34,6 +34,8 @@ import { _t } from "../../../languageHandler";
 import { useMobileNav } from "../../structures/mobile/MobileNavContext";
 import RightPanelStore from "../../../stores/right-panel/RightPanelStore";
 import { RightPanelPhases } from "../../../stores/right-panel/RightPanelStorePhases";
+import dispatcher from "../../../dispatcher/dispatcher";
+import { Action } from "../../../dispatcher/actions";
 
 interface AgricultureCardProps {
     title: string;
@@ -186,6 +188,12 @@ const AgriculturePage: React.FC = () => {
         navigate("services");
     }, [navigate]);
 
+    const handleGreatShopsClick = useCallback((): void => {
+        exitAgricultureView();
+        navigate("chatList");
+        dispatcher.dispatch({ action: Action.ActivateGreatShopsFilter });
+    }, [navigate, exitAgricultureView]);
+
     const bannerSlides = [
         {
             title: "بهترین قیمت نهاده‌ها در آگرینو",
@@ -240,7 +248,7 @@ const AgriculturePage: React.FC = () => {
                     <AgricultureCard
                         title={_t("custom_panels|greatShops")}
                         icon={GreatShopsIcon}
-                        onClick={() => handleMarketClick("@useller:agridemo.ir")}
+                        onClick={handleGreatShopsClick}
                         variant="default"
                     />
                     <AgricultureCard

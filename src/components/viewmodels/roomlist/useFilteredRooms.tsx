@@ -15,6 +15,7 @@ import RoomListStoreV3, {
     type RoomsResult,
 } from "../../../stores/room-list-v3/RoomListStoreV3";
 import { useEventEmitter } from "../../../hooks/useEventEmitter";
+import { useDispatcher } from "../../../hooks/useDispatcher";
 import dispatcher from "../../../dispatcher/dispatcher";
 import { Action } from "../../../dispatcher/actions";
 
@@ -95,6 +96,13 @@ export function useFilteredRooms(): FilteredRooms {
 
     useEventEmitter(RoomListStoreV3.instance, LISTS_LOADED_EVENT, () => {
         setIsLoadingRooms(false);
+    });
+
+    useDispatcher(dispatcher, (payload) => {
+        if (payload.action === Action.ActivateGreatShopsFilter) {
+            setPrimaryFilter(FilterKey.GreatShops);
+            updateRoomsFromStore([FilterKey.GreatShops]);
+        }
     });
 
     /**

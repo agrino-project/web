@@ -390,4 +390,9 @@ export enum Action {
      * Leave the great shops overlay and return to the active room view.
      */
     ClearGreatShopPage = "clear_greatshop_page",
+
+    /**
+     * Activate the GreatShops primary filter in the room list.
+     */
+    ActivateGreatShopsFilter = "activate_greatshops_filter",
 }
