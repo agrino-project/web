@@ -370,26 +370,24 @@ const AgriculturePage: React.FC = () => {
                 <div className="mx_AgriculturePage_support">
                     <h3 className="mx_AgriculturePage_support_title">{_t("custom_panels|support")}</h3>
                     <div className="mx_AgriculturePage_support_cards">
-                        <div className="mx_AgriculturePage_support_card">
-                            <div className="mx_AgriculturePage_support_icon">
-                                <BazaargahIcon />
-                            </div>
-                            <h4 className="mx_AgriculturePage_support_card_title">{_t("custom_panels|Marketplace")}</h4>
-                        </div>
-
-                        <div className="mx_AgriculturePage_support_card">
-                            <div className="mx_AgriculturePage_support_icon">
-                                <ClubIcon />
-                            </div>
-                            <h4 className="mx_AgriculturePage_support_card_title">{_t("custom_panels|Club")}</h4>
-                        </div>
-
-                        <div className="mx_AgriculturePage_support_card">
-                            <div className="mx_AgriculturePage_support_icon">
-                                <WeatherIcon />
-                            </div>
-                            <h4 className="mx_AgriculturePage_support_card_title">{_t("custom_panels|Weather")}</h4>
-                        </div>
+                        <AgricultureCard
+                            title={_t("custom_panels|Marketplace")}
+                            icon={BazaargahIcon}
+                            disabled={true}
+                            variant="small"
+                        />
+                        <AgricultureCard
+                            title={_t("custom_panels|Club")}
+                            icon={ClubIcon}
+                            disabled={true}
+                            variant="small"
+                        />
+                        <AgricultureCard
+                            title={_t("custom_panels|Weather")}
+                            icon={WeatherIcon}
+                            disabled={true}
+                            variant="small"
+                        />
                     </div>
                 </div>
             </div>
