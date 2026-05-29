@@ -16,6 +16,8 @@ import ChargePurchaseCard from "../../views/right_panel/ChargePurchaseCard";
 import BillPaymentCard from "../../views/right_panel/BillPaymentCard";
 
 import "../../../../res/css/structures/mobile/_MobileLayout.pcss";
+import RightPanelStore from "../../../stores/right-panel/RightPanelStore";
+import { RightPanelPhases } from "../../../stores/right-panel/RightPanelStorePhases";
 
 interface MobileLayoutProps {
     /** The chat list (LeftPanel) to show on the chatList page */
@@ -52,21 +54,39 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ chatListElement, chatRoomEl
         case "cardToCard":
             content = (
                 <div className="mx_MobileLayout_page mx_MobileLayout_page--scrollable">
-                    <CardToCardCard onClose={goBack} />
+                    <CardToCardCard
+                        onClose={(): void => {
+                            RightPanelStore.instance.setCard({
+                                phase: RightPanelPhases.Services,
+                            });
+                        }}
+                    />
                 </div>
             );
             break;
         case "chargePurchase":
             content = (
                 <div className="mx_MobileLayout_page mx_MobileLayout_page--scrollable">
-                    <ChargePurchaseCard onClose={goBack} />
+                    <ChargePurchaseCard
+                        onClose={(): void => {
+                            RightPanelStore.instance.setCard({
+                                phase: RightPanelPhases.Services,
+                            });
+                        }}
+                    />
                 </div>
             );
             break;
         case "billPayment":
             content = (
                 <div className="mx_MobileLayout_page mx_MobileLayout_page--scrollable">
-                    <BillPaymentCard onClose={goBack} />
+                    <BillPaymentCard
+                        onClose={(): void => {
+                            RightPanelStore.instance.setCard({
+                                phase: RightPanelPhases.Services,
+                            });
+                        }}
+                    />
                 </div>
             );
             break;

@@ -907,7 +907,11 @@ class LoggedInView extends React.Component<IProps, IState> {
                     )}
                     <div className="mx_RoomView_wrapper">
                         {(() => {
-                            const onClose = (): void => RightPanelStore.instance.togglePanel(null);
+                           const onClose = (): void => {
+                               RightPanelStore.instance.setCard({
+                                   phase: RightPanelPhases.Services,
+                               });
+                           };
                             switch (this.state.desktopPage) {
                                 case "services":
                                     return <ServicesPage />;
