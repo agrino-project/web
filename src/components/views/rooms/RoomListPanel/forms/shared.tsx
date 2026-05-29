@@ -1,6 +1,6 @@
 import React from "react";
 
-export const green = "#10b981";
+export const green = "#326430";
 export const neutralBg = "#e5e7eb";
 export const neutralText = "#9ca3af";
 
@@ -9,10 +9,16 @@ export const inputStyle: React.CSSProperties = {
     padding: "10px 14px",
     borderRadius: 12,
     border: "1px solid #d1d5db",
+    backgroundColor: "#fff",
     fontSize: 14,
     outline: "none",
     boxSizing: "border-box",
     textAlign: "start",
+};
+
+export const selectStyle: React.CSSProperties = {
+    ...inputStyle,
+    color: "#111",
 };
 
 export const labelStyle: React.CSSProperties = {
@@ -32,6 +38,28 @@ export const bodyStyle: React.CSSProperties = {
     flex: 1,
     boxSizing: "border-box",
     minHeight: 0,
+};
+
+export const sectionStyle: React.CSSProperties = {
+    padding: 16,
+    backgroundColor: "#F9FAFB",
+    borderRadius: 12,
+    border: "1px solid #E5E7EB",
+    display: "flex",
+    flexDirection: "column",
+    gap: 12,
+};
+
+export const buttonStyle: React.CSSProperties = {
+    width: "100%",
+    height: "48px",
+    backgroundColor: "#326430",
+    color: "white",
+    border: "none",
+    borderRadius: "12px",
+    fontSize: "12px",
+    fontWeight: "bold",
+    cursor: "pointer",
 };
 
 export function StepIndicator({ current, steps }: { current: number; steps: string[] }) {
@@ -121,7 +149,7 @@ export function FormHeader({ title, onClose }: { title: string; onClose: () => v
                 justifyContent: "center",
                 alignItems: "center",
                 borderBottom: "1px solid #e6e6e6",
-                height: 62,
+                height: 62.5,
                 paddingInline: "40px",
                 position: "relative",
                 textAlign: "center",

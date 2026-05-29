@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { green, neutralText, inputStyle, labelStyle, StepIndicator, FormHeader, bodyStyle } from "./shared.tsx";
+import {
+    green,
+    neutralText,
+    inputStyle,
+    labelStyle,
+    StepIndicator,
+    FormHeader,
+    bodyStyle,
+    selectStyle,
+    sectionStyle,
+    buttonStyle,
+} from "./shared.tsx";
 
 const steps = ["اطلاعات شخصی", "مشخصات زمین و محصول", "برنامه تولید", "تأیید نهایی"];
 
@@ -24,7 +35,7 @@ export function ContractForm({ onClose }: { onClose: () => void }) {
                 <StepIndicator current={step} steps={steps} />
 
                 {step === 0 && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    <div style={sectionStyle}>
                         <div>
                             <label style={labelStyle}>نام و نام خانوادگی</label>
                             <input
@@ -36,11 +47,7 @@ export function ContractForm({ onClose }: { onClose: () => void }) {
                         </div>
                         <div>
                             <label style={labelStyle}>جنسیت</label>
-                            <select
-                                style={{ ...inputStyle, color: form.gender ? "#111" : neutralText }}
-                                value={form.gender}
-                                onChange={set("gender")}
-                            >
+                            <select style={selectStyle} value={form.gender} onChange={set("gender")}>
                                 <option value="" disabled>
                                     انتخاب کنید
                                 </option>
@@ -81,7 +88,7 @@ export function ContractForm({ onClose }: { onClose: () => void }) {
                 )}
 
                 {step === 1 && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    <div style={sectionStyle}>
                         <div>
                             <label style={labelStyle}>کد بهره‌بردار</label>
                             <input
@@ -140,11 +147,7 @@ export function ContractForm({ onClose }: { onClose: () => void }) {
                         </div>
                         <div>
                             <label style={labelStyle}>نوع قرارداد</label>
-                            <select
-                                style={{ ...inputStyle, color: form.contractType ? "#111" : neutralText }}
-                                value={form.contractType ?? ""}
-                                onChange={set("contractType")}
-                            >
+                            <select style={selectStyle} value={form.contractType ?? ""} onChange={set("contractType")}>
                                 <option value="" disabled>
                                     انتخاب کنید
                                 </option>
@@ -154,11 +157,7 @@ export function ContractForm({ onClose }: { onClose: () => void }) {
                         </div>
                         <div>
                             <label style={labelStyle}>رقم (واریته)</label>
-                            <select
-                                style={{ ...inputStyle, color: form.variety ? "#111" : neutralText }}
-                                value={form.variety ?? ""}
-                                onChange={set("variety")}
-                            >
+                            <select style={selectStyle} value={form.variety ?? ""} onChange={set("variety")}>
                                 <option value="" disabled>
                                     انتخاب کنید
                                 </option>
@@ -168,11 +167,7 @@ export function ContractForm({ onClose }: { onClose: () => void }) {
                         </div>
                         <div>
                             <label style={labelStyle}>منبع آب</label>
-                            <select
-                                style={{ ...inputStyle, color: form.waterSource ? "#111" : neutralText }}
-                                value={form.waterSource ?? ""}
-                                onChange={set("waterSource")}
-                            >
+                            <select style={selectStyle} value={form.waterSource ?? ""} onChange={set("waterSource")}>
                                 <option value="" disabled>
                                     انتخاب کنید
                                 </option>
@@ -183,11 +178,7 @@ export function ContractForm({ onClose }: { onClose: () => void }) {
                         </div>
                         <div>
                             <label style={labelStyle}>نوع مالکیت زمین</label>
-                            <select
-                                style={{ ...inputStyle, color: form.ownership ? "#111" : neutralText }}
-                                value={form.ownership ?? ""}
-                                onChange={set("ownership")}
-                            >
+                            <select style={selectStyle} value={form.ownership ?? ""} onChange={set("ownership")}>
                                 <option value="" disabled>
                                     انتخاب کنید
                                 </option>
@@ -211,7 +202,7 @@ export function ContractForm({ onClose }: { onClose: () => void }) {
                 )}
 
                 {step === 2 && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    <div style={sectionStyle}>
                         <div>
                             <label style={labelStyle}>حجم تخمینی تولید (تن)</label>
                             <input
@@ -253,19 +244,7 @@ export function ContractForm({ onClose }: { onClose: () => void }) {
 
                 {step === 3 && (
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                        <div
-                            style={{
-                                padding: 16,
-                                background: "#f9f9f9",
-                                borderRadius: 12,
-                                border: "1px solid #e5e5e5",
-                                fontSize: 13,
-                                color: "#444",
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 8,
-                            }}
-                        >
+                        <div style={sectionStyle}>
                             <div style={{ fontWeight: 600, marginBottom: 4, fontSize: 14 }}>پیش‌نمایش اطلاعات</div>
                             {[
                                 { label: "نام", value: form.name },
@@ -305,8 +284,8 @@ export function ContractForm({ onClose }: { onClose: () => void }) {
                                 gap: 8,
                                 padding: "12px 16px",
                                 borderRadius: 12,
-                                border: "1px solid #4caf50",
-                                color: "#4caf50",
+                                border: `1px solid ${green}`,
+                                color: green,
                                 fontSize: 14,
                                 fontWeight: 500,
                                 textDecoration: "none",
@@ -334,7 +313,7 @@ export function ContractForm({ onClose }: { onClose: () => void }) {
                                 onChange={(e) =>
                                     setForm((prev) => ({ ...prev, acceptRules: e.target.checked ? "true" : "" }))
                                 }
-                                style={{ width: 18, height: 18, accentColor: "#4caf50", cursor: "pointer" }}
+                                style={{ width: 18, height: 18, accentColor: green, cursor: "pointer" }}
                             />
                             <label htmlFor="acceptRules" style={{ fontSize: 14, color: "#444", cursor: "pointer" }}>
                                 قوانین و مقررات شرکت روژین را می‌پذیرم
@@ -348,14 +327,10 @@ export function ContractForm({ onClose }: { onClose: () => void }) {
                         <button
                             onClick={() => setStep((s) => s - 1)}
                             style={{
-                                flex: 1,
-                                height: 48,
-                                borderRadius: 12,
+                                ...buttonStyle,
                                 border: `1px solid ${green}`,
                                 background: "white",
                                 color: green,
-                                fontSize: 16,
-                                cursor: "pointer",
                             }}
                         >
                             قبلی
@@ -372,13 +347,8 @@ export function ContractForm({ onClose }: { onClose: () => void }) {
                             }
                         }}
                         style={{
-                            flex: 1,
-                            height: 48,
-                            borderRadius: 12,
-                            border: "none",
+                            ...buttonStyle,
                             backgroundColor: step === steps.length - 1 && !form.acceptRules ? "#d1d5db" : green,
-                            color: "white",
-                            fontSize: 16,
                             cursor: step === steps.length - 1 && !form.acceptRules ? "not-allowed" : "pointer",
                         }}
                     >

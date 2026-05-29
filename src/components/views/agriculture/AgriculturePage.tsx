@@ -228,17 +228,17 @@ const AgriculturePage: React.FC = () => {
                 {/* Top Row - Two Cards */}
                 <div className="mx_AgriculturePage_row mx_AgriculturePage_row_top">
                     <AgricultureCard
-                        title={_t("custom_panels|banking_services")}
-                        icon={BankGredientIcon}
-                        background={ATMBackground}
-                        onClick={handleBankingServicesClick}
-                        variant="default"
-                    />
-                    <AgricultureCard
                         title={_t("custom_panels|agriculture_bazaar")}
                         icon={BazaarGrediantIcon}
                         background={GroceryBackground}
                         onClick={() => handleMarketClick("@advertisebot:agridemo.ir")}
+                        variant="default"
+                    />
+                    <AgricultureCard
+                        title={_t("custom_panels|banking_services")}
+                        icon={BankGredientIcon}
+                        background={ATMBackground}
+                        onClick={handleBankingServicesClick}
                         variant="default"
                     />
                 </div>
@@ -346,13 +346,6 @@ const AgriculturePage: React.FC = () => {
                         disabled={true}
                         variant="small"
                     />
-                </div>
-
-                {/* Personalized Section */}
-                <h3 className="mx_AgriculturePage_personalized_title">{_t("custom_panels|for_you")}</h3>
-                <div className="mx_AgriculturePage_personalized">
-                    <div className="mx_AgriculturePage_personalized_icon">+</div>
-                    <p className="mx_AgriculturePage_personalized_description">{_t("custom_panels|enter_product")}</p>
                 </div>
 
                 {/* Articles Section */}

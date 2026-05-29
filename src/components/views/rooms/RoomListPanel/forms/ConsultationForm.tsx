@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { bodyStyle, FormHeader, inputStyle, labelStyle } from "./shared";
+import { bodyStyle, buttonStyle, FormHeader, inputStyle, labelStyle, sectionStyle } from "./shared";
 
 interface ConsultationFormProps {
     onClose: () => void;
@@ -58,17 +58,7 @@ export const ConsultationForm: React.FC<ConsultationFormProps> = ({ onClose }) =
 
             <div style={bodyStyle}>
                 {/* Form Card */}
-                <div
-                    style={{
-                        padding: "16px",
-                        backgroundColor: "#F9FAFB",
-                        borderRadius: "12px",
-                        border: "1px solid #E5E7EB",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "12px",
-                    }}
-                >
+                <div style={sectionStyle}>
                     <div style={{ fontSize: "14px", fontWeight: 600, color: "#6B7280" }}>ثبت درخواست مشاوره</div>
 
                     {/* Subject */}
@@ -95,6 +85,7 @@ export const ConsultationForm: React.FC<ConsultationFormProps> = ({ onClose }) =
                                 ...inputStyle,
                                 resize: "vertical",
                                 fontFamily: "inherit",
+                                minHeight: "40px",
                             }}
                         />
                     </div>
@@ -149,15 +140,8 @@ export const ConsultationForm: React.FC<ConsultationFormProps> = ({ onClose }) =
                 <button
                     onClick={handleSubmit}
                     style={{
-                        width: "100%",
-                        height: "48px",
-                        backgroundColor: "#10B981",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "12px",
-                        fontSize: "16px",
-                        fontWeight: 500,
-                        cursor: "pointer",
+                        ...buttonStyle,
+                        marginBlock: "16px",
                     }}
                 >
                     ارسال درخواست

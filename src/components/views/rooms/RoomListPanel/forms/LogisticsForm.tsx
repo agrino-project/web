@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { bodyStyle, FormHeader, green, inputStyle, labelStyle } from "./shared";
+import { bodyStyle, buttonStyle, FormHeader, green, inputStyle, labelStyle, selectStyle } from "./shared";
 
 interface LogisticsFormData {
     contractId: string;
@@ -87,7 +87,7 @@ export function LogisticsForm({ onClose }: { onClose: () => void }) {
                     </div>
                     <div style={{ marginBottom: 12 }}>
                         <label style={labelStyle}>نوع نهاده</label>
-                        <select value={form.inputType} onChange={set("inputType")} style={inputStyle}>
+                        <select value={form.inputType} onChange={set("inputType")} style={selectStyle}>
                             <option value="">انتخاب کنید</option>
                             {inputTypeOptions.map((opt) => (
                                 <option key={opt.value} value={opt.value}>
@@ -107,28 +107,26 @@ export function LogisticsForm({ onClose }: { onClose: () => void }) {
                         />
                     </div>
                     <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-                        <div style={{ flex: 1 }}>
-                            <div>
-                                <label style={labelStyle}>مقدار درخواستی</label>
-                                <input
-                                    type="text"
-                                    placeholder="مثال: ۱۵ کیسه"
-                                    value={form.requestedAmount}
-                                    onChange={set("requestedAmount")}
-                                    style={inputStyle}
-                                />
-                            </div>
-                            <div>
-                                <label style={labelStyle}>نوع بسته‌بندی</label>
-                                <select value={form.packageType} onChange={set("packageType")} style={inputStyle}>
-                                    <option value="">انتخاب</option>
-                                    {packageOptions.map((opt) => (
-                                        <option key={opt.value} value={opt.value}>
-                                            {opt.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                        <div>
+                            <label style={labelStyle}>مقدار درخواستی</label>
+                            <input
+                                type="text"
+                                placeholder="مثال: ۱۵ کیسه"
+                                value={form.requestedAmount}
+                                onChange={set("requestedAmount")}
+                                style={inputStyle}
+                            />
+                        </div>
+                        <div>
+                            <label style={labelStyle}>نوع بسته‌بندی</label>
+                            <select value={form.packageType} onChange={set("packageType")} style={selectStyle}>
+                                <option value="">انتخاب</option>
+                                {packageOptions.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
                     <div style={{ marginBottom: 12 }}>
@@ -223,7 +221,7 @@ export function LogisticsForm({ onClose }: { onClose: () => void }) {
                             type="text"
                             disabled
                             value={form.farmAddress}
-                            style={{ ...inputStyle, backgroundColor: "#f3f4f6", cursor: "not-allowed" }}
+                            style={{ ...inputStyle, cursor: "not-allowed" }}
                         />
                     </div>
                     <div style={{ marginBottom: 12 }}>
@@ -251,7 +249,7 @@ export function LogisticsForm({ onClose }: { onClose: () => void }) {
                     </div>
                 </div>
 
-                <button onClick={handleSubmit} style={submitBtnStyle}>
+                <button onClick={handleSubmit} style={buttonStyle}>
                     ثبت درخواست
                 </button>
             </div>
@@ -289,17 +287,5 @@ const radioLabelStyle: React.CSSProperties = {
     alignItems: "center",
     fontSize: 14,
     color: "#6b7280",
-    cursor: "pointer",
-};
-
-const submitBtnStyle: React.CSSProperties = {
-    width: "100%",
-    height: 48,
-    backgroundColor: green,
-    color: "white",
-    border: "none",
-    borderRadius: 12,
-    fontSize: 16,
-    fontWeight: 600,
     cursor: "pointer",
 };

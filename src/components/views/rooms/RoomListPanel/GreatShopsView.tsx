@@ -57,7 +57,7 @@ export function GreatShopsView(): JSX.Element {
                         }}
                         style={{
                             borderRadius: "14px",
-                            height: "150px",
+                            height: "140px",
                             cursor: "pointer",
                             border: "1px solid #e6e6e6",
                             boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
@@ -73,7 +73,7 @@ export function GreatShopsView(): JSX.Element {
                         {/* Logo */}
                         <div
                             style={{
-                                width: "90px",
+                                width: "80px",
                                 height: "70px",
                                 display: "flex",
                                 alignItems: "center",

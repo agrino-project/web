@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { green, inputStyle, labelStyle, bodyStyle, FormHeader } from "./shared";
+import { green, inputStyle, labelStyle, bodyStyle, FormHeader, selectStyle, sectionStyle, buttonStyle } from "./shared";
 
 interface ShipmentForm {
     origin: string;
@@ -58,16 +58,6 @@ export function FreightForm({ onClose }: { onClose: () => void }) {
         setForm(emptyForm);
     };
 
-    const sectionStyle: React.CSSProperties = {
-        padding: 16,
-        backgroundColor: "#F9FAFB",
-        borderRadius: 12,
-        border: "1px solid #E5E7EB",
-        display: "flex",
-        flexDirection: "column",
-        gap: 12,
-    };
-
     const gridTwo: React.CSSProperties = {
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
@@ -104,11 +94,7 @@ export function FreightForm({ onClose }: { onClose: () => void }) {
 
                     <div>
                         <label style={labelStyle}>نوع محصول</label>
-                        <select
-                            style={{ ...inputStyle, appearance: "none" }}
-                            value={form.productType}
-                            onChange={set("productType")}
-                        >
+                        <select style={selectStyle} value={form.productType} onChange={set("productType")}>
                             <option value="">انتخاب کنید</option>
                             {productOptions.map((o) => (
                                 <option key={o} value={o}>
@@ -141,7 +127,7 @@ export function FreightForm({ onClose }: { onClose: () => void }) {
                 </div>
 
                 {/* Driver info */}
-                <div style={sectionStyle}>
+                <div style={{ ...sectionStyle, marginTop: "8px" }}>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#6B7280" }}>مشخصات راننده</div>
 
                     <div>
@@ -192,14 +178,8 @@ export function FreightForm({ onClose }: { onClose: () => void }) {
                 <button
                     onClick={handleSubmit}
                     style={{
-                        width: "100%",
-                        height: 48,
-                        borderRadius: 12,
-                        border: "none",
-                        backgroundColor: green,
-                        color: "white",
-                        fontSize: 16,
-                        cursor: "pointer",
+                        ...buttonStyle,
+                        marginBlock: "16px",
                     }}
                 >
                     ثبت بارنامه

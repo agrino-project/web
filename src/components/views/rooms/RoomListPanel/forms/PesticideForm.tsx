@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { bodyStyle, FormHeader, green, inputStyle, labelStyle } from "./shared";
+import { bodyStyle, FormHeader, green, inputStyle, labelStyle, sectionStyle, selectStyle } from "./shared";
 
 interface InputItem {
     type: string;
@@ -37,18 +37,7 @@ export function PesticideForm({ onClose }: { onClose: () => void }) {
             <div style={bodyStyle}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                     {items.map((item, idx) => (
-                        <div
-                            key={idx}
-                            style={{
-                                padding: 16,
-                                backgroundColor: "#f9fafb",
-                                borderRadius: 12,
-                                border: "1px solid #e5e7eb",
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 12,
-                            }}
-                        >
+                        <div key={idx} style={sectionStyle}>
                             <div
                                 style={{
                                     display: "flex",
@@ -65,15 +54,7 @@ export function PesticideForm({ onClose }: { onClose: () => void }) {
                                 <select
                                     value={item.type}
                                     onChange={(e) => updateItem(idx, "type", e.target.value)}
-                                    style={{
-                                        ...inputStyle,
-                                        appearance: "none",
-                                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%236b7280' d='M8 11L3 6h10z'/%3E%3C/svg%3E")`,
-                                        backgroundRepeat: "no-repeat",
-                                        backgroundPosition: "left 12px center",
-                                        backgroundSize: "16px",
-                                        paddingLeft: 36,
-                                    }}
+                                    style={selectStyle}
                                 >
                                     <option value="">انتخاب کنید</option>
                                     <option value="fertilizer">کود</option>

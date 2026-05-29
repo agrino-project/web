@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { green, inputStyle, labelStyle, StepIndicator, FormHeader, bodyStyle } from "./shared";
+import {
+    green,
+    inputStyle,
+    labelStyle,
+    StepIndicator,
+    FormHeader,
+    bodyStyle,
+    sectionStyle,
+    buttonStyle,
+} from "./shared";
 
 const steps = ["اعلان کشاورز", "تخصیص نوبت", "تأیید نهایی"];
 
@@ -38,17 +47,7 @@ export function SaleAnnouncementForm({ onClose }: { onClose: () => void }) {
 
                 {/* Step 0 — Farmer Announcement */}
                 {step === 0 && (
-                    <div
-                        style={{
-                            padding: 16,
-                            backgroundColor: "#F9FAFB",
-                            borderRadius: 12,
-                            border: "1px solid #E5E7EB",
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 12,
-                        }}
-                    >
+                    <div style={sectionStyle}>
                         <div style={{ fontSize: 14, fontWeight: 600, color: "#6B7280" }}>اعلان کشاورز</div>
 
                         <div>
@@ -75,17 +74,7 @@ export function SaleAnnouncementForm({ onClose }: { onClose: () => void }) {
 
                 {/* Step 1 — Company Slot Assignment */}
                 {step === 1 && (
-                    <div
-                        style={{
-                            padding: 16,
-                            backgroundColor: "#F9FAFB",
-                            borderRadius: 12,
-                            border: "1px solid #E5E7EB",
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 0,
-                        }}
-                    >
+                    <div style={sectionStyle}>
                         <div style={{ fontSize: 14, fontWeight: 600, color: "#6B7280", marginBottom: 8 }}>
                             تخصیص نوبت توسط شرکت
                         </div>
@@ -200,14 +189,10 @@ export function SaleAnnouncementForm({ onClose }: { onClose: () => void }) {
                         <button
                             onClick={() => setStep(0)}
                             style={{
-                                flex: 1,
-                                height: 48,
-                                borderRadius: 12,
+                                ...buttonStyle,
                                 border: `1px solid ${green}`,
                                 background: "white",
                                 color: green,
-                                fontSize: 16,
-                                cursor: "pointer",
                             }}
                         >
                             ویرایش
@@ -215,19 +200,7 @@ export function SaleAnnouncementForm({ onClose }: { onClose: () => void }) {
                     )}
 
                     {step < 2 && (
-                        <button
-                            onClick={() => setStep((s) => s + 1)}
-                            style={{
-                                flex: 1,
-                                height: 48,
-                                borderRadius: 12,
-                                border: "none",
-                                backgroundColor: green,
-                                color: "white",
-                                fontSize: 16,
-                                cursor: "pointer",
-                            }}
-                        >
+                        <button onClick={() => setStep((s) => s + 1)} style={buttonStyle}>
                             {step === 0 ? "ارسال اعلان" : "تأیید نوبت"}
                         </button>
                     )}
@@ -238,16 +211,7 @@ export function SaleAnnouncementForm({ onClose }: { onClose: () => void }) {
                                 console.log("Sale announcement confirmed", form);
                                 onClose();
                             }}
-                            style={{
-                                flex: 1,
-                                height: 48,
-                                borderRadius: 12,
-                                border: "none",
-                                backgroundColor: green,
-                                color: "white",
-                                fontSize: 16,
-                                cursor: "pointer",
-                            }}
+                            style={buttonStyle}
                         >
                             بستن
                         </button>
