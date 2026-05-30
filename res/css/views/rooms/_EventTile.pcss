@@ -20,7 +20,7 @@ $left-gutter: 64px;
     flex-shrink: 0;
     max-width: 100%;
     clear: both; /* TODO: check if this is necessary */
-    padding-top: 18px;
+    padding-block: 12px;
     position: relative;
 
     &.mx_EventTile_info {
@@ -1547,11 +1547,6 @@ $left-gutter: 64px;
 /* Also prevent hover on the tile itself from adding background */
 .mx_EventTile:hover > .mx_EventTile_line {
     box-shadow: none !important;
-}
-
-/* Add subtle separator between message groups */
-.mx_EventTile:not(.mx_EventTile_continuation) {
-    margin-top: 8px;
 }
 
 /* Continuation messages have less spacing */
