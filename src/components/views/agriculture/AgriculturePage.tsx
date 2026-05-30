@@ -13,17 +13,19 @@ import { Icon as GreatShopsIcon } from "../../../../res/img/element-icons/greatS
 import { Icon as EducationIcon } from "../../../../res/img/element-icons/agriculture-education2.svg";
 // import { Icon as ClimateIcon } from "../../../../res/img/element-icons/agriculture-climate.svg";
 import { Icon as TallarIcon } from "../../../../res/img/element-icons/messageTallar.svg";
-import { Icon as BankIcon } from "../../../../res/img/element-icons/BankIcon.svg";
+// import { Icon as BankIcon } from "../../../../res/img/element-icons/BankIcon.svg";
 import { Icon as BankGredientIcon } from "../../../../res/img/element-icons/BankGredient.svg";
 import { Icon as BuildingsIcon } from "../../../../res/img/element-icons/Buildings.svg";
 // import { Icon as ClubIcon } from "../../../../res/img/element-icons/agriculture-club2.svg";
 import { Icon as InsuranceIcon } from "../../../../res/img/element-icons/agriculture-insurance2.svg";
-import { Icon as BazaarIcon } from "../../../../res/img/element-icons/agriculture-bazaar2.svg";
+// import { Icon as BazaarIcon } from "../../../../res/img/element-icons/agriculture-bazaar2.svg";
 import { Icon as BazaarGrediantIcon } from "../../../../res/img/element-icons/agriculture-bazaar3.svg";
-import { Icon as BazaargahIcon } from "../../../../res/img/element-icons/bazaargah.svg";
 import { Icon as WeatherIcon } from "../../../../res/img/element-icons/weather.svg";
 import { Icon as ClubIcon } from "../../../../res/img/element-icons/club.svg";
 import { Icon as FarmerHand } from "../../../../res/img/element-icons/farmerHand.svg";
+import { Icon as FaqIcon } from "../../../../res/img/element-icons/faq.svg";
+import { Icon as MailboxIcon } from "../../../../res/img/element-icons/Mailbox.svg";
+import { Icon as PhoneIcon } from "../../../../res/img/element-icons/Phone.svg";
 import ATMBackground from "../../../../res/img/element-icons/ATM.png";
 import GroceryBackground from "../../../../res/img/element-icons/groceryShop.png";
 
@@ -42,9 +44,11 @@ interface AgricultureCardProps {
     subtitle?: string;
     icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     background?: string;
+    color?: string;
     disabled?: boolean;
     onClick?: () => void;
     variant?: "default" | "large" | "small" | "wide";
+    BackgroundIcon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }
 
 const AgricultureCard: React.FC<AgricultureCardProps> = ({
@@ -52,9 +56,11 @@ const AgricultureCard: React.FC<AgricultureCardProps> = ({
     subtitle,
     icon: Icon,
     background,
+    color,
     disabled = false,
     onClick,
     variant = "default",
+    BackgroundIcon,
 }) => {
     return (
         <div
@@ -62,18 +68,27 @@ const AgricultureCard: React.FC<AgricultureCardProps> = ({
             onClick={disabled ? undefined : onClick}
             role={disabled ? undefined : "button"}
             tabIndex={disabled ? undefined : 0}
-            style={{
-                background: background ? `url(${background}) center/cover no-repeat` : undefined,
-            }}
+            style={{ background }}
         >
+            {BackgroundIcon && (
+                <div className="mx_AgriculturePage_card_backgroundIcon">
+                    <BackgroundIcon />
+                </div>
+            )}
             <div className="mx_AgriculturePage_card_icon">
                 <Icon className="mx_AgriculturePage_card_icon_svg" />
             </div>
             <div className="mx_AgriculturePage_card_content">
-                <h3 className="mx_AgriculturePage_card_title">{title}</h3>
-                {subtitle && <p className="mx_AgriculturePage_card_subtitle">{subtitle}</p>}
-                {disabled && <span className="mx_AgriculturePage_card_badge">{_t("custom_panels|coming_soon")}</span>}
+                <h3 style={{ color: color }} className="mx_AgriculturePage_card_title">
+                    {title}
+                </h3>
+                {subtitle && (
+                    <p style={{ color: color }} className="mx_AgriculturePage_card_subtitle">
+                        {subtitle}
+                    </p>
+                )}
             </div>
+            {disabled && <span className="mx_AgriculturePage_card_badge">{_t("custom_panels|coming_soon")}</span>}
         </div>
     );
 };
@@ -230,14 +245,14 @@ const AgriculturePage: React.FC = () => {
                     <AgricultureCard
                         title={_t("custom_panels|agriculture_bazaar")}
                         icon={BazaarGrediantIcon}
-                        background={GroceryBackground}
+                        background={`url(${GroceryBackground}) center/cover no-repeat`}
                         onClick={() => handleMarketClick("@advertisebot:agridemo.ir")}
                         variant="default"
                     />
                     <AgricultureCard
                         title={_t("custom_panels|banking_services")}
                         icon={BankGredientIcon}
-                        background={ATMBackground}
+                        background={`url(${ATMBackground}) center/cover no-repeat`}
                         onClick={handleBankingServicesClick}
                         variant="default"
                     />
@@ -277,7 +292,7 @@ const AgriculturePage: React.FC = () => {
                         variant="small"
                     />
                     <AgricultureCard
-                        title={_t("custom_panels|agriculture_climate")}
+                        title={_t("custom_panels|Weather")}
                         icon={WeatherIcon}
                         disabled={true}
                         variant="small"
@@ -312,21 +327,26 @@ const AgriculturePage: React.FC = () => {
                 <div className="mx_AgriculturePage_row mx_AgriculturePage_row_bottom">
                     <AgricultureCard
                         title={_t("custom_panels|interaction_with_organizations")}
-                        subtitle={_t("custom_panels|for_iranian_agricultural_communities")}
-                        icon={BuildingsIcon}
-                        disabled={true}
+                        subtitle={_t("custom_panels|local_agriculture_for_each_other")}
+                        icon={TallarIcon}
+                        BackgroundIcon={TallarIcon}
+                        background="#326430"
                         variant="large"
+                        disabled={true}
                     />
                     <AgricultureCard
                         title={_t("custom_panels|discussion_forum")}
-                        subtitle={_t("custom_panels|local_agriculture_for_each_other")}
-                        icon={TallarIcon}
-                        disabled={true}
+                        subtitle={_t("custom_panels|for_iranian_agricultural_communities")}
+                        icon={BuildingsIcon}
+                        background="#F9FAF9"
+                        color="#151A14"
+                        BackgroundIcon={BuildingsIcon}
                         variant="large"
+                        disabled={true}
                     />
                 </div>
 
-                {/* Final Row - Three Cards */}
+                {/* Final Row - Three Cards
                 <div className="mx_AgriculturePage_row mx_AgriculturePage_row_final">
                     <AgricultureCard
                         title={_t("custom_panels|product_market")}
@@ -346,7 +366,7 @@ const AgriculturePage: React.FC = () => {
                         disabled={true}
                         variant="small"
                     />
-                </div>
+                </div> */}
 
                 {/* Articles Section */}
                 <div className="mx_AgriculturePage_section">
@@ -371,20 +391,20 @@ const AgriculturePage: React.FC = () => {
                     <h3 className="mx_AgriculturePage_support_title">{_t("custom_panels|support")}</h3>
                     <div className="mx_AgriculturePage_support_cards">
                         <AgricultureCard
-                            title={_t("custom_panels|Marketplace")}
-                            icon={BazaargahIcon}
+                            title={_t("custom_panels|support")}
+                            icon={PhoneIcon}
                             disabled={true}
                             variant="small"
                         />
                         <AgricultureCard
-                            title={_t("custom_panels|Club")}
-                            icon={ClubIcon}
+                            title={_t("custom_panels|faq")}
+                            icon={FaqIcon}
                             disabled={true}
                             variant="small"
                         />
                         <AgricultureCard
-                            title={_t("custom_panels|Weather")}
-                            icon={WeatherIcon}
+                            title={_t("custom_panels|contact")}
+                            icon={MailboxIcon}
                             disabled={true}
                             variant="small"
                         />

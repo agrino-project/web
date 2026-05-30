@@ -48,7 +48,7 @@
 
 /* Card Base */
 .mx_AgriculturePage_card {
-    background: linear-gradient(135deg, #4a7c2c 0%, #3d6624 100%);
+    background: #326430;
     border-radius: 16px;
     padding: 20px;
     display: flex;
@@ -99,30 +99,57 @@
 
 /* Large Variant */
 .mx_AgriculturePage_card_large {
-    min-height: 140px;
-    background: #ffffff;
-    border: 1px solid #e0e0e0;
-    text-align: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
+    min-height: 200px;
+    border-radius: 32px;
+    overflow: hidden;
+    position: relative;
+    justify-content: center;
 }
 
-.mx_AgriculturePage_card_large:hover {
-    border-color: #4caf50;
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
-    transform: translateY(-2px);
+.mx_AgriculturePage_card_large .mx_AgriculturePage_card_icon {
+    position: absolute;
+    top: 20px;
+    right: 18px;
+    width: 48px;
+    height: 48px;
+    z-index: 3;
 }
 
-.mx_AgriculturePage_card_large .mx_AgriculturePage_card_icon_svg {
-    color: #234622;
+.mx_AgriculturePage_card_large .mx_AgriculturePage_card_content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    height: 100%;
 }
 
 .mx_AgriculturePage_card_large .mx_AgriculturePage_card_title {
-    color: #2d5016;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 12px;
 }
 
 .mx_AgriculturePage_card_large .mx_AgriculturePage_card_subtitle {
-    color: #5a5a5a;
+    font-size: 16px;
+    line-height: 1.7;
+    max-width: 280px;
+}
+
+.mx_AgriculturePage_card_backgroundIcon {
+    position: absolute;
+    bottom: -45px;
+    width: 240px;
+    height: 260px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.mx_AgriculturePage_card_backgroundIcon svg {
+    width: 100%;
+    height: 100%;
+    opacity: 0.12;
 }
 
 /* Small Variant */
@@ -152,8 +179,8 @@
 }
 
 .mx_AgriculturePage_card_small .mx_AgriculturePage_card_title {
-    font-size: 14px;
-    color: #151A14;
+    font-size: 15px;
+    color: #151a14;
 }
 
 /* Card Hover */
@@ -172,7 +199,7 @@
 .mx_AgriculturePage_card_icon {
     width: 64px;
     height: 64px;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -210,8 +237,9 @@
 
 .mx_AgriculturePage_card_badge {
     display: inline-block;
-    margin-top: 8px;
-    padding: 3px 10px;
+    position: absolute;
+    bottom: 6px;
+    padding: 4px 10px;
     border-radius: 12px;
     font-size: 10px;
     font-weight: 600;
@@ -222,7 +250,7 @@
 
 /* Banner Carousel */
 .mx_AgriculturePage_banner_wrapper {
-    margin: 36px 0;
+    margin: 48px 0;
     position: relative;
 }
 
