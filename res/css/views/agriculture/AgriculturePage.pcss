@@ -351,36 +351,24 @@
     font-weight: 800;
 }
 
-.mx_AgriculturePage_section_more {
-    background: none;
-    border: none;
-    color: #4a7c2c;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 4px 8px;
-    transition: opacity 0.2s ease;
-}
-
-.mx_AgriculturePage_section_more:hover {
-    opacity: 0.7;
-}
-
 .mx_AgriculturePage_articles {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 16px;
 }
 
 .mx_AgriculturePage_article {
+    display: flex;
+    flex-direction: column;
     background: #ffffff;
-    border-radius: 12px;
+    border-radius: 18px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     cursor: pointer;
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
+    min-height: 180px;
 }
 
 .mx_AgriculturePage_article:hover {
@@ -390,10 +378,8 @@
 
 .mx_AgriculturePage_article_image {
     width: 100%;
-    height: 180px;
-    position: relative;
+    height: 220px;
     overflow: hidden;
-    background-color: #e0e0e0;
 }
 
 .mx_AgriculturePage_article_image img {
@@ -403,27 +389,38 @@
 }
 
 .mx_AgriculturePage_article_category {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background-color: #4a7c2c;
+    background-color: #326430;
     color: #ffffff;
     padding: 4px 12px;
     border-radius: 16px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
+    margin-bottom: 12px;
+    display: inline-block;
 }
 
 .mx_AgriculturePage_article_content {
-    padding: 16px;
+    flex: 1;
+    padding: 14px;
 }
 
 .mx_AgriculturePage_article_title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #2d2d2d;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.7;
+    color: #151a14;
     margin: 0;
-    line-height: 1.5;
+}
+
+.mx_AgriculturePage_article_excerpt {
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.8;
+    color: #66706a;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 6;
 }
 
 .mx_AgriculturePage_support {

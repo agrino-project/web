@@ -28,6 +28,8 @@ import { Icon as MailboxIcon } from "../../../../res/img/element-icons/Mailbox.s
 import { Icon as PhoneIcon } from "../../../../res/img/element-icons/Phone.svg";
 import ATMBackground from "../../../../res/img/element-icons/ATM.png";
 import GroceryBackground from "../../../../res/img/element-icons/groceryShop.png";
+import article1 from "../../../../res/img/element-icons/article1.png";
+import article2 from "../../../../res/img/element-icons/article2.png";
 
 import "../../../../res/css/views/agriculture/AgriculturePage.pcss";
 import MatrixClientContext from "../../../contexts/MatrixClientContext";
@@ -115,22 +117,24 @@ const BannerSlide: React.FC<BannerSlideProps> = ({ title, subtitle, onClick }) =
 
 interface ArticleCardProps {
     title: string;
+    excerpt: string;
     image?: string;
     category?: string;
     onClick?: () => void;
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ title, image, category, onClick }) => {
+const ArticleCard: React.FC<ArticleCardProps> = ({ title, excerpt, image, category, onClick }) => {
     return (
         <div className="mx_AgriculturePage_article" onClick={onClick}>
             {image && (
                 <div className="mx_AgriculturePage_article_image">
                     <img src={image} alt={title} />
-                    {category && <span className="mx_AgriculturePage_article_category">{category}</span>}
                 </div>
             )}
             <div className="mx_AgriculturePage_article_content">
+                {category && <span className="mx_AgriculturePage_article_category">{category}</span>}
                 <h4 className="mx_AgriculturePage_article_title">{title}</h4>
+                <p className="mx_AgriculturePage_article_excerpt">{excerpt}</p>
             </div>
         </div>
     );
@@ -225,16 +229,20 @@ const AgriculturePage: React.FC = () => {
     ];
 
     const articles = [
+            {
+            title: "افزایش ۳۰ درصدی قیمت برخی نهاده‌های دامی: چالش جدید برای دامداران",
+            excerpt:
+                "در حالی که بازار کشاورزی ایران با نوسانات متعددی روبرو است، گزارش‌های جدید نشان می‌دهد که قیمت برخی نهاده‌های دامی مانند ذرت، جو و کنجاله سویا، تا ۳۰ درصد افزایش یافته است. این افزایش ناگهانی، که از ابتدای ماه جاری آغاز شده، نگرانی‌های جدی را در میان دامداران و تولیدکنندگان گوشت و لبنیات ایجاد کرده است.",
+            image: article1,
+            category: "اخبار",
+        },
         {
-            title: "چگونه بیشترین محصول برنج را در زمین خود بکارید؟",
-            image: "/path/to/rice-field.jpg",
+            title: "چگونه بیشترین محصول برنج را در زمین خود بکارم؟",
+            excerpt:
+                "برای کاشت بیشترین محصول برنج در زمین خود، باید به روش‌های کشاورزی مدرن و بهینه توجه کنید. افزایش محصول برنج به عوامل مختلفی مانند انتخاب بذر مناسب، آماده‌سازی خاک، مدیریت آب، کوددهی، کنترل آفات و علف‌های هرز بستگی دارد. در ادامه، گام‌به‌گام توضیح می‌دهم چگونه می‌توانید محصول خود را به حداکثر برسانید. این توصیه‌ها بر اساس بهترین شیوه‌های کشاورزی است.",
+            image: article2,
             category: "مقاله",
-        },
-        {
-            title: "افزایش ۳۰ درصدی قیمت برنج نهاده‌های دامی؛ چالش جدید برای دامداران",
-            image: "/path/to/wheat.jpg",
-            category: "اقتصاد",
-        },
+        }
     ];
 
     return (
@@ -372,13 +380,13 @@ const AgriculturePage: React.FC = () => {
                 <div className="mx_AgriculturePage_section">
                     <div className="mx_AgriculturePage_section_header">
                         <h3 className="mx_AgriculturePage_section_title_main">{_t("custom_panels|articles")}</h3>
-                        <button className="mx_AgriculturePage_section_more">{_t("custom_panels|show_all")}</button>
                     </div>
                     <div className="mx_AgriculturePage_articles">
                         {articles.map((article, index) => (
                             <ArticleCard
                                 key={index}
                                 title={article.title}
+                                excerpt={article.excerpt}
                                 image={article.image}
                                 category={article.category}
                             />
