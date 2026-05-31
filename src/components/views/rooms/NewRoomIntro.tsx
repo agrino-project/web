@@ -61,6 +61,13 @@ const NewRoomIntro: React.FC = () => {
     }
 
     const isLocalRoom = room instanceof LocalRoom;
+    if (!isLocalRoom) {
+        const hasAnyMessage = room
+            .getLiveTimeline()
+            .getEvents()
+            .some((e) => !e.isState());
+        if (hasAnyMessage) return null;
+    }
     const dmPartner = isLocalRoom ? room.targets[0]?.userId : DMRoomMap.shared().getUserIdForRoomId(roomId);
 
     let body: JSX.Element;
@@ -79,34 +86,29 @@ const NewRoomIntro: React.FC = () => {
 
         const member = room?.getMember(dmPartner);
         const displayName = room?.name || member?.rawDisplayName || dmPartner;
-        body = (
-            <React.Fragment>
-                <RoomAvatar
-                    room={room}
-                    size={AVATAR_SIZE}
-                    onClick={() => {
-                        defaultDispatcher.dispatch<ViewUserPayload>({
-                            action: Action.ViewUser,
-                            // XXX: We should be using a real member object and not assuming what the receiver wants.
-                            member: member || ({ userId: dmPartner } as User),
-                        });
-                    }}
-                />
+       body = (
+           <React.Fragment>
+               <div className="mx_NewRoomIntro_iconContainer">
+                   <div className="mx_NewRoomIntro_chatIcon">
+                       <svg
+                           width="24"
+                           height="24"
+                           viewBox="0 0 24 24"
+                           fill="none"
+                           stroke="currentColor"
+                           strokeWidth="2"
+                           strokeLinecap="round"
+                           strokeLinejoin="round"
+                       >
+                           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                       </svg>
+                   </div>
+               </div>
 
-                <h2>{room.name}</h2>
-
-                <p>
-                    {_t(
-                        introMessage,
-                        {},
-                        {
-                            displayName: () => <strong>{displayName}</strong>,
-                        },
-                    )}
-                </p>
-                {caption && <p>{caption}</p>}
-            </React.Fragment>
-        );
+               <h2>مکالمه را آغاز کنید.</h2>
+               <p>برای شروع مکالمه روی باکس زیر بزنید.</p>
+           </React.Fragment>
+       );
     } else {
         const inRoom = room && room.getMyMembership() === KnownMembership.Join;
         const canAddTopic = inRoom && room.currentState.maySendStateEvent(EventType.RoomTopic, cli.getSafeUserId());
@@ -236,26 +238,29 @@ const NewRoomIntro: React.FC = () => {
             );
         }
 
-        body = (
-            <React.Fragment>
-                {avatar}
+      body = (
+          <React.Fragment>
+              <div className="mx_NewRoomIntro_iconContainer">
+                  <div className="mx_NewRoomIntro_chatIcon">
+                      <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                      >
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                      </svg>
+                  </div>
+              </div>
 
-                <h2>{room.name}</h2>
-
-                <p>
-                    {createdText}{" "}
-                    {_t(
-                        "room|intro|start_of_room",
-                        {},
-                        {
-                            roomName: () => <strong>{room.name}</strong>,
-                        },
-                    )}
-                </p>
-                <p data-testid="topic">{topicText}</p>
-                {buttons}
-            </React.Fragment>
-        );
+              <h2>مکالمه را آغاز کنید.</h2>
+              <p>برای شروع مکالمه روی باکس زیر بزنید.</p>
+          </React.Fragment>
+      );
     }
 
     function openRoomSettings(event: ButtonEvent): void {
