@@ -48,85 +48,77 @@ const GenericEventListSummary: React.FC<IProps> = ({
     layout = Layout.Group,
     "data-testid": testId,
 }) => {
-    const [expanded, toggleExpanded] = useStateToggle(startExpanded);
+    // const [expanded, toggleExpanded] = useStateToggle(startExpanded);
 
-    // Whenever expanded changes call onToggle
-    useEffect(() => {
-        if (onToggle) {
-            onToggle();
-        }
-    }, [expanded]); // eslint-disable-line react-hooks/exhaustive-deps
+    // // Whenever expanded changes call onToggle
+    // useEffect(() => {
+    //     if (onToggle) {
+    //         onToggle();
+    //     }
+    // }, [expanded]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const eventIds = events.map((e) => e.getId()).join(",");
 
     // If we are only given few events then just pass them through
-    if (events.length < threshold) {
-        return (
-            <li
-                className="mx_GenericEventListSummary"
-                data-scroll-tokens={eventIds}
-                data-expanded={true}
-                data-layout={layout}
-            >
-                <ol className="mx_GenericEventListSummary_unstyledList">{children}</ol>
-            </li>
-        );
-    }
+    // if (events.length < threshold) {
+    //     return (
+    //         <li
+    //             className="mx_GenericEventListSummary"
+    //             data-scroll-tokens={eventIds}
+    //             data-expanded={true}
+    //             data-layout={layout}
+    //         >
+    //             <ol className="mx_GenericEventListSummary_unstyledList">{children}</ol>
+    //         </li>
+    //     );
+    // }
 
-    let body;
-    if (expanded) {
-        body = (
-            <React.Fragment>
-                <div className="mx_GenericEventListSummary_spacer">&nbsp;</div>
-                <ol className="mx_GenericEventListSummary_unstyledList">{children}</ol>
-            </React.Fragment>
-        );
-    } else {
-        const uniqueMembers = uniqBy(
-            summaryMembers.filter((member) => {
-                if (!member?.getMxcAvatarUrl) {
-                    logger.error(
-                        "EventListSummary given null summaryMember, termites may be afoot eating event senders",
-                        summaryMembers,
-                    );
-                    return false;
-                }
-                return true;
-            }),
-            (member) => member.getMxcAvatarUrl(),
-        );
-        const avatars = uniqueMembers.map((m) => <MemberAvatar key={m.userId} member={m} size="14px" />);
-        body = (
-            <div className="mx_EventTile_line">
-                <div className="mx_EventTile_info">
-                    {/* <span className="mx_GenericEventListSummary_avatars" onClick={toggleExpanded}>
-                        {avatars}
-                    </span> */}
-                    <span className="mx_TextualEvent mx_GenericEventListSummary_summary">{summaryText}</span>
-                </div>
-            </div>
-        );
-    }
+    // let body;
+    // if (expanded) {
+    //     body = (
+    //         <React.Fragment>
+    //             <div className="mx_GenericEventListSummary_spacer">&nbsp;</div>
+    //             <ol className="mx_GenericEventListSummary_unstyledList">{children}</ol>
+    //         </React.Fragment>
+    //     );
+    // } else {
+    //     const uniqueMembers = uniqBy(
+    //         summaryMembers.filter((member) => {
+    //             if (!member?.getMxcAvatarUrl) {
+    //                 logger.error(
+    //                     "EventListSummary given null summaryMember, termites may be afoot eating event senders",
+    //                     summaryMembers,
+    //                 );
+    //                 return false;
+    //             }
+    //             return true;
+    //         }),
+    //         (member) => member.getMxcAvatarUrl(),
+    //     );
+    //     const avatars = uniqueMembers.map((m) => <MemberAvatar key={m.userId} member={m} size="14px" />);
+    //     body = (
+    //         <div className="mx_EventTile_line">
+    //             <div className="mx_EventTile_info">
+    //                 {/* <span className="mx_GenericEventListSummary_avatars" onClick={toggleExpanded}>
+    //                     {avatars}
+    //                 </span> */}
+    //                 <span className="mx_TextualEvent mx_GenericEventListSummary_summary">{summaryText}</span>
+    //             </div>
+    //         </div>
+    //     );
+    // }
 
-    return (
-        <li
-            className="mx_GenericEventListSummary"
-            data-scroll-tokens={eventIds}
-            data-expanded={expanded + ""}
-            data-layout={layout}
-            data-testid={testId}
-        >
-            <AccessibleButton
-                kind="link_inline"
-                className="mx_GenericEventListSummary_toggle"
-                onClick={toggleExpanded}
-                aria-expanded={expanded}
-            >
-                {expanded ? _t("action|collapse") : _t("action|expand")}
-            </AccessibleButton>
-            {body}
-        </li>
-    );
+  return (
+      <li
+          className="mx_GenericEventListSummary"
+          data-scroll-tokens={eventIds}
+          data-expanded={true}
+          data-layout={layout}
+          data-testid={testId}
+      >
+          <ol className="mx_GenericEventListSummary_unstyledList">{children}</ol>
+      </li>
+  );
 };
 
 export default GenericEventListSummary;
