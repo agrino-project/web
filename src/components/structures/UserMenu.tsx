@@ -389,7 +389,7 @@ export default class UserMenu extends React.Component<IProps, IState> {
                         </span>
                     </div>
 
-                    <RovingAccessibleButton
+                    {/* <RovingAccessibleButton
                         className="mx_UserMenu_contextMenu_themeButton"
                         onClick={this.onSwitchThemeClick}
                         title={
@@ -399,7 +399,7 @@ export default class UserMenu extends React.Component<IProps, IState> {
                         }
                     >
                         <img src={DarkLightModeSvg} role="presentation" alt="" width={16} />
-                    </RovingAccessibleButton>
+                    </RovingAccessibleButton> */}
                 </div>
                 {topSection}
                 {primaryOptionList}

@@ -137,61 +137,61 @@ export default function UserSettingsDialog(props: IProps): JSX.Element {
         );
 
         // Session tab
-        tabs.push(
-            new Tab(
-                UserTab.SessionManager,
-                _td("settings|sessions|title"),
-                <DevicesIcon />,
-                <SessionManagerTab showMsc4108QrCode={showMsc4108QrCode} />,
-                undefined,
-            ),
-        );
+        // tabs.push(
+        //     new Tab(
+        //         UserTab.SessionManager,
+        //         _td("settings|sessions|title"),
+        //         <DevicesIcon />,
+        //         <SessionManagerTab showMsc4108QrCode={showMsc4108QrCode} />,
+        //         undefined,
+        //     ),
+        // );
 
-        // Notifications tab
-        tabs.push(
-            new Tab(
-                UserTab.Notifications,
-                _td("notifications|enable_prompt_toast_title"),
-                <NotificationsIcon />,
-                <NotificationUserSettingsTab />,
-                "UserSettingsNotifications",
-            ),
-        );
+        // // Notifications tab
+        // tabs.push(
+        //     new Tab(
+        //         UserTab.Notifications,
+        //         _td("notifications|enable_prompt_toast_title"),
+        //         <NotificationsIcon />,
+        //         <NotificationUserSettingsTab />,
+        //         "UserSettingsNotifications",
+        //     ),
+        // );
 
-        // Keyboard tab
-        tabs.push(
-            new Tab(
-                UserTab.Keyboard,
-                _td("settings|keyboard|title"),
-                <KeyboardIcon />,
-                <KeyboardUserSettingsTab />,
-                "UserSettingsKeyboard",
-            ),
-        );
+        // // Keyboard tab
+        // tabs.push(
+        //     new Tab(
+        //         UserTab.Keyboard,
+        //         _td("settings|keyboard|title"),
+        //         <KeyboardIcon />,
+        //         <KeyboardUserSettingsTab />,
+        //         "UserSettingsKeyboard",
+        //     ),
+        // );
 
-        // Voice (Audio and Video) tab
-        if (voipEnabled) {
-            tabs.push(
-                new Tab(
-                    UserTab.Voice,
-                    _td("settings|voip|title"),
-                    <MicOnIcon />,
-                    <VoiceUserSettingsTab />,
-                    "UserSettingsVoiceVideo",
-                ),
-            );
-        }
+        // // Voice (Audio and Video) tab
+        // if (voipEnabled) {
+        //     tabs.push(
+        //         new Tab(
+        //             UserTab.Voice,
+        //             _td("settings|voip|title"),
+        //             <MicOnIcon />,
+        //             <VoiceUserSettingsTab />,
+        //             "UserSettingsVoiceVideo",
+        //         ),
+        //     );
+        // }
 
-        // Help (About) tab
-        tabs.push(
-            new Tab(
-                UserTab.Help,
-                _td("setting|help_about|title"),
-                <HelpIcon />,
-                <HelpUserSettingsTab />,
-                "UserSettingsHelpAbout",
-            ),
-        );
+        // // Help (About) tab
+        // tabs.push(
+        //     new Tab(
+        //         UserTab.Help,
+        //         _td("setting|help_about|title"),
+        //         <HelpIcon />,
+        //         <HelpUserSettingsTab />,
+        //         "UserSettingsHelpAbout",
+        //     ),
+        // );
 
         return tabs as NonEmptyArray<Tab<UserTab>>;
     };

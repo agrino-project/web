@@ -11,8 +11,13 @@ import { Text, Button, IconButton, Menu, MenuItem, Tooltip } from "@vector-im/co
 import VideoCallIcon from "@vector-im/compound-design-tokens/assets/web/icons/video-call-solid";
 import VoiceCallIcon from "@vector-im/compound-design-tokens/assets/web/icons/voice-call-solid";
 import CloseCallIcon from "@vector-im/compound-design-tokens/assets/web/icons/close";
-import ThreadsIcon from "@vector-im/compound-design-tokens/assets/web/icons/threads-solid";
-import RoomInfoIcon from "@vector-im/compound-design-tokens/assets/web/icons/info-solid";
+// import ThreadsIcon from "@vector-im/compound-design-tokens/assets/web/icons/threads-solid";
+import SearchIcon from "@vector-im/compound-design-tokens/assets/web/icons/search";
+import { Icon as MoreIcon } from "../../../../../res/img/element-icons/more.svg";
+import { Icon as MuteIcon } from "../../../../../res/img/element-icons/mute.svg";
+import { Icon as LeftIcon } from "../../../../../res/img/element-icons/left.svg";
+import { Icon as ReportIcon } from "../../../../../res/img/element-icons/report.svg";
+// import RoomInfoIcon from "@vector-im/compound-design-tokens/assets/web/icons/info-solid";
 import NotificationsIcon from "@vector-im/compound-design-tokens/assets/web/icons/notifications-solid";
 import VerifiedIcon from "@vector-im/compound-design-tokens/assets/web/icons/verified";
 import ErrorIcon from "@vector-im/compound-design-tokens/assets/web/icons/error-solid";
@@ -38,7 +43,7 @@ import { useRoomState } from "../../../../hooks/useRoomState.ts";
 import RoomAvatar from "../../avatars/RoomAvatar.tsx";
 import { formatCount } from "../../../../utils/FormattingUtils.ts";
 import RightPanelStore from "../../../../stores/right-panel/RightPanelStore.ts";
-import PosthogTrackers from "../../../../PosthogTrackers.ts";
+// import PosthogTrackers from "../../../../PosthogTrackers.ts";
 import { VideoRoomChatButton } from "./VideoRoomChatButton.tsx";
 import { RoomKnocksBar } from "../RoomKnocksBar.tsx";
 import { isVideoRoom as calcIsVideoRoom } from "../../../../utils/video-rooms.ts";
@@ -81,6 +86,7 @@ function RoomHeaderButtons({
     } = useRoomCall(room);
 
     const groupCallsEnabled = useFeatureEnabled("feature_group_calls");
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     /**
      * A special mode where only Element Call is used. In this case we want to
      * hide the voice call button
@@ -134,6 +140,20 @@ function RoomHeaderButtons({
     );
 
     const [menuOpen, setMenuOpen] = useState(false);
+    const MenuIcon = ({ children }: { children: React.ReactNode }) => (
+        <span
+            style={{
+                width: 18,
+                height: 18,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginInlineEnd: "10px",
+            }}
+        >
+            {children}
+        </span>
+    );
 
     const onOpenChange = useCallback(
         (newOpen: boolean) => {
@@ -264,8 +284,68 @@ function RoomHeaderButtons({
             )}
 
             {showChatButton && <VideoRoomChatButton room={room} />}
+            <IconButton aria-label="Search">
+                <SearchIcon />
+            </IconButton>
+            <Menu
+                open={isMenuOpen}
+                title={_t("common|options")}
+                onOpenChange={setIsMenuOpen}
+                trigger={
+                    <IconButton aria-label={_t("common|options")} onClick={(e) => e.stopPropagation()}>
+                        <MoreIcon style={{ height: "80%", marginTop: "2px" }} />
+                    </IconButton>
+                }
+            >
+                <MenuItem
+                    label="بی صدا"
+                    onSelect={() => {
+                        setIsMenuOpen(false);
+                    }}
+                    Icon={() => (
+                        <MenuIcon>
+                            <MuteIcon />
+                        </MenuIcon>
+                    )}
+                />
 
-            <Tooltip label={_t("common|threads")}>
+                <MenuItem
+                    label={"جستجو"}
+                    onSelect={() => {
+                        setIsMenuOpen(false);
+                    }}
+                    Icon={() => (
+                        <MenuIcon>
+                            <SearchIcon style={{ width: "100%", height: "100%" }} />
+                        </MenuIcon>
+                    )}
+                />
+
+                <MenuItem
+                    label="گزارش"
+                    onSelect={() => {
+                        setIsMenuOpen(false);
+                    }}
+                    Icon={() => (
+                        <MenuIcon>
+                            <ReportIcon />
+                        </MenuIcon>
+                    )}
+                />
+                <MenuItem
+                    label="حذف گروه"
+                    onSelect={() => {
+                        setIsMenuOpen(false);
+                    }}
+                    Icon={() => (
+                        <MenuIcon>
+                            <LeftIcon />
+                        </MenuIcon>
+                    )}
+                />
+            </Menu>
+
+            {/* <Tooltip label={_t("common|threads")}>
                 <IconButton
                     indicator={notificationLevelToIndicator(threadNotifications)}
                     onClick={(evt) => {
@@ -277,7 +357,7 @@ function RoomHeaderButtons({
                 >
                     <ToggleableIcon Icon={ThreadsIcon} phase={RightPanelPhases.ThreadPanel} />
                 </IconButton>
-            </Tooltip>
+            </Tooltip> */}
             {notificationsEnabled && (
                 <Tooltip label={_t("notifications|enable_prompt_toast_title")}>
                     <IconButton
@@ -293,7 +373,7 @@ function RoomHeaderButtons({
                 </Tooltip>
             )}
 
-            <Tooltip label={_t("right_panel|room_summary_card|title")}>
+            {/* <Tooltip label={_t("right_panel|room_summary_card|title")}>
                 <IconButton
                     onClick={(evt) => {
                         evt.stopPropagation();
@@ -303,7 +383,7 @@ function RoomHeaderButtons({
                 >
                     <ToggleableIcon Icon={RoomInfoIcon} phase={RightPanelPhases.RoomSummary} />
                 </IconButton>
-            </Tooltip>
+            </Tooltip> */}
 
             {!isDirectMessage && (
                 <Text as="div" size="sm" weight="medium">
@@ -368,7 +448,7 @@ export default function RoomHeader({
                         {/* Disable on-click actions until the room is created */}
                         <RoomAvatar
                             room={room}
-                            size="40px"
+                            size="35px"
                             oobData={oobData}
                             onClick={room instanceof LocalRoom ? undefined : onAvatarClick}
                             tabIndex={-1}
@@ -389,7 +469,7 @@ export default function RoomHeader({
                         <Box flex="1" className="mx_RoomHeader_info">
                             <Text
                                 as="div"
-                                size="lg"
+                                size="md"
                                 weight="semibold"
                                 dir="auto"
                                 role="heading"

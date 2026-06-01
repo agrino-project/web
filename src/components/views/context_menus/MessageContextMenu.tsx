@@ -702,7 +702,7 @@ export default class MessageContextMenu extends React.Component<IProps, IState> 
                 <IconizedContextMenuOptionList>
                     {reactButton}
                     {replyButton}
-                    {replyInThreadButton}
+                    {/* {replyInThreadButton} */}
                     {editButton}
                     {pinButton}
                 </IconizedContextMenuOptionList>

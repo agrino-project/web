@@ -495,7 +495,7 @@ export default class MessageActionBar extends React.PureComponent<IMessageAction
 
                 if (this.context.canSendMessages) {
                     if (this.showReplyInThreadAction) {
-                        toolbarOpts.splice(0, 0, threadTooltipButton);
+                        // toolbarOpts.splice(0, 0, threadTooltipButton);
                     }
                     toolbarOpts.splice(
                         0,
