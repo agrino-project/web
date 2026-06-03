@@ -289,11 +289,12 @@ function RoomHeaderButtons({
             </IconButton>
             <Menu
                 open={isMenuOpen}
+                showTitle={false}
                 title={_t("common|options")}
                 onOpenChange={setIsMenuOpen}
                 trigger={
                     <IconButton aria-label={_t("common|options")} onClick={(e) => e.stopPropagation()}>
-                        <MoreIcon style={{ height: "80%", marginTop: "2px" }} />
+                        <MoreIcon style={{ height: "70%", marginTop: "3px" }} />
                     </IconButton>
                 }
             >
@@ -333,7 +334,7 @@ function RoomHeaderButtons({
                     )}
                 />
                 <MenuItem
-                    label="حذف گروه"
+                    label="ترک گروه"
                     onSelect={() => {
                         setIsMenuOpen(false);
                     }}

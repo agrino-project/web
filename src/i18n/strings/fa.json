@@ -72,7 +72,7 @@
         "explore_public_rooms": "کاوش گروه‌های عمومی",
         "explore_rooms": "کاوش گروه‌ها",
         "export": "صادرات",
-        "forward": "جلوگیری",
+        "forward": "بازنشر",
         "go": "برو",
         "go_back": "بازگشت",
         "got_it": "متوجه شدم",
@@ -2368,10 +2368,10 @@
         "sort": "مرتب‌سازی",
         "sort_by": "مرتب‌سازی بر اساس",
         "sort_by_activity": "فعالیت",
-        "sort_by_alphabet": "A-Z",
+        "sort_by_alphabet": "حروف الفبا",
         "sort_type": {
             "activity": "فعالیت",
-            "atoz": "A-Z"
+            "atoz": "حروف الفبا"
         },
         "sort_unread_first": "گروه‌هایی با پیام‌های خوانده‌نشده را اول نشان بده",
         "space_menu": {
