@@ -60,6 +60,12 @@ import { ToggleableIcon } from "./toggle/ToggleableIcon.tsx";
 import { CurrentRightPanelPhaseContextProvider } from "../../../../contexts/CurrentRightPanelPhaseContext.tsx";
 import { LocalRoom } from "../../../../models/LocalRoom.ts";
 import { useMobileNav } from "../../../structures/mobile/MobileNavContext";
+import dis from "../../../../dispatcher/dispatcher";
+import { useNotificationState } from "../../../../hooks/useRoomNotificationState";
+import { RoomNotifState } from "../../../../RoomNotifs";
+import NotificationsOffSolidIcon from "@vector-im/compound-design-tokens/assets/web/icons/notifications-off-solid";
+import CheckIcon from "@vector-im/compound-design-tokens/assets/web/icons/check";
+import { Action } from "../../../../dispatcher/actions";
 
 function RoomHeaderButtons({
     room,
@@ -140,6 +146,9 @@ function RoomHeaderButtons({
     );
 
     const [menuOpen, setMenuOpen] = useState(false);
+    const [showNotifMenu, setShowNotifMenu] = useState(false);
+    const [roomNotifState, setRoomNotifState] = useNotificationState(room);
+
     const MenuIcon = ({ children }: { children: React.ReactNode }) => (
         <span
             style={{
@@ -299,13 +308,14 @@ function RoomHeaderButtons({
                 }
             >
                 <MenuItem
-                    label="بی صدا"
+                    label={roomNotifState === RoomNotifState.Mute ? "صدادار کردن" : "بی صدا"}
                     onSelect={() => {
                         setIsMenuOpen(false);
+                        setShowNotifMenu(true);
                     }}
                     Icon={() => (
                         <MenuIcon>
-                            <MuteIcon />
+                            {roomNotifState === RoomNotifState.Mute ? <NotificationsOffSolidIcon /> : <MuteIcon />}
                         </MenuIcon>
                     )}
                 />
@@ -326,6 +336,15 @@ function RoomHeaderButtons({
                     label="گزارش"
                     onSelect={() => {
                         setIsMenuOpen(false);
+                           const timeline = room.getLiveTimeline().getEvents();
+                           const lastEvent = timeline[timeline.length - 1];
+
+                           if (lastEvent) {
+                               dis.dispatch({
+                                   action: Action.OpenReportEventDialog,
+                                   event: lastEvent,
+                               });
+                           }
                     }}
                     Icon={() => (
                         <MenuIcon>
@@ -337,6 +356,10 @@ function RoomHeaderButtons({
                     label="ترک گروه"
                     onSelect={() => {
                         setIsMenuOpen(false);
+                        dis.dispatch({
+                            action: "leave_room",
+                            room_id: room.roomId,
+                        });
                     }}
                     Icon={() => (
                         <MenuIcon>
@@ -346,6 +369,57 @@ function RoomHeaderButtons({
                 />
             </Menu>
 
+            <Menu
+                open={showNotifMenu}
+                onOpenChange={setShowNotifMenu}
+                title={_t("room_list|notification_options")}
+                showTitle={false}
+                align="start"
+                trigger={<span style={{ width: 0, height: 0, overflow: "hidden", display: "none" }} />}
+            >
+                {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+                <div
+                    // We don't want keyboard navigation events to bubble up to the ListView changing the focused item
+                    onKeyDown={(e) => e.stopPropagation()}
+                >
+                    <MenuItem
+                        aria-selected={roomNotifState === RoomNotifState.AllMessages}
+                        hideChevron={true}
+                        label={_t("notifications|default_settings")}
+                        onSelect={() => setRoomNotifState(RoomNotifState.AllMessages)}
+                        onClick={(evt) => evt.stopPropagation()}
+                    >
+                        {roomNotifState === RoomNotifState.AllMessages && <CheckIcon />}
+                    </MenuItem>
+                    <MenuItem
+                        aria-selected={roomNotifState === RoomNotifState.AllMessagesLoud}
+                        hideChevron={true}
+                        label={_t("notifications|all_messages")}
+                        onSelect={() => setRoomNotifState(RoomNotifState.AllMessagesLoud)}
+                        onClick={(evt) => evt.stopPropagation()}
+                    >
+                        {roomNotifState === RoomNotifState.AllMessagesLoud && <CheckIcon />}
+                    </MenuItem>
+                    <MenuItem
+                        aria-selected={roomNotifState === RoomNotifState.MentionsOnly}
+                        hideChevron={true}
+                        label={_t("notifications|mentions_keywords")}
+                        onSelect={() => setRoomNotifState(RoomNotifState.MentionsOnly)}
+                        onClick={(evt) => evt.stopPropagation()}
+                    >
+                        {roomNotifState === RoomNotifState.MentionsOnly && <CheckIcon />}
+                    </MenuItem>
+                    <MenuItem
+                        aria-selected={roomNotifState === RoomNotifState.Mute}
+                        hideChevron={true}
+                        label={_t("notifications|mute_room")}
+                        onSelect={() => setRoomNotifState(RoomNotifState.Mute)}
+                        onClick={(evt) => evt.stopPropagation()}
+                    >
+                        {roomNotifState === RoomNotifState.Mute && <CheckIcon />}
+                    </MenuItem>
+                </div>
+            </Menu>
             {/* <Tooltip label={_t("common|threads")}>
                 <IconButton
                     indicator={notificationLevelToIndicator(threadNotifications)}
