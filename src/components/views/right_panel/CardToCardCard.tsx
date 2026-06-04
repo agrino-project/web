@@ -46,13 +46,27 @@ const CardToCardCard: React.FC<Props> = ({ onClose }) => {
     const cvv2Ref = useRef<HTMLInputElement>(null);
     const otpRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => { card1Ref.current?.focus(); }, []);
-    useEffect(() => { if (card1.length === 4) card2Ref.current?.focus(); }, [card1]);
-    useEffect(() => { if (card2.length === 4) card3Ref.current?.focus(); }, [card2]);
-    useEffect(() => { if (card3.length === 4) card4Ref.current?.focus(); }, [card3]);
-    useEffect(() => { if (expMonth.length === 2) expYearRef.current?.focus(); }, [expMonth]);
-    useEffect(() => { if (expYear.length === 2) cvv2Ref.current?.focus(); }, [expYear]);
-    useEffect(() => { if (cvv2.length >= 3) otpRef.current?.focus(); }, [cvv2]);
+    useEffect(() => {
+        card1Ref.current?.focus();
+    }, []);
+    useEffect(() => {
+        if (card1.length === 4) card2Ref.current?.focus();
+    }, [card1]);
+    useEffect(() => {
+        if (card2.length === 4) card3Ref.current?.focus();
+    }, [card2]);
+    useEffect(() => {
+        if (card3.length === 4) card4Ref.current?.focus();
+    }, [card3]);
+    useEffect(() => {
+        if (expMonth.length === 2) expYearRef.current?.focus();
+    }, [expMonth]);
+    useEffect(() => {
+        if (expYear.length === 2) cvv2Ref.current?.focus();
+    }, [expYear]);
+    useEffect(() => {
+        if (cvv2.length === 4) otpRef.current?.focus();
+    }, [cvv2]);
 
     useEffect(() => {
         if (otpTimer > 0) {
@@ -62,6 +76,17 @@ const CardToCardCard: React.FC<Props> = ({ onClose }) => {
             setIsOtpDisabled(false);
         }
     }, [otpTimer, isOtpDisabled]);
+
+    /** Current Jalali (Shamsi) year/month using the built-in Persian calendar */
+    const getCurrentJalali = (): { year: number; month: number } => {
+        const parts = new Intl.DateTimeFormat("en-US-u-ca-persian", {
+            year: "numeric",
+            month: "numeric",
+        }).formatToParts(new Date());
+        const year = Number(parts.find((p) => p.type === "year")?.value);
+        const month = Number(parts.find((p) => p.type === "month")?.value);
+        return { year, month };
+    };
 
     const forceNumeric = (v: string): string => v.replace(/[^0-9]/g, "");
     const handleCardInput = (v: string, set: (s: string) => void, max: number): void => {
@@ -99,22 +124,46 @@ const CardToCardCard: React.FC<Props> = ({ onClose }) => {
             });
             return;
         }
+        const month = Number(expMonth);
+        const year = Number(expYear);
+        if (expMonth.length !== 2 || month < 1 || month > 12) {
+            Modal.createDialog(ErrorDialog, {
+                title: t("custom_panels|card_to_card_error_title"),
+                description: t("custom_panels|card_to_card_error_exp_month"),
+            });
+            return;
+        }
+        const { year: curYear, month: curMonth } = getCurrentJalali();
+        const curYear2 = curYear % 100;
+        if (expYear.length !== 2 || year < curYear2 || (year === curYear2 && month < curMonth)) {
+            Modal.createDialog(ErrorDialog, {
+                title: t("custom_panels|card_to_card_error_title"),
+                description: t("custom_panels|card_to_card_error_expired"),
+            });
+            return;
+        }
         setIsSubmitting(true);
-        const progressDialog = Modal.createDialog(InfoDialog, {
-            title: t("custom_panels|card_to_card_progress"),
-            description: (
-                <div className="mx_CardToCardCard_progressContent">
-                    <Spinner w={48} h={48} />
-                    <div className="mx_CardToCardCard_progressInfo">
-                        <strong>{amount} {t("custom_panels|card_to_card_toman")}</strong>
-                        <br />
-                        {fullCard}
+        const progressDialog = Modal.createDialog(
+            InfoDialog,
+            {
+                title: t("custom_panels|card_to_card_progress"),
+                description: (
+                    <div className="mx_CardToCardCard_progressContent">
+                        <Spinner w={48} h={48} />
+                        <div className="mx_CardToCardCard_progressInfo">
+                            <strong>
+                                {amount} {t("custom_panels|card_to_card_toman")}
+                            </strong>
+                            <br />
+                            {fullCard}
+                        </div>
                     </div>
-                </div>
-            ),
-            hasCloseButton: false,
-            fixedWidth: true,
-        }, "mx_CardToCardCard_progressDialog");
+                ),
+                hasCloseButton: false,
+                fixedWidth: true,
+            },
+            "mx_CardToCardCard_progressDialog",
+        );
 
         setTimeout(() => {
             progressDialog.close();
@@ -126,9 +175,16 @@ const CardToCardCard: React.FC<Props> = ({ onClose }) => {
                         <div className="mx_CardToCardCard_checkmark">
                             <CheckCircleIcon width="80px" height="80px" className="mx_CardToCardCard_checkIcon" />
                         </div>
-                        <p><strong>{t("custom_panels|card_to_card_amount_label")}</strong> {amount} {t("custom_panels|card_to_card_toman")}</p>
-                        <p><strong>{t("custom_panels|card_to_card_dest_label")}</strong> {fullCard}</p>
-                        <p><strong>{t("custom_panels|card_to_card_tracking")}</strong> ۱۲۸۴۹۰۱۲۳</p>
+                        <p>
+                            <strong>{t("custom_panels|card_to_card_amount_label")}</strong> {amount}{" "}
+                            {t("custom_panels|card_to_card_toman")}
+                        </p>
+                        <p>
+                            <strong>{t("custom_panels|card_to_card_dest_label")}</strong> {fullCard}
+                        </p>
+                        <p>
+                            <strong>{t("custom_panels|card_to_card_tracking")}</strong> ۱۲۸۴۹۰۱۲۳
+                        </p>
                     </div>
                 ),
                 hasCloseButton: true,
@@ -145,7 +201,13 @@ const CardToCardCard: React.FC<Props> = ({ onClose }) => {
                         <h1>{t("custom_panels|card_to_card_title")}</h1>
                         <p>{t("custom_panels|card_to_card_subtitle")}</p>
                     </div>
-                    <IconButton size="28px" onClick={onClose} tooltip={t("custom_panels|close")} kind="secondary" className="mx_CardToCardCard_closeBtn">
+                    <IconButton
+                        size="28px"
+                        onClick={onClose}
+                        tooltip={t("custom_panels|close")}
+                        kind="secondary"
+                        className="mx_CardToCardCard_closeBtn"
+                    >
                         <CloseIcon />
                     </IconButton>
                 </div>
@@ -154,17 +216,63 @@ const CardToCardCard: React.FC<Props> = ({ onClose }) => {
                         <div className="mx_CardToCardCard_inputGroup">
                             <label>{t("custom_panels|card_to_card_dest_card")}</label>
                             <div className="mx_CardToCardCard_cardInputs">
-                                <input ref={card1Ref} type="text" value={card1} onChange={(e) => handleCardInput(e.target.value, setCard1, 4)} maxLength={4} inputMode="numeric" autoFocus />
-                                <input ref={card2Ref} type="text" value={card2} onChange={(e) => handleCardInput(e.target.value, setCard2, 4)} onKeyDown={(e) => { if (e.key === "Backspace" && !card2) card1Ref.current?.focus(); }} maxLength={4} inputMode="numeric" />
-                                <input ref={card3Ref} type="text" value={card3} onChange={(e) => handleCardInput(e.target.value, setCard3, 4)} onKeyDown={(e) => { if (e.key === "Backspace" && !card3) card2Ref.current?.focus(); }} maxLength={4} inputMode="numeric" />
-                                <input ref={card4Ref} type="text" value={card4} onChange={(e) => handleCardInput(e.target.value, setCard4, 4)} onKeyDown={(e) => { if (e.key === "Backspace" && !card4) card3Ref.current?.focus(); }} maxLength={4} inputMode="numeric" />
+                                <input
+                                    ref={card1Ref}
+                                    type="text"
+                                    value={card1}
+                                    onChange={(e) => handleCardInput(e.target.value, setCard1, 4)}
+                                    maxLength={4}
+                                    inputMode="numeric"
+                                    autoFocus
+                                />
+                                <input
+                                    ref={card2Ref}
+                                    type="text"
+                                    value={card2}
+                                    onChange={(e) => handleCardInput(e.target.value, setCard2, 4)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Backspace" && !card2) card1Ref.current?.focus();
+                                    }}
+                                    maxLength={4}
+                                    inputMode="numeric"
+                                />
+                                <input
+                                    ref={card3Ref}
+                                    type="text"
+                                    value={card3}
+                                    onChange={(e) => handleCardInput(e.target.value, setCard3, 4)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Backspace" && !card3) card2Ref.current?.focus();
+                                    }}
+                                    maxLength={4}
+                                    inputMode="numeric"
+                                />
+                                <input
+                                    ref={card4Ref}
+                                    type="text"
+                                    value={card4}
+                                    onChange={(e) => handleCardInput(e.target.value, setCard4, 4)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Backspace" && !card4) card3Ref.current?.focus();
+                                    }}
+                                    maxLength={4}
+                                    inputMode="numeric"
+                                />
                             </div>
                         </div>
                         <div className="mx_CardToCardCard_inputGroup">
                             <label>{t("custom_panels|card_to_card_amount")}</label>
                             <div className="mx_CardToCardCard_amountWrapper">
-                                <span className="mx_CardToCardCard_tomanLabel">{t("custom_panels|card_to_card_toman")}</span>
-                                <input type="text" value={amount} onChange={handleAmountInput} inputMode="numeric" required />
+                                <span className="mx_CardToCardCard_tomanLabel">
+                                    {t("custom_panels|card_to_card_toman")}
+                                </span>
+                                <input
+                                    type="text"
+                                    value={amount}
+                                    onChange={handleAmountInput}
+                                    inputMode="numeric"
+                                    required
+                                />
                             </div>
                         </div>
                         <div className="mx_CardToCardCard_inputGroup">
@@ -174,31 +282,69 @@ const CardToCardCard: React.FC<Props> = ({ onClose }) => {
                         <div className="mx_CardToCardCard_row">
                             <div className="mx_CardToCardCard_inputGroup">
                                 <label>{t("custom_panels|card_to_card_exp_month")}</label>
-                                <input ref={expMonthRef} type="text" value={expMonth} onChange={(e) => handleCardInput(e.target.value, setExpMonth, 2)} maxLength={2} inputMode="numeric" />
+                                <input
+                                    ref={expMonthRef}
+                                    type="text"
+                                    value={expMonth}
+                                    onChange={(e) => handleCardInput(e.target.value, setExpMonth, 2)}
+                                    maxLength={2}
+                                    inputMode="numeric"
+                                />
                             </div>
                             <div className="mx_CardToCardCard_inputGroup">
                                 <label>{t("custom_panels|card_to_card_exp_year")}</label>
-                                <input ref={expYearRef} type="text" value={expYear} onChange={(e) => handleCardInput(e.target.value, setExpYear, 2)} maxLength={2} inputMode="numeric" />
+                                <input
+                                    ref={expYearRef}
+                                    type="text"
+                                    value={expYear}
+                                    onChange={(e) => handleCardInput(e.target.value, setExpYear, 2)}
+                                    maxLength={2}
+                                    inputMode="numeric"
+                                />
                             </div>
                             <div className="mx_CardToCardCard_inputGroup">
                                 <label>CVV2</label>
-                                <input ref={cvv2Ref} type="text" value={cvv2} onChange={(e) => handleCardInput(e.target.value, setCvv2, 4)} maxLength={4} inputMode="numeric" />
+                                <input
+                                    ref={cvv2Ref}
+                                    type="text"
+                                    value={cvv2}
+                                    onChange={(e) => handleCardInput(e.target.value, setCvv2, 4)}
+                                    maxLength={4}
+                                    inputMode="numeric"
+                                />
                             </div>
                         </div>
                         <div className="mx_CardToCardCard_inputGroup">
                             <label>{t("custom_panels|card_to_card_otp")}</label>
                             <div className="mx_CardToCardCard_otpGroup">
-                                <input ref={otpRef} type="text" value={otp} onChange={(e) => handleCardInput(e.target.value, setOtp, 6)} maxLength={6} inputMode="numeric" className="mx_CardToCardCard_otpInput" />
-                                <button type="button" className="mx_CardToCardCard_getOtpBtn" onClick={handleGetOtp} disabled={isOtpDisabled}>
+                                <input
+                                    ref={otpRef}
+                                    type="text"
+                                    value={otp}
+                                    onChange={(e) => handleCardInput(e.target.value, setOtp, 6)}
+                                    maxLength={6}
+                                    inputMode="numeric"
+                                    className="mx_CardToCardCard_otpInput"
+                                />
+                                <button
+                                    type="button"
+                                    className="mx_CardToCardCard_getOtpBtn"
+                                    onClick={handleGetOtp}
+                                    disabled={isOtpDisabled}
+                                >
                                     {isOtpDisabled ? `${otpTimer}s` : t("custom_panels|card_to_card_get_otp")}
                                 </button>
                             </div>
                             {otpTimer > 0 && (
-                                <div className="mx_CardToCardCard_timer">{t("custom_panels|card_to_card_resend_otp", { seconds: String(otpTimer) })}</div>
+                                <div className="mx_CardToCardCard_timer">
+                                    {t("custom_panels|card_to_card_resend_otp", { seconds: String(otpTimer) })}
+                                </div>
                             )}
                         </div>
                         <button type="submit" className="mx_CardToCardCard_btnPrimary" disabled={isSubmitting}>
-                            {isSubmitting ? t("custom_panels|card_to_card_submitting") : t("custom_panels|card_to_card_submit")}
+                            {isSubmitting
+                                ? t("custom_panels|card_to_card_submitting")
+                                : t("custom_panels|card_to_card_submit")}
                         </button>
                     </form>
                 </div>

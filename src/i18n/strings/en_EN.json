@@ -869,7 +869,9 @@
         "buy_internet_package": "Buy Internet Package",
         "financial_consulting": "Financial Consulting",
         "click_here": "Click Here!",
-        "recent_transactions_summary": "Recent Transactions Summary"
+        "recent_transactions_summary": "Recent Transactions Summary",
+        "card_to_card_error_exp_month": "Expiry month must be between 1 and 12",
+        "card_to_card_error_expired": "The card expiry date has passed"
     },
     "decline_invitation_dialog": {
         "confirm": "Are you sure you want to decline the invitation to join \"%(roomName)s\"?",

@@ -825,7 +825,9 @@
         "creditFLow": "گردش حساب",
         "financial_consulting": "مشاوره مالی",
         "click_here": "کلیک کنید!",
-        "recent_transactions_summary": "خلاصه تراکنش‌های اخیر"
+        "recent_transactions_summary": "خلاصه تراکنش‌های اخیر",
+        "card_to_card_error_exp_month": "ماه انقضا باید بین ۱ تا ۱۲ باشد",
+        "card_to_card_error_expired": "تاریخ انقضای کارت گذشته است"
     },
     "create_space": {
         "add_details_prompt": "چند جزئیات اضافه کنید تا به مردم کمک کند آن را شناسایی کنند.",
