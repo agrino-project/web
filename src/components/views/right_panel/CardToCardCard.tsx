@@ -18,6 +18,96 @@ import CheckCircleIcon from "@vector-im/compound-design-tokens/assets/web/icons/
 import { IconButton } from "@vector-im/compound-web";
 import CloseIcon from "@vector-im/compound-design-tokens/assets/web/icons/close";
 
+type ReportStatus = "success" | "failed" | "unknown";
+
+interface ReportRow {
+    label: string;
+    value: React.ReactNode;
+    isCard?: boolean;
+}
+
+interface CardToCardReportProps {
+    status: ReportStatus;
+    rows: ReportRow[];
+    note?: string;
+    showAddContact?: boolean;
+    onClose(): void;
+}
+
+/** Styled "payment report" dialog content shown after a transfer attempt. */
+const CardToCardReport: React.FC<CardToCardReportProps> = ({ status, rows, note, showAddContact, onClose }) => {
+    const [addContact, setAddContact] = useState(false);
+
+    const statusText =
+        status === "success"
+            ? t("custom_panels|card_to_card_status_success")
+            : status === "failed"
+              ? t("custom_panels|card_to_card_status_failed")
+              : t("custom_panels|card_to_card_status_unknown");
+
+    const handleShare = (): void => {
+        if (typeof navigator !== "undefined" && navigator.share) {
+            void navigator.share({ title: t("custom_panels|card_to_card_report_title"), text: statusText });
+        }
+    };
+
+    return (
+        <div className={`mx_CardToCardReport mx_CardToCardReport_${status}`}>
+            <div className="mx_CardToCardReport_header">
+                <h1>{t("custom_panels|card_to_card_report_title")}</h1>
+            </div>
+            <div className="mx_CardToCardReport_body">
+                <div className="mx_CardToCardReport_status">
+                    <div className="mx_CardToCardReport_statusIcon">
+                        {status === "success" && <CheckCircleIcon width="52px" height="52px" />}
+                        {status === "failed" && (
+                            <span className="mx_CardToCardReport_iconCircle">
+                                <CloseIcon width="30px" height="30px" />
+                            </span>
+                        )}
+                        {status === "unknown" && <span className="mx_CardToCardReport_iconCircle">!</span>}
+                    </div>
+                    <div className="mx_CardToCardReport_statusText">{statusText}</div>
+                    <div className="mx_CardToCardReport_statusSub">
+                        {t("custom_panels|card_to_card_report_subtitle")}
+                    </div>
+                </div>
+                <div className="mx_CardToCardReport_rows">
+                    {rows.map((row, i) => (
+                        <div className="mx_CardToCardReport_row" key={i}>
+                            <span className="mx_CardToCardReport_rowLabel">{row.label}</span>
+                            <span
+                                className={
+                                    "mx_CardToCardReport_rowValue" +
+                                    (row.isCard ? " mx_CardToCardReport_cardValue" : "")
+                                }
+                            >
+                                {row.value}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+                {showAddContact && (
+                    <label className="mx_CardToCardReport_addContact">
+                        <input type="checkbox" checked={addContact} onChange={(e) => setAddContact(e.target.checked)} />
+                        {t("custom_panels|card_to_card_report_add_contact")}
+                    </label>
+                )}
+                {note && <div className="mx_CardToCardReport_note">{note}</div>}
+                <button type="button" className="mx_CardToCardReport_shareBtn" onClick={handleShare}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path
+                            d="M18 8a3 3 0 1 0-2.83-4H15a3 3 0 0 0 .12 1.07l-6.3 3.67a3 3 0 1 0 0 4.52l6.3 3.67A3 3 0 1 0 18 16a2.98 2.98 0 0 0-1.88.67l-6.3-3.67a3 3 0 0 0 0-1.94l6.3-3.67A2.98 2.98 0 0 0 18 8Z"
+                            fill="currentColor"
+                        />
+                    </svg>
+                    {t("custom_panels|card_to_card_report_share")}
+                </button>
+            </div>
+        </div>
+    );
+};
+
 interface Props {
     onClose(): void;
 }
@@ -154,7 +244,6 @@ const CardToCardCard: React.FC<Props> = ({ onClose }) => {
                             <strong>
                                 {amount} {t("custom_panels|card_to_card_toman")}
                             </strong>
-                            <br />
                             {fullCard}
                         </div>
                     </div>
@@ -168,28 +257,47 @@ const CardToCardCard: React.FC<Props> = ({ onClose }) => {
         setTimeout(() => {
             progressDialog.close();
             setIsSubmitting(false);
-            Modal.createDialog(InfoDialog, {
-                title: t("custom_panels|card_to_card_success"),
-                description: (
-                    <div className="mx_CardToCardCard_successContent">
-                        <div className="mx_CardToCardCard_checkmark">
-                            <CheckCircleIcon width="80px" height="80px" className="mx_CardToCardCard_checkIcon" />
-                        </div>
-                        <p>
-                            <strong>{t("custom_panels|card_to_card_amount_label")}</strong> {amount}{" "}
-                            {t("custom_panels|card_to_card_toman")}
-                        </p>
-                        <p>
-                            <strong>{t("custom_panels|card_to_card_dest_label")}</strong> {fullCard}
-                        </p>
-                        <p>
-                            <strong>{t("custom_panels|card_to_card_tracking")}</strong> ۱۲۸۴۹۰۱۲۳
-                        </p>
-                    </div>
-                ),
-                hasCloseButton: true,
-                fixedWidth: true,
-            });
+
+            const now = new Date();
+            const dateStr = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+            }).format(now);
+            const timeStr = new Intl.DateTimeFormat("fa-IR", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+            }).format(now);
+
+            const rows: ReportRow[] = [
+                {
+                    label: t("custom_panels|card_to_card_report_amount"),
+                    value: `${amount} ${t("custom_panels|card_to_card_toman")}`,
+                },
+                { label: t("custom_panels|card_to_card_report_date"), value: `${dateStr}  ${timeStr}` },
+                { label: t("custom_panels|card_to_card_report_dest_card"), value: fullCard, isCard: true },
+                { label: t("custom_panels|card_to_card_report_tracking"), value: "۱۲۸۴۹۰۱۲۳" },
+            ];
+
+            let reportDialog: { close: () => void } | undefined;
+            reportDialog = Modal.createDialog(
+                InfoDialog,
+                {
+                    title: "",
+                    description: (
+                        <CardToCardReport
+                            status="success"
+                            rows={rows}
+                            showAddContact
+                            onClose={() => reportDialog?.close()}
+                        />
+                    ),
+                    hasCloseButton: false,
+                    fixedWidth: true,
+                },
+                "mx_CardToCardCard_reportDialog",
+            );
         }, 3000);
     };
 

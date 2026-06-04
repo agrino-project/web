@@ -827,7 +827,22 @@
         "click_here": "کلیک کنید!",
         "recent_transactions_summary": "خلاصه تراکنش‌های اخیر",
         "card_to_card_error_exp_month": "ماه انقضا باید بین ۱ تا ۱۲ باشد",
-        "card_to_card_error_expired": "تاریخ انقضای کارت گذشته است"
+        "card_to_card_error_expired": "تاریخ انقضای کارت گذشته است",
+        "card_to_card_report_title": "گزارش پرداخت",
+        "card_to_card_report_subtitle": "انتقال وجه کارت به کارت",
+        "card_to_card_status_success": "تراکنش موفق",
+        "card_to_card_status_failed": "تراکنش ناموفق",
+        "card_to_card_status_unknown": "تراکنش نامشخص",
+        "card_to_card_report_amount": "مبلغ",
+        "card_to_card_report_date": "تاریخ",
+        "card_to_card_report_source_card": "کارت مبدا",
+        "card_to_card_report_dest_card": "کارت مقصد",
+        "card_to_card_report_name": "بنام",
+        "card_to_card_report_tracking": "شماره پیگیری",
+        "card_to_card_report_add_contact": "اضافه کردن این شماره کارت به لیست مخاطبان",
+        "card_to_card_report_share": "اشتراک گذاری",
+        "card_to_card_report_failed_note": "اطلاعات کارت صحیح نیست. شما ممکن است CVV2، تاریخ انقضا یا رمز کارت خود را اشتباه وارد کرده باشید.",
+        "card_to_card_report_unknown_note": "نتیجه تراکنش نامشخص. لطفا پیش از انجام دوباره تراکنش نسبت به عدم کسر از حساب خود، اطمینان حاصل نمایید."
     },
     "create_space": {
         "add_details_prompt": "چند جزئیات اضافه کنید تا به مردم کمک کند آن را شناسایی کنند.",
