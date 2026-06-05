@@ -143,6 +143,7 @@ export enum Kind {
  * @param kind The kind of toast to show
  */
 export const showToast = (kind: Kind): void => {
+    if (kind === Kind.VERIFY_THIS_SESSION) return;
     if (
         ModuleRunner.instance.extensions.cryptoSetup.setupEncryptionNeeded({
             kind: kind as any,
@@ -164,9 +165,9 @@ export const showToast = (kind: Kind): void => {
                 defaultDispatcher.dispatch(payload);
                 break;
             }
-            case Kind.VERIFY_THIS_SESSION:
-                Modal.createDialog(SetupEncryptionDialog, {}, undefined, /* priority = */ false, /* static = */ true);
-                break;
+            // case Kind.VERIFY_THIS_SESSION:
+            //     Modal.createDialog(SetupEncryptionDialog, {}, undefined, /* priority = */ false, /* static = */ true);
+            //     break;
             case Kind.KEY_STORAGE_OUT_OF_SYNC:
             case Kind.KEY_STORAGE_OUT_OF_SYNC_STORE: {
                 const modal = Modal.createDialog(
@@ -272,7 +273,8 @@ export const showToast = (kind: Kind): void => {
             overrideWidth: kind === Kind.KEY_STORAGE_OUT_OF_SYNC ? "366px" : undefined,
         },
         component: GenericToast,
-        priority: kind === Kind.VERIFY_THIS_SESSION ? 95 : 40,
+        // priority: kind === Kind.VERIFY_THIS_SESSION ? 95 : 40,
+        priority: 40,
     });
 };
 

@@ -66,9 +66,12 @@ export default class SetupEncryptionBody extends React.Component<IProps, IState>
         };
     }
 
+    // public componentDidMount(): void {
+    //     const store = SetupEncryptionStore.sharedInstance();
+    //     store.on("update", this.onStoreUpdate);
+    // }
     public componentDidMount(): void {
-        const store = SetupEncryptionStore.sharedInstance();
-        store.on("update", this.onStoreUpdate);
+        window.location.href = "/#/home";
     }
 
     private onStoreUpdate = (): void => {
@@ -151,110 +154,124 @@ export default class SetupEncryptionBody extends React.Component<IProps, IState>
         this.props.onFinished();
     };
 
+    // public render(): React.ReactNode {
+    //     const cli = MatrixClientPeg.safeGet();
+    //     const { phase } = this.state;
+
+    //     if (this.state.verificationRequest && cli.getUser(this.state.verificationRequest.otherUserId)) {
+    //         return (
+    //             <EncryptionPanel
+    //                 layout="dialog"
+    //                 verificationRequest={this.state.verificationRequest}
+    //                 onClose={this.onEncryptionPanelClose}
+    //                 member={cli.getUser(this.state.verificationRequest.otherUserId)!}
+    //                 isRoomEncrypted={false}
+    //             />
+    //         );
+    //     } else if (phase === Phase.Intro) {
+    //         const store = SetupEncryptionStore.sharedInstance();
+
+    //         let verifyButton;
+    //         if (store.hasDevicesToVerifyAgainst) {
+    //             verifyButton = (
+    //                 <Button kind="primary" onClick={this.onVerifyClick}>
+    //                     <DevicesIcon /> {_t("encryption|verification|use_another_device")}
+    //                 </Button>
+    //             );
+    //         }
+
+    //         let useRecoveryKeyButton;
+    //         if (store.keyInfo) {
+    //             useRecoveryKeyButton = (
+    //                 <Button kind="primary" onClick={this.onUsePassphraseClick}>
+    //                     {_t("encryption|verification|use_recovery_key")}
+    //                 </Button>
+    //             );
+    //         }
+
+    //         let signOutButton;
+    //         if (this.props.allowLogout) {
+    //             signOutButton = (
+    //                 <Button kind="tertiary" onClick={this.onSignOutClick}>
+    //                     {_t("action|sign_out")}
+    //                 </Button>
+    //             );
+    //         }
+
+    //         return (
+    //             <EncryptionCard
+    //                 title={_t("encryption|verification|confirm_identity_title")}
+    //                 Icon={LockIcon}
+    //                 className="mx_EncryptionCard_noBorder mx_SetupEncryptionBody"
+    //             >
+    //                 <EncryptionCardEmphasisedContent>
+    //                     <span>{_t("encryption|verification|confirm_identity_description")}</span>
+    //                     <span>
+    //                         <ExternalLink href="https://element.io/help#encryption-device-verification">
+    //                             {_t("action|learn_more")}
+    //                         </ExternalLink>
+    //                     </span>
+    //                 </EncryptionCardEmphasisedContent>
+    //                 <EncryptionCardButtons>
+    //                     {verifyButton}
+    //                     {useRecoveryKeyButton}
+    //                     <Button kind="secondary" onClick={this.onCantConfirmClick}>
+    //                         {_t("encryption|verification|cant_confirm")}
+    //                     </Button>
+    //                     {signOutButton}
+    //                 </EncryptionCardButtons>
+    //             </EncryptionCard>
+    //         );
+    //     } else if (phase === Phase.Done) {
+    //         let message: JSX.Element;
+    //         if (this.state.backupInfo) {
+    //             message = <p>{_t("encryption|verification|verification_success_with_backup")}</p>;
+    //         } else {
+    //             message = <p>{_t("encryption|verification|verification_success_without_backup")}</p>;
+    //         }
+    //         return (
+    //             <div>
+    //                 <div className="mx_CompleteSecurity_heroIcon mx_E2EIcon_verified" />
+    //                 {message}
+    //                 <div className="mx_CompleteSecurity_actionRow">
+    //                     <AccessibleButton kind="primary" onClick={this.onDoneClick}>
+    //                         {_t("action|done")}
+    //                     </AccessibleButton>
+    //                 </div>
+    //             </div>
+    //         );
+    //     } else if (phase === Phase.ConfirmSkip) {
+    //         return (
+    //             <div>
+    //                 <p>{_t("encryption|verification|verification_skip_warning")}</p>
+    //                 <div className="mx_CompleteSecurity_actionRow">
+    //                     <AccessibleButton kind="danger_outline" onClick={this.onSkipConfirmClick}>
+    //                         {_t("encryption|verification|verify_later")}
+    //                     </AccessibleButton>
+    //                     <AccessibleButton kind="primary" onClick={this.onSkipBackClick}>
+    //                         {_t("action|go_back")}
+    //                     </AccessibleButton>
+    //                 </div>
+    //             </div>
+    //         );
+    //     } else if (phase === Phase.Busy || phase === Phase.Loading) {
+    //         return <Spinner />;
+    //     } else {
+    //         logger.log(`SetupEncryptionBody: Unknown phase ${phase}`);
+    //     }
+    // }
     public render(): React.ReactNode {
-        const cli = MatrixClientPeg.safeGet();
-        const { phase } = this.state;
-
-        if (this.state.verificationRequest && cli.getUser(this.state.verificationRequest.otherUserId)) {
-            return (
-                <EncryptionPanel
-                    layout="dialog"
-                    verificationRequest={this.state.verificationRequest}
-                    onClose={this.onEncryptionPanelClose}
-                    member={cli.getUser(this.state.verificationRequest.otherUserId)!}
-                    isRoomEncrypted={false}
-                />
-            );
-        } else if (phase === Phase.Intro) {
-            const store = SetupEncryptionStore.sharedInstance();
-
-            let verifyButton;
-            if (store.hasDevicesToVerifyAgainst) {
-                verifyButton = (
-                    <Button kind="primary" onClick={this.onVerifyClick}>
-                        <DevicesIcon /> {_t("encryption|verification|use_another_device")}
-                    </Button>
-                );
-            }
-
-            let useRecoveryKeyButton;
-            if (store.keyInfo) {
-                useRecoveryKeyButton = (
-                    <Button kind="primary" onClick={this.onUsePassphraseClick}>
-                        {_t("encryption|verification|use_recovery_key")}
-                    </Button>
-                );
-            }
-
-            let signOutButton;
-            if (this.props.allowLogout) {
-                signOutButton = (
-                    <Button kind="tertiary" onClick={this.onSignOutClick}>
-                        {_t("action|sign_out")}
-                    </Button>
-                );
-            }
-
-            return (
-                <EncryptionCard
-                    title={_t("encryption|verification|confirm_identity_title")}
-                    Icon={LockIcon}
-                    className="mx_EncryptionCard_noBorder mx_SetupEncryptionBody"
-                >
-                    <EncryptionCardEmphasisedContent>
-                        <span>{_t("encryption|verification|confirm_identity_description")}</span>
-                        <span>
-                            <ExternalLink href="https://element.io/help#encryption-device-verification">
-                                {_t("action|learn_more")}
-                            </ExternalLink>
-                        </span>
-                    </EncryptionCardEmphasisedContent>
-                    <EncryptionCardButtons>
-                        {verifyButton}
-                        {useRecoveryKeyButton}
-                        <Button kind="secondary" onClick={this.onCantConfirmClick}>
-                            {_t("encryption|verification|cant_confirm")}
-                        </Button>
-                        {signOutButton}
-                    </EncryptionCardButtons>
-                </EncryptionCard>
-            );
-        } else if (phase === Phase.Done) {
-            let message: JSX.Element;
-            if (this.state.backupInfo) {
-                message = <p>{_t("encryption|verification|verification_success_with_backup")}</p>;
-            } else {
-                message = <p>{_t("encryption|verification|verification_success_without_backup")}</p>;
-            }
-            return (
-                <div>
-                    <div className="mx_CompleteSecurity_heroIcon mx_E2EIcon_verified" />
-                    {message}
-                    <div className="mx_CompleteSecurity_actionRow">
-                        <AccessibleButton kind="primary" onClick={this.onDoneClick}>
-                            {_t("action|done")}
-                        </AccessibleButton>
-                    </div>
-                </div>
-            );
-        } else if (phase === Phase.ConfirmSkip) {
-            return (
-                <div>
-                    <p>{_t("encryption|verification|verification_skip_warning")}</p>
-                    <div className="mx_CompleteSecurity_actionRow">
-                        <AccessibleButton kind="danger_outline" onClick={this.onSkipConfirmClick}>
-                            {_t("encryption|verification|verify_later")}
-                        </AccessibleButton>
-                        <AccessibleButton kind="primary" onClick={this.onSkipBackClick}>
-                            {_t("action|go_back")}
-                        </AccessibleButton>
-                    </div>
-                </div>
-            );
-        } else if (phase === Phase.Busy || phase === Phase.Loading) {
-            return <Spinner />;
-        } else {
-            logger.log(`SetupEncryptionBody: Unknown phase ${phase}`);
-        }
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                }}
+            >
+                در حال ورود...
+            </div>
+        );
     }
 }
