@@ -54,80 +54,53 @@ const getOwnProfile = (
     avatarUrl: OwnProfileStore.instance.getHttpAvatarUrl(parseInt(AVATAR_SIZE, 10)) ?? undefined,
 });
 
-const UserWelcomeTop: React.FC = () => {
-    const cli = useContext(MatrixClientContext);
-    const userId = cli.getUserId()!;
-    const [ownProfile, setOwnProfile] = useState(getOwnProfile(userId));
-    useEventEmitter(OwnProfileStore.instance, UPDATE_EVENT, () => {
-        setOwnProfile(getOwnProfile(userId));
-    });
+// const UserWelcomeTop: React.FC = () => {
+//     const cli = useContext(MatrixClientContext);
+//     const userId = cli.getUserId()!;
+//     const [ownProfile, setOwnProfile] = useState(getOwnProfile(userId));
+//     useEventEmitter(OwnProfileStore.instance, UPDATE_EVENT, () => {
+//         setOwnProfile(getOwnProfile(userId));
+//     });
 
-    return (
-        <div>
-            <MiniAvatarUploader
-                hasAvatar={!!ownProfile.avatarUrl}
-                hasAvatarLabel={_t("onboarding|has_avatar_label")}
-                noAvatarLabel={_t("onboarding|no_avatar_label")}
-                setAvatarUrl={(url) => cli.setAvatarUrl(url)}
-                isUserAvatar
-                onClick={(ev) => PosthogTrackers.trackInteraction("WebHomeMiniAvatarUploadButton", ev)}
-            >
-                <BaseAvatar
-                    idName={userId}
-                    name={ownProfile.displayName}
-                    url={ownProfile.avatarUrl}
-                    size={AVATAR_SIZE}
-                />
-            </MiniAvatarUploader>
+//     return (
+//         <div>
+//             <MiniAvatarUploader
+//                 hasAvatar={!!ownProfile.avatarUrl}
+//                 hasAvatarLabel={_t("onboarding|has_avatar_label")}
+//                 noAvatarLabel={_t("onboarding|no_avatar_label")}
+//                 setAvatarUrl={(url) => cli.setAvatarUrl(url)}
+//                 isUserAvatar
+//                 onClick={(ev) => PosthogTrackers.trackInteraction("WebHomeMiniAvatarUploadButton", ev)}
+//             >
+//                 <BaseAvatar
+//                     idName={userId}
+//                     name={ownProfile.displayName}
+//                     url={ownProfile.avatarUrl}
+//                     size={AVATAR_SIZE}
+//                 />
+//             </MiniAvatarUploader>
 
-            <h1>{_tDom("onboarding|welcome_user", { name: ownProfile.displayName })}</h1>
-            <h2>{_tDom("onboarding|welcome_detail")}</h2>
-        </div>
-    );
-};
+//             <h1>{_tDom("onboarding|welcome_user", { name: ownProfile.displayName })}</h1>
+//             <h2>{_tDom("onboarding|welcome_detail")}</h2>
+//         </div>
+//     );
+// };
 
-// آیکون‌ها
-const SendIcon = () => (
-    <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <line x1="22" y1="2" x2="11" y2="13"></line>
-        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+const DmIcon = () => (
+    <svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z" />
     </svg>
 );
 
 const ExploreIcon = () => (
-    <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <circle cx="12" cy="12" r="10"></circle>
-        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+    <svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
     </svg>
 );
 
-const GroupIcon = () => (
-    <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-        <circle cx="9" cy="7" r="4"></circle>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+const RoomIcon = () => (
+    <svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor">
+        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
     </svg>
 );
 
@@ -141,9 +114,9 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
     }
 
     let introSection: JSX.Element;
-    if (justRegistered || !OwnProfileStore.instance.getHttpAvatarUrl(parseInt(AVATAR_SIZE, 10))) {
-        introSection = <UserWelcomeTop />;
-    } else {
+    // if (justRegistered || !OwnProfileStore.instance.getHttpAvatarUrl(parseInt(AVATAR_SIZE, 10))) {
+    //     introSection = <UserWelcomeTop />;
+    // } else {
         const brandingConfig = SdkConfig.getObject("branding");
         const logoUrl = brandingConfig?.get("auth_header_logo_url") ?? "themes/element/img/logos/element-logo.svg";
 
@@ -154,61 +127,42 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                 <h2>{_tDom("onboarding|intro_byline")}</h2>
             </React.Fragment>
         );
-    }
+    // }
 
     return (
-        <AutoHideScrollbar className="mx_HomePage mx_HomePage_playful" element="main">
+        <AutoHideScrollbar className="mx_HomePage mx_HomePage_default" element="main">
             <div className="mx_HomePage_default_wrapper">
                 {introSection}
+                <div className="mx_HomePage_default_buttons">
+                    <AccessibleButton onClick={onClickSendDm} className="mx_HomePage_button_sendDm">
+                        <div className="mx_IconBox">
+                            <DmIcon />
+                        </div>
+                        <div className="mx_TextWrapper">
+                            <div className="mx_CardText">{_tDom("onboarding|send_dm")}</div>
+                            <div className="mx_CardSubtext">کلمه بنویسید یا عکس اضافه کنید</div>
+                        </div>
+                    </AccessibleButton>
 
-                <div className="mx_HomePage_container">
-                    {/* بخش اصلی الهام گرفته از تصویر 1 (ورودی چت) */}
-                    <div className="mx_HomePage_hero_section">
-                        <AccessibleButton onClick={onClickSendDm} className="mx_HomePage_hero_btn">
-                            <div className="mx_HomePage_hero_icon">
-                                <svg
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                >
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                                </svg>
-                            </div>
-                            <div className="mx_HomePage_hero_content">
-                                <div className="mx_HomePage_hero_title">{_tDom("onboarding|send_dm")}</div>
-                                <div className="mx_HomePage_hero_placeholder">کلمه بنویسید یا عکس اضافه کنید...</div>
-                            </div>
-                            <div className="mx_HomePage_hero_action">
-                                <SendIcon />
-                            </div>
-                        </AccessibleButton>
-                    </div>
+                    <AccessibleButton onClick={onClickNewRoom} className="mx_HomePage_button_createGroup">
+                        <div className="mx_IconBox">
+                            <RoomIcon />
+                        </div>
+                        <div className="mx_TextWrapper">
+                            <div className="mx_CardText">{_tDom("onboarding|create_room")}</div>
+                            <div className="mx_CardSubtext">گروه جدید بسازید</div>
+                        </div>
+                    </AccessibleButton>
 
-                    {/* بخش کارت‌های دومینو الهام گرفته از تصویر 2 (دوستانه و سبز) */}
-                    <div className="mx_HomePage_secondary_grid">
-                        <AccessibleButton onClick={onClickExplore} className="mx_HomePage_playful_card">
-                            <div className="mx_CardVisual explore">
-                                <ExploreIcon />
-                            </div>
-                            <div className="mx_CardText">
-                                <h3>{_tDom("onboarding|explore_rooms")}</h3>
-                                <p>کاوش در دنیای ارتباطات</p>
-                            </div>
-                        </AccessibleButton>
-
-                        <AccessibleButton onClick={onClickNewRoom} className="mx_HomePage_playful_card">
-                            <div className="mx_CardVisual group">
-                                <GroupIcon />
-                            </div>
-                            <div className="mx_CardText">
-                                <h3>{_tDom("onboarding|create_room")}</h3>
-                                <p>ساخت گروه جدید</p>
-                            </div>
-                        </AccessibleButton>
-                    </div>
+                    <AccessibleButton onClick={onClickExplore} className="mx_HomePage_button_explore">
+                        <div className="mx_IconBox">
+                            <ExploreIcon />
+                        </div>
+                        <div className="mx_TextWrapper">
+                            <div className="mx_CardText">{_tDom("onboarding|explore_rooms")}</div>
+                            <div className="mx_CardSubtext">جستجوی موضوعات جدید</div>
+                        </div>
+                    </AccessibleButton>
                 </div>
             </div>
         </AutoHideScrollbar>
