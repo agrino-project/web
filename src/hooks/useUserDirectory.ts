@@ -17,6 +17,16 @@ export interface IUserDirectoryOpts {
     query: string;
 }
 
+interface PhoneDirectoryResponse {
+    results: {
+        user: string;
+        user_id: string;
+        display_name?: string;
+        avatar_url?: string;
+    }[];
+    limited: boolean;
+}
+
 export const useUserDirectory = (): {
     ready: boolean;
     loading: boolean;
@@ -41,7 +51,22 @@ export const useUserDirectory = (): {
 
             try {
                 setLoading(true);
-                const { results } = await MatrixClientPeg.safeGet().searchUserDirectory(opts);
+                // const { results } = await MatrixClientPeg.safeGet().searchUserDirectory(opts);
+                const client = MatrixClientPeg.safeGet();
+                const accessToken = client.getAccessToken();
+                const baseUrl = client.getHomeserverUrl();
+
+                const response = await fetch(`${baseUrl}/_synapse/client/phone_directory/search`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ search_term: opts.term, limit: opts.limit }),
+                });
+                const { results } = await response.json() as PhoneDirectoryResponse;
+                // console.log(result1);
+
                 updateResult(
                     opts,
                     results.map((user) => new DirectoryMember(user)),

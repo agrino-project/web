@@ -537,29 +537,8 @@ const SpotlightDialog: React.FC<IProps> = ({ initialText = "", initialFilter = n
     const activeSpace = SpaceStore.instance.activeSpaceRoom;
     const [spaceResults, spaceResultsLoading] = useSpaceResults(activeSpace ?? undefined, query);
 
-    function buildUserIdFromPhone(phone: string, domain: string): string {
-        const clean = phone.replace(/\D/g, "");
-        return `@u${clean}:${domain}`;
-    }
-    
     const setQuery = (e: ChangeEvent<HTMLInputElement>): void => {
         let value = transformSearchTerm(e.currentTarget.value);
-
-        if (filter === Filter.People) {
-            const digitsOnly = value.replace(/\D/g, "");
-
-            if (digitsOnly.length >= 7) {
-                const cli = MatrixClientPeg.safeGet();
-                if (!cli) return;
-
-                const userId = cli.getUserId();
-                if (!userId) return;
-
-                const domain = userId.split(":")[1];
-                value = buildUserIdFromPhone(digitsOnly, domain);
-            }
-        }
-
         _setQuery(value);
     };
 
