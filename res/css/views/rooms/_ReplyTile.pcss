@@ -72,6 +72,7 @@ Please see LICENSE files in the repository root for full details.
         // in order to keep the message on two lines, we need to make the body inline
         .mx_EventTile_body {
             display: inline;
+            font-size: 14px;
         }
 
         // Hide line numbers and edited indicator
@@ -146,6 +147,8 @@ Please see LICENSE files in the repository root for full details.
     font: var(--cpd-font-body-md-semibold);
     line-height: 1;
     color: #936e00;
-    font-size: 14px;
-    margin-bottom: 2px;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

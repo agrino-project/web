@@ -86,6 +86,51 @@ const UserWelcomeTop: React.FC = () => {
     );
 };
 
+// آیکون‌ها
+const SendIcon = () => (
+    <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+    </svg>
+);
+
+const ExploreIcon = () => (
+    <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <circle cx="12" cy="12" r="10"></circle>
+        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+    </svg>
+);
+
+const GroupIcon = () => (
+    <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+    </svg>
+);
+
 const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
     const cli = useMatrixClientContext();
     const config = SdkConfig.get();
@@ -112,19 +157,58 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
     }
 
     return (
-        <AutoHideScrollbar className="mx_HomePage mx_HomePage_default" element="main">
+        <AutoHideScrollbar className="mx_HomePage mx_HomePage_playful" element="main">
             <div className="mx_HomePage_default_wrapper">
                 {introSection}
-                <div className="mx_HomePage_default_buttons">
-                    <AccessibleButton onClick={onClickSendDm} className="mx_HomePage_button_sendDm">
-                        {_tDom("onboarding|send_dm")}
-                    </AccessibleButton>
-                    <AccessibleButton onClick={onClickExplore} className="mx_HomePage_button_explore">
-                        {_tDom("onboarding|explore_rooms")}
-                    </AccessibleButton>
-                    <AccessibleButton onClick={onClickNewRoom} className="mx_HomePage_button_createGroup">
-                        {_tDom("onboarding|create_room")}
-                    </AccessibleButton>
+
+                <div className="mx_HomePage_container">
+                    {/* بخش اصلی الهام گرفته از تصویر 1 (ورودی چت) */}
+                    <div className="mx_HomePage_hero_section">
+                        <AccessibleButton onClick={onClickSendDm} className="mx_HomePage_hero_btn">
+                            <div className="mx_HomePage_hero_icon">
+                                <svg
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                >
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                            </div>
+                            <div className="mx_HomePage_hero_content">
+                                <div className="mx_HomePage_hero_title">{_tDom("onboarding|send_dm")}</div>
+                                <div className="mx_HomePage_hero_placeholder">کلمه بنویسید یا عکس اضافه کنید...</div>
+                            </div>
+                            <div className="mx_HomePage_hero_action">
+                                <SendIcon />
+                            </div>
+                        </AccessibleButton>
+                    </div>
+
+                    {/* بخش کارت‌های دومینو الهام گرفته از تصویر 2 (دوستانه و سبز) */}
+                    <div className="mx_HomePage_secondary_grid">
+                        <AccessibleButton onClick={onClickExplore} className="mx_HomePage_playful_card">
+                            <div className="mx_CardVisual explore">
+                                <ExploreIcon />
+                            </div>
+                            <div className="mx_CardText">
+                                <h3>{_tDom("onboarding|explore_rooms")}</h3>
+                                <p>کاوش در دنیای ارتباطات</p>
+                            </div>
+                        </AccessibleButton>
+
+                        <AccessibleButton onClick={onClickNewRoom} className="mx_HomePage_playful_card">
+                            <div className="mx_CardVisual group">
+                                <GroupIcon />
+                            </div>
+                            <div className="mx_CardText">
+                                <h3>{_tDom("onboarding|create_room")}</h3>
+                                <p>ساخت گروه جدید</p>
+                            </div>
+                        </AccessibleButton>
+                    </div>
                 </div>
             </div>
         </AutoHideScrollbar>

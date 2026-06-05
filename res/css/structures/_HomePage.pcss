@@ -13,90 +13,206 @@ Please see LICENSE files in the repository root for full details.
     height: 100%;
     margin-left: auto;
     margin-right: auto;
+    // پالت رنگی جدید الهام گرفته از تصاویر
+    --playful-green: #4CAF50;
+    --playful-green-light: #E8F5E9;
+    --playful-accent: #81C784;
+    --chat-bg: #ffffff;
+    --text-main: #333333;
+    --text-sub: #666666;
+    --shadow-soft: 0 8px 24px rgba(76, 175, 80, 0.15);
+    --shadow-hover: 0 12px 32px rgba(76, 175, 80, 0.25);
 }
 
-.mx_HomePage_default {
+.mx_HomePage_playful {
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: #F9FAFB; // پس زمینه خیلی روشن
 
     .mx_HomePage_default_wrapper {
         margin-block: 20px;
+        width: 100%;
+        max-width: 800px;
+    }
+
+    h1 {
+        font-weight: 800;
+        font-size: $font-32px;
+        color: var(--text-main);
+        margin-bottom: 8px;
+    }
+
+    h2 {
+        font-weight: 500;
+        font-size: $font-18px;
+        color: var(--text-sub);
+        margin-bottom: 40px;
+    }
+
+    .mx_MiniAvatarUploader {
+        margin: 0 auto 16px;
     }
 
     img {
         height: 48px;
+        margin-bottom: 16px;
     }
 
-    h1 {
-        font-weight: var(--cpd-font-weight-semibold);
-        font-size: $font-32px;
-        line-height: 1.375;
-        margin-bottom: 4px;
-    }
-
-    h2 {
-        margin-top: 4px;
-        font-weight: var(--cpd-font-weight-semibold);
-        font-size: $font-18px;
-        line-height: $font-25px;
-        color: $muted-fg-color;
-    }
-
-    .mx_MiniAvatarUploader {
-        margin: 0 auto;
-    }
-
-    .mx_HomePage_default_buttons {
+    // کانتینر اصلی دکمه‌ها
+    .mx_HomePage_container {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
+        gap: 32px;
+        align-items: center;
+    }
+
+    // --- بخش قهرمان (Hero) - شبیه تصویر اول ---
+    .mx_HomePage_hero_section {
+        width: 100%;
+        display: flex;
         justify-content: center;
-        margin: 60px auto 0;
-        width: fit-content;
+    }
 
-        .mx_AccessibleButton {
-            padding: 73px 8px 15px; /* top: 20px top padding + 40px icon + 13px margin */
+    .mx_HomePage_hero_btn {
+        width: 100%;
+        max-width: 600px;
+        height: 72px;
+        background-color: var(--chat-bg);
+        border-radius: 36px; // شکل قرص (Pill shape)
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+        overflow: hidden;
 
-            width: 160px;
-            min-height: 132px;
-            margin: 20px;
-            position: relative;
-            display: inline-block;
-            border-radius: 8px;
-            vertical-align: top;
-            word-break: break-word;
-            box-sizing: border-box;
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            border-color: var(--playful-accent);
+        }
 
-            font-weight: var(--cpd-font-weight-semibold);
-            font-size: $font-15px;
-            line-height: $font-20px;
-            color: #fff; /* on all themes */
-            background-color: $accent;
+        .mx_HomePage_hero_icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--playful-green-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--playful-green);
+            margin-left: 16px; // فاصله در حالت RTL
+        }
 
-            &::before {
-                top: 20px;
-                left: 60px; /* (160px-40px)/2 */
-                width: 40px;
-                height: 40px;
+        .mx_HomePage_hero_content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: right;
 
-                content: "";
-                position: absolute;
-                background-color: #fff; /* on all themes */
-                mask-repeat: no-repeat;
-                mask-size: contain;
+            .mx_HomePage_hero_title {
+                font-size: 16px;
+                font-weight: 700;
+                color: var(--text-main);
+                margin-bottom: 2px;
             }
 
-            &.mx_HomePage_button_sendDm::before {
-                mask-image: url("$(res)/img/element-icons/feedback.svg");
+            .mx_HomePage_hero_placeholder {
+                font-size: 13px;
+                color: #999;
+            }
+        }
+
+        .mx_HomePage_hero_action {
+            width: 36px;
+            height: 36px;
+            background-color: var(--playful-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 8px; // سمت راست در RTL
+
+            svg {
+                width: 18px;
+                height: 18px;
+                stroke-width: 2.5;
+            }
+        }
+    }
+
+    // --- گرید کارت‌های بازیگوش (Playful Cards) - شبیه تصویر دوم ---
+    .mx_HomePage_secondary_grid {
+        display: flex;
+        gap: 20px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .mx_HomePage_playful_card {
+        flex: 1;
+        max-width: 320px;
+        background: linear-gradient(135deg, #ffffff 0%, var(--playful-green-light) 100%);
+        border-radius: 24px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: right;
+        border: 1px solid rgba(129, 199, 132, 0.3);
+        box-shadow: var(--shadow-soft);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+
+        &:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .mx_CardVisual {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            color: white;
+
+            &.explore {
+                background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
             }
 
-            &.mx_HomePage_button_explore::before {
-                mask-image: url("$(res)/img/element-icons/roomlist/explore.svg");
+            &.group {
+                background: linear-gradient(135deg, #26A69A 0%, #00897B 100%);
             }
 
-            &.mx_HomePage_button_createGroup::before {
-                mask-image: url("$(res)/img/element-icons/group-members.svg");
+            svg {
+                width: 28px;
+                height: 28px;
+            }
+        }
+
+        .mx_CardText {
+            h3 {
+                font-size: 18px;
+                font-weight: 700;
+                color: var(--text-main);
+                margin-bottom: 4px;
+            }
+
+            p {
+                font-size: 14px;
+                color: var(--text-sub);
+                line-height: 1.4;
             }
         }
     }
@@ -104,73 +220,57 @@ Please see LICENSE files in the repository root for full details.
 
 /* Mobile responsive layout */
 @media only screen and (max-width: 768px) {
-    .mx_HomePage_default {
-        .mx_HomePage_default_buttons {
-            flex-direction: column;
-            align-items: center;
+    .mx_HomePage_playful {
+        .mx_HomePage_container {
+            gap: 24px;
+        }
 
-            .mx_AccessibleButton {
-                width: 80%;
-                max-width: 280px;
-                margin: 8px auto;
+        .mx_HomePage_secondary_grid {
+            flex-direction: column;
+        }
+
+        .mx_HomePage_playful_card {
+            max-width: 100%;
+            flex-direction: row;
+            align-items: center;
+            padding: 16px;
+
+            .mx_CardVisual {
+                margin-bottom: 0;
+                margin-left: 16px;
+                width: 48px;
+                height: 48px;
+                border-radius: 12px;
             }
         }
 
-        h1 {
-            font-size: 24px;
-        }
-
-        h2 {
-            font-size: 16px;
-        }
+        h1 { font-size: 24px; }
+        h2 { font-size: 16px; }
     }
 }
 
 @media only screen and (max-width: 480px) {
     .mx_HomePage {
-        max-width: 100%;
-        padding: 0 8px;
-        box-sizing: border-box;
+        padding: 0 16px;
     }
 
-    .mx_HomePage_default {
-        .mx_HomePage_default_wrapper {
-            padding: 0 4px;
-            width: 100%;
-            box-sizing: border-box;
+    .mx_HomePage_playful {
+        padding-top: 20px;
+
+        .mx_HomePage_hero_btn {
+            height: 64px;
+            padding: 0 16px;
+
+            .mx_HomePage_hero_title { font-size: 14px; }
+            .mx_HomePage_hero_placeholder { font-size: 12px; }
+
+            .mx_HomePage_hero_icon { width: 36px; height: 36px; }
         }
 
-        .mx_HomePage_default_buttons {
-            margin-top: 24px;
-            width: 100%;
-
-            .mx_AccessibleButton {
-                width: 100%;
-                max-width: 100%;
-                min-height: 80px;
-                padding: 48px 8px 10px;
-                margin: 6px 0;
-                font-size: 13px;
-
-                &::before {
-                    left: calc(50% - 16px);
-                    width: 32px;
-                    height: 32px;
-                    top: 12px;
-                }
-            }
-        }
-
-        h1 {
-            font-size: 20px;
-        }
-
-        h2 {
-            font-size: 14px;
-        }
-
-        img {
-            height: 36px;
+        .mx_HomePage_playful_card {
+            .mx_CardVisual { width: 40px; height: 40px; }
+            h3 { font-size: 16px; }
+            p { display: none; } // مخفی کردن متن توضیحات در موبایل خیلی کوچک
         }
     }
 }

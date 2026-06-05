@@ -273,7 +273,7 @@ export default class ReplyChain extends React.Component<IProps, IState> {
 
         return (
             <div className="mx_ReplyChain_wrapper">
-                <div>{header}</div>
+                {/* <div>{header}</div> */}
                 <div>{evTiles}</div>
             </div>
         );
