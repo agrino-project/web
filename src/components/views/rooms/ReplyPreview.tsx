@@ -40,7 +40,14 @@ export default class ReplyPreview extends React.Component<IProps> {
             <div className="mx_ReplyPreview">
                 <div className="mx_ReplyPreview_section">
                     <div className="mx_ReplyPreview_header">
-                        <span>{_t("composer|replying_title")}</span>
+                        {/* این بخش برای دربرگرفتن آیکون و متن با هم است */}
+                        <div className="mx_ReplyPreview_header_titleContainer">
+                            <span className="mx_ReplyPreview_header_icon" />
+                            <span className="mx_ReplyPreview_header_title">
+                                {/* اینجا نام فرستنده را به صورت پویاتر هم می‌توانید هندل کنید، فعلا متن ترجمه شماست */}
+                                {_t("composer|replying_title")}
+                            </span>
+                        </div>
                         <AccessibleButton
                             className="mx_ReplyPreview_header_cancel"
                             onClick={() => cancelQuoting(this.context.timelineRenderingType)}
