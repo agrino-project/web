@@ -13,7 +13,13 @@ import Spinner from "../elements/Spinner";
 import CheckCircleIcon from "@vector-im/compound-design-tokens/assets/web/icons/check-circle-solid";
 import { IconButton } from "@vector-im/compound-web";
 import CloseIcon from "@vector-im/compound-design-tokens/assets/web/icons/close";
-import { _t } from "../../../languageHandler";
+import { _t, type TranslationKey } from "../../../languageHandler";
+
+/** Helper to cast new translation keys that the TS server hasn't picked up yet */
+const t = (key: string, vars?: Record<string, string>): string => _t(key as TranslationKey, vars);
+
+import CardToCardReport, { type ReportRow } from "./CardToCardReport";
+import { ExpiryValidationResult, validateJalaliExpiry } from "./jalaliExpiry";
 
 interface Props {
     onClose(): void;
@@ -46,14 +52,30 @@ const ChargePurchaseCard: React.FC<Props> = ({ onClose }) => {
     const otpRef = useRef<HTMLInputElement>(null);
     const phoneRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => { phoneRef.current?.focus(); }, []);
-    useEffect(() => { if (step === 2) card1Ref.current?.focus(); }, [step]);
-    useEffect(() => { if (card1.length === 4) card2Ref.current?.focus(); }, [card1]);
-    useEffect(() => { if (card2.length === 4) card3Ref.current?.focus(); }, [card2]);
-    useEffect(() => { if (card3.length === 4) card4Ref.current?.focus(); }, [card3]);
-    useEffect(() => { if (expMonth.length === 2) expYearRef.current?.focus(); }, [expMonth]);
-    useEffect(() => { if (expYear.length === 2) cvv2Ref.current?.focus(); }, [expYear]);
-    useEffect(() => { if (cvv2.length >= 3) otpRef.current?.focus(); }, [cvv2]);
+    useEffect(() => {
+        phoneRef.current?.focus();
+    }, []);
+    useEffect(() => {
+        if (step === 2) card1Ref.current?.focus();
+    }, [step]);
+    useEffect(() => {
+        if (card1.length === 4) card2Ref.current?.focus();
+    }, [card1]);
+    useEffect(() => {
+        if (card2.length === 4) card3Ref.current?.focus();
+    }, [card2]);
+    useEffect(() => {
+        if (card3.length === 4) card4Ref.current?.focus();
+    }, [card3]);
+    useEffect(() => {
+        if (expMonth.length === 2) expYearRef.current?.focus();
+    }, [expMonth]);
+    useEffect(() => {
+        if (expYear.length === 2) cvv2Ref.current?.focus();
+    }, [expYear]);
+    useEffect(() => {
+        if (cvv2.length >= 3) otpRef.current?.focus();
+    }, [cvv2]);
 
     useEffect(() => {
         if (otpTimer > 0) {
@@ -108,42 +130,81 @@ const ChargePurchaseCard: React.FC<Props> = ({ onClose }) => {
             });
             return;
         }
+
+        const validationResult = validateJalaliExpiry(expMonth, expYear);
+
+        if (validationResult === ExpiryValidationResult.InvalidMonth) {
+            Modal.createDialog(ErrorDialog, {
+                title: t("custom_panels|card_to_card_error_title"),
+                description: t("custom_panels|card_to_card_error_exp_month"),
+            });
+            return;
+        }
+
+        if (validationResult === ExpiryValidationResult.InvalidFormat) {
+            Modal.createDialog(ErrorDialog, {
+                title: t("custom_panels|card_to_card_error_title"),
+                description: t("custom_panels|card_to_card_error_format"),
+            });
+            return;
+        }
+
+        if (validationResult === ExpiryValidationResult.Expired) {
+            Modal.createDialog(ErrorDialog, {
+                title: t("custom_panels|card_to_card_error_title"),
+                description: t("custom_panels|card_to_card_error_expired"),
+            });
+            return;
+        }
+
         setIsSubmitting(true);
-        const progressDialog = Modal.createDialog(InfoDialog, {
-            title: _t("custom_panels|charge_paying"),
-            description: (
-                <div style={{ textAlign: "center", direction: "rtl", marginTop: "20px" }}>
-                    <Spinner w={48} h={48} />
-                    <div style={{ marginTop: "20px" }}>
-                        <strong>{selectedAmount?.toLocaleString("fa-IR")} تومان</strong>
-                        <br />
-                        {_t("custom_panels|charge_for_number", { phone })}
+
+        const progressDialog = Modal.createDialog(
+            InfoDialog,
+            {
+                title: _t("custom_panels|charge_paying"),
+                description: (
+                    <div style={{ textAlign: "center", direction: "rtl", marginTop: "20px" }}>
+                        <Spinner w={48} h={48} />
+                        <div style={{ marginTop: "20px" }}>
+                            <strong>{selectedAmount?.toLocaleString("fa-IR")} تومان</strong>
+                            <br />
+                            {_t("custom_panels|charge_for_number", { phone })}
+                        </div>
                     </div>
-                </div>
-            ),
-            hasCloseButton: false,
-            fixedWidth: true,
-        }, "mx_ChargePurchaseCard_progressDialog");
+                ),
+                hasCloseButton: false,
+                fixedWidth: true,
+            },
+            "mx_ChargePurchaseCard_progressDialog",
+        );
         progressDialogRef.current = progressDialog;
 
         setTimeout(() => {
             progressDialog.close();
             setIsSubmitting(false);
-            Modal.createDialog(InfoDialog, {
-                title: _t("custom_panels|charge_success_title"),
-                description: (
-                    <div style={{ textAlign: "right", direction: "rtl", lineHeight: "2" }}>
-                        <div style={{ marginBottom: "20px", textAlign: "center" }}>
-                            <CheckCircleIcon width="80px" height="80px" style={{ color: "#326430" }} />
-                        </div>
-                        <p><strong>{_t("custom_panels|charge_amount")}:</strong> {selectedAmount?.toLocaleString("fa-IR")} تومان</p>
-                        <p><strong>{_t("custom_panels|charge_number")}:</strong> {phone}</p>
-                        <p><strong>{_t("custom_panels|charge_tracking")}:</strong> ۹۸۷۶۵۴۳۲۱</p>
-                    </div>
-                ),
-                hasCloseButton: true,
-                fixedWidth: true,
-            });
+            const rows: ReportRow[] = [
+                {
+                    label: t("custom_panels|card_to_card_report_amount"),
+                    value: `${selectedAmount?.toLocaleString("fa-IR")} ${t("custom_panels|card_to_card_toman")}`,
+                },
+                { label: t("custom_panels|charge_number"), value: phone },
+                { label: t("custom_panels|charge_tracking"), value: "۹۸۷۶۵۴۳۲۱" },
+            ];
+
+            let reportDialog: { close: () => void } | undefined;
+            reportDialog = Modal.createDialog(
+                InfoDialog,
+                {
+                    title: "",
+                    description: (
+                        <CardToCardReport status="success" rows={rows} onClose={() => reportDialog?.close()} />
+                    ),
+                    hasCloseButton: false,
+                    fixedWidth: true,
+                },
+                "mx_ChargePurchaseCard_reportDialog",
+            );
         }, 2800);
     };
 
@@ -163,7 +224,13 @@ const ChargePurchaseCard: React.FC<Props> = ({ onClose }) => {
                         <h1>{_t("custom_panels|charge_purchase_title")}</h1>
                         <p>{_t("custom_panels|charge_purchase_subtitle")}</p>
                     </div>
-                    <IconButton size="28px" onClick={onClose} tooltip={_t("custom_panels|close")} kind="secondary" className="mx_ChargePurchaseCard_closeBtn">
+                    <IconButton
+                        size="28px"
+                        onClick={onClose}
+                        tooltip={_t("custom_panels|close")}
+                        kind="secondary"
+                        className="mx_ChargePurchaseCard_closeBtn"
+                    >
                         <CloseIcon />
                     </IconButton>
                 </div>
@@ -173,66 +240,172 @@ const ChargePurchaseCard: React.FC<Props> = ({ onClose }) => {
                         <div className="mx_ChargePurchaseCard_step">
                             <div className="mx_ChargePurchaseCard_inputGroup">
                                 <label>{_t("custom_panels|charge_phone_label")}</label>
-                                <input ref={phoneRef} type="text" id="phone" value={phone} onChange={handlePhoneInput} placeholder={_t("custom_panels|charge_phone_placeholder")} maxLength={11} inputMode="numeric" />
+                                <input
+                                    ref={phoneRef}
+                                    type="text"
+                                    id="phone"
+                                    value={phone}
+                                    onChange={handlePhoneInput}
+                                    placeholder={_t("custom_panels|charge_phone_placeholder")}
+                                    maxLength={11}
+                                    inputMode="numeric"
+                                />
                             </div>
                             <div className="mx_ChargePurchaseCard_inputGroup">
                                 <label>{_t("custom_panels|charge_amount_label")}</label>
                                 <div className="mx_ChargePurchaseCard_amountButtons">
                                     {amountButtons.map((btn) => (
-                                        <div key={btn.amount} className={`mx_ChargePurchaseCard_amountBtn ${selectedAmount === btn.amount ? "selected" : ""}`} onClick={() => setSelectedAmount(btn.amount)}>
+                                        <div
+                                            key={btn.amount}
+                                            className={`mx_ChargePurchaseCard_amountBtn ${selectedAmount === btn.amount ? "selected" : ""}`}
+                                            onClick={() => setSelectedAmount(btn.amount)}
+                                        >
                                             {btn.label}
                                         </div>
                                     ))}
                                 </div>
                             </div>
-                            <button type="button" className="mx_ChargePurchaseCard_btnPrimary" onClick={handleNextStep}>{_t("custom_panels|charge_next_step")}</button>
+                            <button type="button" className="mx_ChargePurchaseCard_btnPrimary" onClick={handleNextStep}>
+                                {_t("custom_panels|charge_next_step")}
+                            </button>
                         </div>
                     )}
 
                     {step === 2 && (
                         <div className="mx_ChargePurchaseCard_step">
                             <div className="mx_ChargePurchaseCard_summary">
-                                {_t("custom_panels|charge_purchase")} <strong>{selectedAmount?.toLocaleString("fa-IR")} تومان</strong> {_t("custom_panels|charge_for_number", { phone: <strong>{phone}</strong> })}
+                                {_t("custom_panels|charge_purchase")}{" "}
+                                <strong>{selectedAmount?.toLocaleString("fa-IR")} تومان</strong>{" "}
+                                {_t("custom_panels|charge_for_number", { phone: <strong>{phone}</strong> })}
                             </div>
                             <div className="mx_ChargePurchaseCard_inputGroup">
                                 <label>{_t("custom_panels|charge_card_number")}</label>
                                 <div className="mx_ChargePurchaseCard_cardInputs">
-                                    <input ref={card1Ref} type="text" value={card1} onChange={(e) => handleCardInput(e.target.value, setCard1, 4)} maxLength={4} inputMode="numeric" />
-                                    <input ref={card2Ref} type="text" value={card2} onChange={(e) => handleCardInput(e.target.value, setCard2, 4)} onKeyDown={(e) => { if (e.key === "Backspace" && card2 === "") card1Ref.current?.focus(); }} maxLength={4} inputMode="numeric" />
-                                    <input ref={card3Ref} type="text" value={card3} onChange={(e) => handleCardInput(e.target.value, setCard3, 4)} onKeyDown={(e) => { if (e.key === "Backspace" && card3 === "") card2Ref.current?.focus(); }} maxLength={4} inputMode="numeric" />
-                                    <input ref={card4Ref} type="text" value={card4} onChange={(e) => handleCardInput(e.target.value, setCard4, 4)} onKeyDown={(e) => { if (e.key === "Backspace" && card4 === "") card3Ref.current?.focus(); }} maxLength={4} inputMode="numeric" />
+                                    <input
+                                        ref={card1Ref}
+                                        type="text"
+                                        value={card1}
+                                        onChange={(e) => handleCardInput(e.target.value, setCard1, 4)}
+                                        maxLength={4}
+                                        inputMode="numeric"
+                                    />
+                                    <input
+                                        ref={card2Ref}
+                                        type="text"
+                                        value={card2}
+                                        onChange={(e) => handleCardInput(e.target.value, setCard2, 4)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Backspace" && card2 === "") card1Ref.current?.focus();
+                                        }}
+                                        maxLength={4}
+                                        inputMode="numeric"
+                                    />
+                                    <input
+                                        ref={card3Ref}
+                                        type="text"
+                                        value={card3}
+                                        onChange={(e) => handleCardInput(e.target.value, setCard3, 4)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Backspace" && card3 === "") card2Ref.current?.focus();
+                                        }}
+                                        maxLength={4}
+                                        inputMode="numeric"
+                                    />
+                                    <input
+                                        ref={card4Ref}
+                                        type="text"
+                                        value={card4}
+                                        onChange={(e) => handleCardInput(e.target.value, setCard4, 4)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Backspace" && card4 === "") card3Ref.current?.focus();
+                                        }}
+                                        maxLength={4}
+                                        inputMode="numeric"
+                                    />
                                 </div>
                             </div>
                             <div className="mx_ChargePurchaseCard_row">
                                 <div className="mx_ChargePurchaseCard_inputGroup">
                                     <label>{_t("custom_panels|charge_exp_month")}</label>
-                                    <input ref={expMonthRef} type="text" value={expMonth} onChange={(e) => handleCardInput(e.target.value, setExpMonth, 2)} placeholder="۰۶" maxLength={2} inputMode="numeric" />
+                                    <input
+                                        ref={expMonthRef}
+                                        type="text"
+                                        value={expMonth}
+                                        onChange={(e) => handleCardInput(e.target.value, setExpMonth, 2)}
+                                        placeholder="۰۶"
+                                        maxLength={2}
+                                        inputMode="numeric"
+                                    />
                                 </div>
                                 <div className="mx_ChargePurchaseCard_inputGroup">
                                     <label>{_t("custom_panels|charge_exp_year")}</label>
-                                    <input ref={expYearRef} type="text" value={expYear} onChange={(e) => handleCardInput(e.target.value, setExpYear, 2)} placeholder="۰۵" maxLength={2} inputMode="numeric" />
+                                    <input
+                                        ref={expYearRef}
+                                        type="text"
+                                        value={expYear}
+                                        onChange={(e) => handleCardInput(e.target.value, setExpYear, 2)}
+                                        placeholder="۰۵"
+                                        maxLength={2}
+                                        inputMode="numeric"
+                                    />
                                 </div>
                                 <div className="mx_ChargePurchaseCard_inputGroup">
                                     <label>CVV2</label>
-                                    <input ref={cvv2Ref} type="text" value={cvv2} onChange={(e) => handleCardInput(e.target.value, setCvv2, 4)} placeholder="۱۲۳" maxLength={4} inputMode="numeric" />
+                                    <input
+                                        ref={cvv2Ref}
+                                        type="text"
+                                        value={cvv2}
+                                        onChange={(e) => handleCardInput(e.target.value, setCvv2, 4)}
+                                        placeholder="۱۲۳"
+                                        maxLength={4}
+                                        inputMode="numeric"
+                                    />
                                 </div>
                             </div>
                             <div className="mx_ChargePurchaseCard_inputGroup">
                                 <label>{_t("custom_panels|charge_otp")}</label>
                                 <div className="mx_ChargePurchaseCard_otpGroup">
-                                    <input ref={otpRef} type="text" value={otp} onChange={(e) => handleCardInput(e.target.value, setOtp, 6)} placeholder="------" maxLength={6} inputMode="numeric" />
-                                    <button type="button" className="mx_ChargePurchaseCard_getOtpBtn" onClick={handleGetOtp} disabled={isOtpDisabled}>
+                                    <input
+                                        ref={otpRef}
+                                        type="text"
+                                        value={otp}
+                                        onChange={(e) => handleCardInput(e.target.value, setOtp, 6)}
+                                        placeholder="------"
+                                        maxLength={6}
+                                        inputMode="numeric"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="mx_ChargePurchaseCard_getOtpBtn"
+                                        onClick={handleGetOtp}
+                                        disabled={isOtpDisabled}
+                                    >
                                         {isOtpDisabled ? `${otpTimer}s` : _t("custom_panels|charge_get_otp")}
                                     </button>
                                 </div>
                                 {otpTimer > 0 && (
-                                    <div className="mx_ChargePurchaseCard_timer">{_t("custom_panels|charge_resend_otp", { seconds: String(otpTimer) })}</div>
+                                    <div className="mx_ChargePurchaseCard_timer">
+                                        {_t("custom_panels|charge_resend_otp", { seconds: String(otpTimer) })}
+                                    </div>
                                 )}
                             </div>
-                            <button type="button" className="mx_ChargePurchaseCard_btnPrimary" onClick={handlePay} disabled={isSubmitting}>
-                                {isSubmitting ? _t("custom_panels|charge_paying_btn") : _t("custom_panels|charge_pay_btn")}
+                            <button
+                                type="button"
+                                className="mx_ChargePurchaseCard_btnPrimary"
+                                onClick={handlePay}
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting
+                                    ? _t("custom_panels|charge_paying_btn")
+                                    : _t("custom_panels|charge_pay_btn")}
                             </button>
-                            <button type="button" className="mx_ChargePurchaseCard_btnSecondary" onClick={() => setStep(1)}>{_t("custom_panels|charge_prev_step")}</button>
+                            <button
+                                type="button"
+                                className="mx_ChargePurchaseCard_btnSecondary"
+                                onClick={() => setStep(1)}
+                            >
+                                {_t("custom_panels|charge_prev_step")}
+                            </button>
                         </div>
                     )}
                 </div>

@@ -15,8 +15,12 @@ import ErrorDialog from "../dialogs/ErrorDialog";
 import InfoDialog from "../dialogs/InfoDialog";
 import Spinner from "../elements/Spinner";
 import CheckCircleIcon from "@vector-im/compound-design-tokens/assets/web/icons/check-circle-solid";
+
 import { IconButton } from "@vector-im/compound-web";
 import CloseIcon from "@vector-im/compound-design-tokens/assets/web/icons/close";
+
+import CardToCardReport, { type ReportRow } from "./CardToCardReport";
+import { ExpiryValidationResult, validateJalaliExpiry } from "./jalaliExpiry";
 
 interface Props {
     onClose(): void;
@@ -50,13 +54,27 @@ const BillPaymentCard: React.FC<Props> = ({ onClose }) => {
     const cvv2Ref = useRef<HTMLInputElement>(null);
     const otpRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => { if (step === 2) card1Ref.current?.focus(); }, [step]);
-    useEffect(() => { if (card1.length === 4) card2Ref.current?.focus(); }, [card1]);
-    useEffect(() => { if (card2.length === 4) card3Ref.current?.focus(); }, [card2]);
-    useEffect(() => { if (card3.length === 4) card4Ref.current?.focus(); }, [card3]);
-    useEffect(() => { if (expMonth.length === 2) expYearRef.current?.focus(); }, [expMonth]);
-    useEffect(() => { if (expYear.length === 2) cvv2Ref.current?.focus(); }, [expYear]);
-    useEffect(() => { if (cvv2.length >= 3) otpRef.current?.focus(); }, [cvv2]);
+    useEffect(() => {
+        if (step === 2) card1Ref.current?.focus();
+    }, [step]);
+    useEffect(() => {
+        if (card1.length === 4) card2Ref.current?.focus();
+    }, [card1]);
+    useEffect(() => {
+        if (card2.length === 4) card3Ref.current?.focus();
+    }, [card2]);
+    useEffect(() => {
+        if (card3.length === 4) card4Ref.current?.focus();
+    }, [card3]);
+    useEffect(() => {
+        if (expMonth.length === 2) expYearRef.current?.focus();
+    }, [expMonth]);
+    useEffect(() => {
+        if (expYear.length === 2) cvv2Ref.current?.focus();
+    }, [expYear]);
+    useEffect(() => {
+        if (cvv2.length >= 3) otpRef.current?.focus();
+    }, [cvv2]);
 
     useEffect(() => {
         if (otpTimer > 0) {
@@ -107,6 +125,7 @@ const BillPaymentCard: React.FC<Props> = ({ onClose }) => {
 
     const handlePay = (): void => {
         const cardNumber = `${card1}${card2}${card3}${card4}`;
+
         if (cardNumber.length !== 16) {
             Modal.createDialog(ErrorDialog, {
                 title: t("custom_panels|card_to_card_error_title"),
@@ -114,6 +133,32 @@ const BillPaymentCard: React.FC<Props> = ({ onClose }) => {
             });
             return;
         }
+        const validationResult = validateJalaliExpiry(expMonth, expYear);
+
+        if (validationResult === ExpiryValidationResult.InvalidMonth) {
+            Modal.createDialog(ErrorDialog, {
+                title: t("custom_panels|card_to_card_error_title"),
+                description: t("custom_panels|card_to_card_error_exp_month"),
+            });
+            return;
+        }
+
+        if (validationResult === ExpiryValidationResult.InvalidFormat) {
+            Modal.createDialog(ErrorDialog, {
+                title: t("custom_panels|card_to_card_error_title"),
+                description: t("custom_panels|card_to_card_error_format"),
+            });
+            return;
+        }
+
+        if (validationResult === ExpiryValidationResult.Expired) {
+            Modal.createDialog(ErrorDialog, {
+                title: t("custom_panels|card_to_card_error_title"),
+                description: t("custom_panels|card_to_card_error_expired"),
+            });
+            return;
+        }
+
         setIsSubmitting(true);
         const billLabel = billTypeKeys.find((b) => b.key === billType)?.label ?? billType;
         const progressDialog = Modal.createDialog(InfoDialog, {
@@ -122,8 +167,11 @@ const BillPaymentCard: React.FC<Props> = ({ onClose }) => {
                 <div className="mx_BillPaymentCard_progressContent">
                     <Spinner w={48} h={48} />
                     <div className="mx_BillPaymentCard_progressInfo">
-                        <strong>{finalAmount?.toLocaleString("fa-IR")} {t("custom_panels|card_to_card_toman")}</strong>
-                        <br />{billLabel}
+                        <strong>
+                            {finalAmount?.toLocaleString("fa-IR")} {t("custom_panels|card_to_card_toman")}
+                        </strong>
+                        <br />
+                        {billLabel}
                     </div>
                 </div>
             ),
@@ -134,22 +182,26 @@ const BillPaymentCard: React.FC<Props> = ({ onClose }) => {
         setTimeout(() => {
             progressDialog.close();
             setIsSubmitting(false);
-            Modal.createDialog(InfoDialog, {
-                title: t("custom_panels|bill_pay_success"),
-                description: (
-                    <div className="mx_BillPaymentCard_successContent">
-                        <div className="mx_BillPaymentCard_checkmark">
-                            <CheckCircleIcon width="80px" height="80px" className="mx_BillPaymentCard_checkIcon" />
-                        </div>
-                        <p><strong>{t("custom_panels|bill_type_label")}</strong> {billLabel}</p>
-                        <p><strong>{t("custom_panels|bill_id_label")}</strong> {billId}</p>
-                        <p><strong>{t("custom_panels|bill_amount_label")}</strong> {finalAmount?.toLocaleString("fa-IR")} {t("custom_panels|card_to_card_toman")}</p>
-                        <p><strong>{t("custom_panels|bill_tracking")}</strong> ۸۷۶۵۴۳۲۱۰</p>
-                    </div>
-                ),
-                hasCloseButton: true,
-                fixedWidth: true,
-            });
+            const rows: ReportRow[] = [
+                {
+                    label: t("custom_panels|card_to_card_report_amount"),
+                    value: `${finalAmount?.toLocaleString("fa-IR")} ${t("custom_panels|card_to_card_toman")}`,
+                },
+                { label: t("custom_panels|bill_type_label"), value: billLabel },
+                { label: t("custom_panels|bill_id_label"), value: billId },
+                { label: t("custom_panels|bill_tracking"), value: "۸۷۶۵۴۳۲۱۰" },
+            ];
+
+            Modal.createDialog(
+                InfoDialog,
+                {
+                    title: "",
+                    description: <CardToCardReport status="success" rows={rows} onClose={() => undefined} />,
+                    hasCloseButton: false,
+                    fixedWidth: true,
+                },
+                "mx_BillPaymentCard_reportDialog",
+            );
         }, 2800);
     };
 
@@ -161,7 +213,13 @@ const BillPaymentCard: React.FC<Props> = ({ onClose }) => {
                         <h1>{t("custom_panels|bill_payment_title")}</h1>
                         <p>{t("custom_panels|bill_payment_subtitle")}</p>
                     </div>
-                    <IconButton size="28px" onClick={onClose} tooltip={t("custom_panels|close")} kind="secondary" className="mx_BillPaymentCard_closeBtn">
+                    <IconButton
+                        size="28px"
+                        onClick={onClose}
+                        tooltip={t("custom_panels|close")}
+                        kind="secondary"
+                        className="mx_BillPaymentCard_closeBtn"
+                    >
                         <CloseIcon />
                     </IconButton>
                 </div>
@@ -172,7 +230,15 @@ const BillPaymentCard: React.FC<Props> = ({ onClose }) => {
                                 <label>{t("custom_panels|bill_type")}</label>
                                 <div className="mx_BillPaymentCard_billTypes">
                                     {billTypeKeys.map((bt) => (
-                                        <div key={bt.key} className={`mx_BillPaymentCard_billType ${billType === bt.key ? "selected" : ""}`} onClick={() => { setBillType(bt.key); setIsBillChecked(false); setFinalAmount(null); }}>
+                                        <div
+                                            key={bt.key}
+                                            className={`mx_BillPaymentCard_billType ${billType === bt.key ? "selected" : ""}`}
+                                            onClick={() => {
+                                                setBillType(bt.key);
+                                                setIsBillChecked(false);
+                                                setFinalAmount(null);
+                                            }}
+                                        >
                                             {bt.label}
                                         </div>
                                     ))}
@@ -180,11 +246,23 @@ const BillPaymentCard: React.FC<Props> = ({ onClose }) => {
                             </div>
                             <div className="mx_BillPaymentCard_inputGroup">
                                 <label>{t("custom_panels|bill_id")}</label>
-                                <input type="text" value={billId} onChange={(e) => setBillId(forceNumeric(e.target.value))} placeholder={t("custom_panels|bill_id_placeholder")} inputMode="numeric" />
+                                <input
+                                    type="text"
+                                    value={billId}
+                                    onChange={(e) => setBillId(forceNumeric(e.target.value))}
+                                    placeholder={t("custom_panels|bill_id_placeholder")}
+                                    inputMode="numeric"
+                                />
                             </div>
                             <div className="mx_BillPaymentCard_inputGroup">
                                 <label>{t("custom_panels|bill_payment_id")}</label>
-                                <input type="text" value={paymentId} onChange={(e) => setPaymentId(forceNumeric(e.target.value))} placeholder={t("custom_panels|bill_payment_id_placeholder")} inputMode="numeric" />
+                                <input
+                                    type="text"
+                                    value={paymentId}
+                                    onChange={(e) => setPaymentId(forceNumeric(e.target.value))}
+                                    placeholder={t("custom_panels|bill_payment_id_placeholder")}
+                                    inputMode="numeric"
+                                />
                             </div>
                             {finalAmount !== null && (
                                 <div className="mx_BillPaymentCard_billResult">
@@ -192,47 +270,159 @@ const BillPaymentCard: React.FC<Props> = ({ onClose }) => {
                                 </div>
                             )}
                             {!isBillChecked ? (
-                                <button type="button" className="mx_BillPaymentCard_btnPrimary" onClick={handleCheckBill}>{t("custom_panels|bill_check")}</button>
+                                <button
+                                    type="button"
+                                    className="mx_BillPaymentCard_btnPrimary"
+                                    onClick={handleCheckBill}
+                                >
+                                    {t("custom_panels|bill_check")}
+                                </button>
                             ) : (
-                                <button type="button" className="mx_BillPaymentCard_btnPrimary" onClick={() => setStep(2)}>{_t("custom_panels|charge_next_step")}</button>
+                                <button
+                                    type="button"
+                                    className="mx_BillPaymentCard_btnPrimary"
+                                    onClick={() => setStep(2)}
+                                >
+                                    {_t("custom_panels|charge_next_step")}
+                                </button>
                             )}
                         </div>
                     )}
                     {step === 2 && (
                         <div className="mx_BillPaymentCard_step">
                             <div className="mx_BillPaymentCard_summary">
-                                {t("custom_panels|bill_type_label")} <strong>{billTypeKeys.find((b) => b.key === billType)?.label}</strong><br />
-                                {t("custom_panels|bill_id_label")} <strong>{billId}</strong><br />
-                                {t("custom_panels|bill_amount_label")} <strong>{finalAmount?.toLocaleString("fa-IR")} {t("custom_panels|card_to_card_toman")}</strong>
+                                {t("custom_panels|bill_type_label")}{" "}
+                                <strong>{billTypeKeys.find((b) => b.key === billType)?.label}</strong>
+                                <br />
+                                {t("custom_panels|bill_id_label")} <strong>{billId}</strong>
+                                <br />
+                                {t("custom_panels|bill_amount_label")}{" "}
+                                <strong>
+                                    {finalAmount?.toLocaleString("fa-IR")} {t("custom_panels|card_to_card_toman")}
+                                </strong>
                             </div>
                             <div className="mx_BillPaymentCard_inputGroup">
                                 <label>{_t("custom_panels|charge_card_number")}</label>
                                 <div className="mx_BillPaymentCard_cardInputs">
-                                    <input ref={card1Ref} type="text" value={card1} onChange={(e) => handleCardInput(e.target.value, setCard1, 4)} maxLength={4} inputMode="numeric" />
-                                    <input ref={card2Ref} type="text" value={card2} onChange={(e) => handleCardInput(e.target.value, setCard2, 4)} onKeyDown={(e) => { if (e.key === "Backspace" && !card2) card1Ref.current?.focus(); }} maxLength={4} inputMode="numeric" />
-                                    <input ref={card3Ref} type="text" value={card3} onChange={(e) => handleCardInput(e.target.value, setCard3, 4)} onKeyDown={(e) => { if (e.key === "Backspace" && !card3) card2Ref.current?.focus(); }} maxLength={4} inputMode="numeric" />
-                                    <input ref={card4Ref} type="text" value={card4} onChange={(e) => handleCardInput(e.target.value, setCard4, 4)} onKeyDown={(e) => { if (e.key === "Backspace" && !card4) card3Ref.current?.focus(); }} maxLength={4} inputMode="numeric" />
+                                    <input
+                                        ref={card1Ref}
+                                        type="text"
+                                        value={card1}
+                                        onChange={(e) => handleCardInput(e.target.value, setCard1, 4)}
+                                        maxLength={4}
+                                        inputMode="numeric"
+                                    />
+                                    <input
+                                        ref={card2Ref}
+                                        type="text"
+                                        value={card2}
+                                        onChange={(e) => handleCardInput(e.target.value, setCard2, 4)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Backspace" && !card2) card1Ref.current?.focus();
+                                        }}
+                                        maxLength={4}
+                                        inputMode="numeric"
+                                    />
+                                    <input
+                                        ref={card3Ref}
+                                        type="text"
+                                        value={card3}
+                                        onChange={(e) => handleCardInput(e.target.value, setCard3, 4)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Backspace" && !card3) card2Ref.current?.focus();
+                                        }}
+                                        maxLength={4}
+                                        inputMode="numeric"
+                                    />
+                                    <input
+                                        ref={card4Ref}
+                                        type="text"
+                                        value={card4}
+                                        onChange={(e) => handleCardInput(e.target.value, setCard4, 4)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Backspace" && !card4) card3Ref.current?.focus();
+                                        }}
+                                        maxLength={4}
+                                        inputMode="numeric"
+                                    />
                                 </div>
                             </div>
                             <div className="mx_BillPaymentCard_row">
-                                <div className="mx_BillPaymentCard_inputGroup"><label>{_t("custom_panels|charge_exp_month")}</label><input ref={expMonthRef} type="text" value={expMonth} onChange={(e) => handleCardInput(e.target.value, setExpMonth, 2)} maxLength={2} inputMode="numeric" /></div>
-                                <div className="mx_BillPaymentCard_inputGroup"><label>{_t("custom_panels|charge_exp_year")}</label><input ref={expYearRef} type="text" value={expYear} onChange={(e) => handleCardInput(e.target.value, setExpYear, 2)} maxLength={2} inputMode="numeric" /></div>
-                                <div className="mx_BillPaymentCard_inputGroup"><label>CVV2</label><input ref={cvv2Ref} type="text" value={cvv2} onChange={(e) => handleCardInput(e.target.value, setCvv2, 4)} maxLength={4} inputMode="numeric" /></div>
+                                <div className="mx_BillPaymentCard_inputGroup">
+                                    <label>{_t("custom_panels|charge_exp_month")}</label>
+                                    <input
+                                        ref={expMonthRef}
+                                        type="text"
+                                        value={expMonth}
+                                        onChange={(e) => handleCardInput(e.target.value, setExpMonth, 2)}
+                                        maxLength={2}
+                                        inputMode="numeric"
+                                    />
+                                </div>
+                                <div className="mx_BillPaymentCard_inputGroup">
+                                    <label>{_t("custom_panels|charge_exp_year")}</label>
+                                    <input
+                                        ref={expYearRef}
+                                        type="text"
+                                        value={expYear}
+                                        onChange={(e) => handleCardInput(e.target.value, setExpYear, 2)}
+                                        maxLength={2}
+                                        inputMode="numeric"
+                                    />
+                                </div>
+                                <div className="mx_BillPaymentCard_inputGroup">
+                                    <label>CVV2</label>
+                                    <input
+                                        ref={cvv2Ref}
+                                        type="text"
+                                        value={cvv2}
+                                        onChange={(e) => handleCardInput(e.target.value, setCvv2, 4)}
+                                        maxLength={4}
+                                        inputMode="numeric"
+                                    />
+                                </div>
                             </div>
                             <div className="mx_BillPaymentCard_inputGroup">
                                 <label>{_t("custom_panels|charge_otp")}</label>
                                 <div className="mx_BillPaymentCard_otpGroup">
-                                    <input ref={otpRef} type="text" value={otp} onChange={(e) => handleCardInput(e.target.value, setOtp, 6)} maxLength={6} inputMode="numeric" />
-                                    <button type="button" className="mx_BillPaymentCard_getOtpBtn" onClick={handleGetOtp} disabled={isOtpDisabled}>
+                                    <input
+                                        ref={otpRef}
+                                        type="text"
+                                        value={otp}
+                                        onChange={(e) => handleCardInput(e.target.value, setOtp, 6)}
+                                        maxLength={6}
+                                        inputMode="numeric"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="mx_BillPaymentCard_getOtpBtn"
+                                        onClick={handleGetOtp}
+                                        disabled={isOtpDisabled}
+                                    >
                                         {isOtpDisabled ? `${otpTimer}s` : _t("custom_panels|charge_get_otp")}
                                     </button>
                                 </div>
-                                {otpTimer > 0 && <div className="mx_BillPaymentCard_timer">{t("custom_panels|card_to_card_resend_otp", { seconds: String(otpTimer) })}</div>}
+                                {otpTimer > 0 && (
+                                    <div className="mx_BillPaymentCard_timer">
+                                        {t("custom_panels|card_to_card_resend_otp", { seconds: String(otpTimer) })}
+                                    </div>
+                                )}
                             </div>
-                            <button type="button" className="mx_BillPaymentCard_btnPrimary" onClick={handlePay} disabled={isSubmitting}>
+                            <button
+                                type="button"
+                                className="mx_BillPaymentCard_btnPrimary"
+                                onClick={handlePay}
+                                disabled={isSubmitting}
+                            >
                                 {isSubmitting ? t("custom_panels|bill_paying") : t("custom_panels|bill_pay")}
                             </button>
-                            <button type="button" className="mx_BillPaymentCard_btnSecondary" onClick={() => setStep(1)}>{_t("custom_panels|charge_prev_step")}</button>
+                            <button
+                                type="button"
+                                className="mx_BillPaymentCard_btnSecondary"
+                                onClick={() => setStep(1)}
+                            >
+                                {_t("custom_panels|charge_prev_step")}
+                            </button>
                         </div>
                     )}
                 </div>

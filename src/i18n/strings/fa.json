@@ -827,6 +827,7 @@
         "click_here": "کلیک کنید!",
         "recent_transactions_summary": "خلاصه تراکنش‌های اخیر",
         "card_to_card_error_exp_month": "ماه انقضا باید بین ۱ تا ۱۲ باشد",
+        "card_to_card_error_format": "ماه و سال باید دو رقمی وارد شود (مثلاً 03)",
         "card_to_card_error_expired": "تاریخ انقضای کارت گذشته است",
         "card_to_card_report_title": "گزارش پرداخت",
         "card_to_card_report_subtitle": "انتقال وجه کارت به کارت",

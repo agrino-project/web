@@ -14,99 +14,13 @@ const t = (key: string, vars?: Record<string, string>): string => _t(key as Tran
 import ErrorDialog from "../dialogs/ErrorDialog";
 import InfoDialog from "../dialogs/InfoDialog";
 import Spinner from "../elements/Spinner";
-import CheckCircleIcon from "@vector-im/compound-design-tokens/assets/web/icons/check-circle-solid";
 import { IconButton } from "@vector-im/compound-web";
 import CloseIcon from "@vector-im/compound-design-tokens/assets/web/icons/close";
 
+import CardToCardReport, { type ReportRow } from "./CardToCardReport";
+import { ExpiryValidationResult, validateJalaliExpiry } from "./jalaliExpiry";
+
 type ReportStatus = "success" | "failed" | "unknown";
-
-interface ReportRow {
-    label: string;
-    value: React.ReactNode;
-    isCard?: boolean;
-}
-
-interface CardToCardReportProps {
-    status: ReportStatus;
-    rows: ReportRow[];
-    note?: string;
-    showAddContact?: boolean;
-    onClose(): void;
-}
-
-/** Styled "payment report" dialog content shown after a transfer attempt. */
-const CardToCardReport: React.FC<CardToCardReportProps> = ({ status, rows, note, showAddContact, onClose }) => {
-    const [addContact, setAddContact] = useState(false);
-
-    const statusText =
-        status === "success"
-            ? t("custom_panels|card_to_card_status_success")
-            : status === "failed"
-              ? t("custom_panels|card_to_card_status_failed")
-              : t("custom_panels|card_to_card_status_unknown");
-
-    const handleShare = (): void => {
-        if (typeof navigator !== "undefined" && navigator.share) {
-            void navigator.share({ title: t("custom_panels|card_to_card_report_title"), text: statusText });
-        }
-    };
-
-    return (
-        <div className={`mx_CardToCardReport mx_CardToCardReport_${status}`}>
-            <div className="mx_CardToCardReport_header">
-                <h1>{t("custom_panels|card_to_card_report_title")}</h1>
-            </div>
-            <div className="mx_CardToCardReport_body">
-                <div className="mx_CardToCardReport_status">
-                    <div className="mx_CardToCardReport_statusIcon">
-                        {status === "success" && <CheckCircleIcon width="52px" height="52px" />}
-                        {status === "failed" && (
-                            <span className="mx_CardToCardReport_iconCircle">
-                                <CloseIcon width="30px" height="30px" />
-                            </span>
-                        )}
-                        {status === "unknown" && <span className="mx_CardToCardReport_iconCircle">!</span>}
-                    </div>
-                    <div className="mx_CardToCardReport_statusText">{statusText}</div>
-                    <div className="mx_CardToCardReport_statusSub">
-                        {t("custom_panels|card_to_card_report_subtitle")}
-                    </div>
-                </div>
-                <div className="mx_CardToCardReport_rows">
-                    {rows.map((row, i) => (
-                        <div className="mx_CardToCardReport_row" key={i}>
-                            <span className="mx_CardToCardReport_rowLabel">{row.label}</span>
-                            <span
-                                className={
-                                    "mx_CardToCardReport_rowValue" +
-                                    (row.isCard ? " mx_CardToCardReport_cardValue" : "")
-                                }
-                            >
-                                {row.value}
-                            </span>
-                        </div>
-                    ))}
-                </div>
-                {showAddContact && (
-                    <label className="mx_CardToCardReport_addContact">
-                        <input type="checkbox" checked={addContact} onChange={(e) => setAddContact(e.target.checked)} />
-                        {t("custom_panels|card_to_card_report_add_contact")}
-                    </label>
-                )}
-                {note && <div className="mx_CardToCardReport_note">{note}</div>}
-                <button type="button" className="mx_CardToCardReport_shareBtn" onClick={handleShare}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path
-                            d="M18 8a3 3 0 1 0-2.83-4H15a3 3 0 0 0 .12 1.07l-6.3 3.67a3 3 0 1 0 0 4.52l6.3 3.67A3 3 0 1 0 18 16a2.98 2.98 0 0 0-1.88.67l-6.3-3.67a3 3 0 0 0 0-1.94l6.3-3.67A2.98 2.98 0 0 0 18 8Z"
-                            fill="currentColor"
-                        />
-                    </svg>
-                    {t("custom_panels|card_to_card_report_share")}
-                </button>
-            </div>
-        </div>
-    );
-};
 
 interface Props {
     onClose(): void;
@@ -167,17 +81,6 @@ const CardToCardCard: React.FC<Props> = ({ onClose }) => {
         }
     }, [otpTimer, isOtpDisabled]);
 
-    /** Current Jalali (Shamsi) year/month using the built-in Persian calendar */
-    const getCurrentJalali = (): { year: number; month: number } => {
-        const parts = new Intl.DateTimeFormat("en-US-u-ca-persian", {
-            year: "numeric",
-            month: "numeric",
-        }).formatToParts(new Date());
-        const year = Number(parts.find((p) => p.type === "year")?.value);
-        const month = Number(parts.find((p) => p.type === "month")?.value);
-        return { year, month };
-    };
-
     const forceNumeric = (v: string): string => v.replace(/[^0-9]/g, "");
     const handleCardInput = (v: string, set: (s: string) => void, max: number): void => {
         const n = forceNumeric(v);
@@ -214,24 +117,33 @@ const CardToCardCard: React.FC<Props> = ({ onClose }) => {
             });
             return;
         }
-        const month = Number(expMonth);
-        const year = Number(expYear);
-        if (expMonth.length !== 2 || month < 1 || month > 12) {
+
+        const validationResult = validateJalaliExpiry(expMonth, expYear);
+
+        if (validationResult === ExpiryValidationResult.InvalidMonth) {
             Modal.createDialog(ErrorDialog, {
                 title: t("custom_panels|card_to_card_error_title"),
                 description: t("custom_panels|card_to_card_error_exp_month"),
             });
             return;
         }
-        const { year: curYear, month: curMonth } = getCurrentJalali();
-        const curYear2 = curYear % 100;
-        if (expYear.length !== 2 || year < curYear2 || (year === curYear2 && month < curMonth)) {
+
+        if (validationResult === ExpiryValidationResult.InvalidFormat) {
+            Modal.createDialog(ErrorDialog, {
+                title: t("custom_panels|card_to_card_error_title"),
+                description: t("custom_panels|card_to_card_error_format"),
+            });
+            return;
+        }
+
+        if (validationResult === ExpiryValidationResult.Expired) {
             Modal.createDialog(ErrorDialog, {
                 title: t("custom_panels|card_to_card_error_title"),
                 description: t("custom_panels|card_to_card_error_expired"),
             });
             return;
         }
+
         setIsSubmitting(true);
         const progressDialog = Modal.createDialog(
             InfoDialog,
