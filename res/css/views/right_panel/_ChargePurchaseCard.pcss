@@ -271,14 +271,20 @@ Please see LICENSE files in the repository root for full details.
     }
 }
 
-.mx_ChargePurchaseCard_progressDialog {
-    direction: rtl;
-    font-family: "Vazirmatn", system-ui, sans-serif;
-
-    .mx_ChargePurchaseCard_progressContent {
+.mx_CardToCardCard_progressDialog {
+    .mx_CardToCardCard_progressContent {
         padding: 20px;
         text-align: center;
         min-width: 300px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        .mx_CardToCardCard_progressInfo {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
     }
 }
 
@@ -318,8 +324,6 @@ Please see LICENSE files in the repository root for full details.
         opacity: 1;
     }
 }
-
-
 
 /* Mobile: full-screen page instead of dialog card */
 @media only screen and (max-width: 768px) {

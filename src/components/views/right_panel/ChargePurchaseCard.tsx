@@ -18,7 +18,6 @@ import { _t, type TranslationKey } from "../../../languageHandler";
 /** Helper to cast new translation keys that the TS server hasn't picked up yet */
 const t = (key: string, vars?: Record<string, string>): string => _t(key as TranslationKey, vars);
 
-import CardToCardReport, { type ReportRow } from "./CardToCardReport";
 import { ExpiryValidationResult, validateJalaliExpiry } from "./jalaliExpiry";
 
 interface Props {
@@ -164,11 +163,10 @@ const ChargePurchaseCard: React.FC<Props> = ({ onClose }) => {
             {
                 title: _t("custom_panels|charge_paying"),
                 description: (
-                    <div style={{ textAlign: "center", direction: "rtl", marginTop: "20px" }}>
+                    <div className="mx_CardToCardCard_progressContent">
                         <Spinner w={48} h={48} />
-                        <div style={{ marginTop: "20px" }}>
+                        <div className="mx_CardToCardCard_progressInfo">
                             <strong>{selectedAmount?.toLocaleString("fa-IR")} تومان</strong>
-                            <br />
                             {_t("custom_panels|charge_for_number", { phone })}
                         </div>
                     </div>
@@ -176,35 +174,34 @@ const ChargePurchaseCard: React.FC<Props> = ({ onClose }) => {
                 hasCloseButton: false,
                 fixedWidth: true,
             },
-            "mx_ChargePurchaseCard_progressDialog",
+            "mx_CardToCardCard_progressDialog",
         );
         progressDialogRef.current = progressDialog;
 
         setTimeout(() => {
             progressDialog.close();
             setIsSubmitting(false);
-            const rows: ReportRow[] = [
-                {
-                    label: t("custom_panels|card_to_card_report_amount"),
-                    value: `${selectedAmount?.toLocaleString("fa-IR")} ${t("custom_panels|card_to_card_toman")}`,
-                },
-                { label: t("custom_panels|charge_number"), value: phone },
-                { label: t("custom_panels|charge_tracking"), value: "۹۸۷۶۵۴۳۲۱" },
-            ];
-
-            let reportDialog: { close: () => void } | undefined;
-            reportDialog = Modal.createDialog(
-                InfoDialog,
-                {
-                    title: "",
-                    description: (
-                        <CardToCardReport status="success" rows={rows} onClose={() => reportDialog?.close()} />
-                    ),
-                    hasCloseButton: false,
-                    fixedWidth: true,
-                },
-                "mx_ChargePurchaseCard_reportDialog",
-            );
+            Modal.createDialog(InfoDialog, {
+                title: _t("custom_panels|charge_success_title"),
+                description: (
+                    <div style={{ textAlign: "right", direction: "rtl", lineHeight: "2" }}>
+                        <div style={{ marginBottom: "20px", textAlign: "center" }}>
+                            <CheckCircleIcon width="80px" height="80px" style={{ color: "#326430" }} />
+                        </div>
+                        <p>
+                            <strong>{_t("custom_panels|charge_amount")}:</strong>{" "}
+                            {selectedAmount?.toLocaleString("fa-IR")} تومان
+                        </p>
+                        <p>
+                            <strong>{_t("custom_panels|charge_number")}:</strong> {phone}
+                        </p>
+                        <p>
+                            <strong>{_t("custom_panels|charge_tracking")}:</strong> ۹۸۷۶۵۴۳۲۱
+                        </p>
+                    </div>
+                ),
+                hasCloseButton: true,
+            });
         }, 2800);
     };
 

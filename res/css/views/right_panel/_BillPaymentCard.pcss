@@ -283,14 +283,20 @@ Please see LICENSE files in the repository root for full details.
     }
 }
 
-.mx_BillPaymentCard_progressDialog {
-    direction: rtl;
-    font-family: "Vazirmatn", system-ui, sans-serif;
-
-    .mx_BillPaymentCard_progressContent {
+.mx_CardToCardCard_progressDialog {
+    .mx_CardToCardCard_progressContent {
         padding: 20px;
         text-align: center;
         min-width: 300px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        .mx_CardToCardCard_progressInfo {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
     }
 }
 

@@ -18,8 +18,6 @@ import CheckCircleIcon from "@vector-im/compound-design-tokens/assets/web/icons/
 
 import { IconButton } from "@vector-im/compound-web";
 import CloseIcon from "@vector-im/compound-design-tokens/assets/web/icons/close";
-
-import CardToCardReport, { type ReportRow } from "./CardToCardReport";
 import { ExpiryValidationResult, validateJalaliExpiry } from "./jalaliExpiry";
 
 interface Props {
@@ -161,47 +159,54 @@ const BillPaymentCard: React.FC<Props> = ({ onClose }) => {
 
         setIsSubmitting(true);
         const billLabel = billTypeKeys.find((b) => b.key === billType)?.label ?? billType;
-        const progressDialog = Modal.createDialog(InfoDialog, {
-            title: t("custom_panels|bill_pay_progress"),
-            description: (
-                <div className="mx_BillPaymentCard_progressContent">
-                    <Spinner w={48} h={48} />
-                    <div className="mx_BillPaymentCard_progressInfo">
-                        <strong>
-                            {finalAmount?.toLocaleString("fa-IR")} {t("custom_panels|card_to_card_toman")}
-                        </strong>
-                        <br />
-                        {billLabel}
+        const progressDialog = Modal.createDialog(
+            InfoDialog,
+            {
+                title: t("custom_panels|bill_pay_progress"),
+                description: (
+                    <div className="mx_CardToCardCard_progressContent">
+                        <Spinner w={48} h={48} />
+                        <div className="mx_CardToCardCard_progressInfo">
+                            <strong>
+                                {finalAmount?.toLocaleString("fa-IR")} {t("custom_panels|card_to_card_toman")}
+                            </strong>
+                            {billLabel}
+                        </div>
                     </div>
-                </div>
-            ),
-            hasCloseButton: false,
-            fixedWidth: true,
-        });
+                ),
+                hasCloseButton: false,
+                fixedWidth: true,
+            },
+            "mx_CardToCardCard_progressDialog",
+        );
 
         setTimeout(() => {
             progressDialog.close();
             setIsSubmitting(false);
-            const rows: ReportRow[] = [
-                {
-                    label: t("custom_panels|card_to_card_report_amount"),
-                    value: `${finalAmount?.toLocaleString("fa-IR")} ${t("custom_panels|card_to_card_toman")}`,
-                },
-                { label: t("custom_panels|bill_type_label"), value: billLabel },
-                { label: t("custom_panels|bill_id_label"), value: billId },
-                { label: t("custom_panels|bill_tracking"), value: "۸۷۶۵۴۳۲۱۰" },
-            ];
-
-            Modal.createDialog(
-                InfoDialog,
-                {
-                    title: "",
-                    description: <CardToCardReport status="success" rows={rows} onClose={() => undefined} />,
-                    hasCloseButton: false,
-                    fixedWidth: true,
-                },
-                "mx_BillPaymentCard_reportDialog",
-            );
+            Modal.createDialog(InfoDialog, {
+                title: t("custom_panels|bill_pay_success"),
+                description: (
+                    <div className="mx_BillPaymentCard_successContent">
+                        <div className="mx_BillPaymentCard_checkmark">
+                            <CheckCircleIcon width="80px" height="80px" className="mx_BillPaymentCard_checkIcon" />
+                        </div>
+                        <p>
+                            <strong>{t("custom_panels|bill_type_label")}</strong> {billLabel}
+                        </p>
+                        <p>
+                            <strong>{t("custom_panels|bill_id_label")}</strong> {billId}
+                        </p>
+                        <p>
+                            <strong>{t("custom_panels|bill_amount_label")}</strong>{" "}
+                            {finalAmount?.toLocaleString("fa-IR")} {t("custom_panels|card_to_card_toman")}
+                        </p>
+                        <p>
+                            <strong>{t("custom_panels|bill_tracking")}</strong> ۸۷۶۵۴۳۲۱۰
+                        </p>
+                    </div>
+                ),
+                hasCloseButton: true,
+            });
         }, 2800);
     };
 
