@@ -14,11 +14,10 @@ import CheckCircleIcon from "@vector-im/compound-design-tokens/assets/web/icons/
 import { IconButton } from "@vector-im/compound-web";
 import CloseIcon from "@vector-im/compound-design-tokens/assets/web/icons/close";
 import { _t, type TranslationKey } from "../../../languageHandler";
-
 /** Helper to cast new translation keys that the TS server hasn't picked up yet */
 const t = (key: string, vars?: Record<string, string>): string => _t(key as TranslationKey, vars);
-
 import { ExpiryValidationResult, validateJalaliExpiry } from "./jalaliExpiry";
+import CardToCardReport, { type ReportRow } from "./CardToCardReport";
 
 interface Props {
     onClose(): void;
@@ -181,27 +180,43 @@ const ChargePurchaseCard: React.FC<Props> = ({ onClose }) => {
         setTimeout(() => {
             progressDialog.close();
             setIsSubmitting(false);
-            Modal.createDialog(InfoDialog, {
-                title: _t("custom_panels|charge_success_title"),
-                description: (
-                    <div style={{ textAlign: "right", direction: "rtl", lineHeight: "2" }}>
-                        <div style={{ marginBottom: "20px", textAlign: "center" }}>
-                            <CheckCircleIcon width="80px" height="80px" style={{ color: "#326430" }} />
-                        </div>
-                        <p>
-                            <strong>{_t("custom_panels|charge_amount")}:</strong>{" "}
-                            {selectedAmount?.toLocaleString("fa-IR")} تومان
-                        </p>
-                        <p>
-                            <strong>{_t("custom_panels|charge_number")}:</strong> {phone}
-                        </p>
-                        <p>
-                            <strong>{_t("custom_panels|charge_tracking")}:</strong> ۹۸۷۶۵۴۳۲۱
-                        </p>
-                    </div>
-                ),
-                hasCloseButton: true,
-            });
+            const rows: ReportRow[] = [
+                {
+                    label: _t("custom_panels|charge_amount"),
+                    value: `${selectedAmount?.toLocaleString("fa-IR")} تومان`,
+                },
+                {
+                    label: _t("custom_panels|charge_number"),
+                    value: phone,
+                },
+                {
+                    label: _t("custom_panels|charge_tracking"),
+                    value: "۹۸۷۶۵۴۳۲۱",
+                },
+            ];
+
+            let reportDialog: { close: () => void } | undefined;
+
+            reportDialog = Modal.createDialog(
+                InfoDialog,
+                {
+                    title: "",
+                    description: (
+                        <CardToCardReport
+                            status="success"
+                            rows={rows}
+                            title={_t("custom_panels|charge_receipt_title")}
+                            statusMessage={_t("custom_panels|charge_success_title")}
+                            showAddContact={false}
+                            onClose={() => reportDialog?.close()}
+                        />
+                    ),
+                    hasCloseButton: false,
+                    button: _t("action|done"),
+                    fixedWidth: true,
+                },
+                "mx_CardToCardCard_reportDialog",
+            );
         }, 2800);
     };
 

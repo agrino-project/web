@@ -301,9 +301,6 @@ Please see LICENSE files in the repository root for full details.
 }
 
 .mx_BillPaymentCard_successDialog {
-    direction: rtl;
-    font-family: "Vazirmatn", system-ui, sans-serif;
-
     .mx_BillPaymentCard_successContent {
         padding: 20px;
         text-align: center;
@@ -337,7 +334,6 @@ Please see LICENSE files in the repository root for full details.
     }
 }
 
-
 /* Mobile: full-screen page instead of dialog card */
 @media only screen and (max-width: 768px) {
     .mx_BillPaymentCard {
@@ -362,5 +358,23 @@ Please see LICENSE files in the repository root for full details.
         .mx_BillPaymentCard_formBody {
             padding: 24px 16px;
         }
+    }
+}
+
+.mx_Dialog_primary {
+    background: linear-gradient(135deg, #326430 0%, #2a5428 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 20px;
+    color: white;
+    transition: transform 0.2s;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(50, 100, 48, 0.3);
     }
 }

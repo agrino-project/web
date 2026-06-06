@@ -206,6 +206,7 @@ const CardToCardCard: React.FC<Props> = ({ onClose }) => {
                         />
                     ),
                     hasCloseButton: false,
+                    button: t("action|done"),
                     fixedWidth: true,
                 },
                 "mx_CardToCardCard_reportDialog",

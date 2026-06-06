@@ -28,33 +28,41 @@ export interface CardToCardReportProps {
     note?: string;
     showAddContact?: boolean;
     onClose(): void;
+    title?: string;
+    statusMessage?: string;
 }
 
 /** Styled "payment report" dialog content shown after a transfer attempt. */
-const CardToCardReport: React.FC<CardToCardReportProps> = ({ status, rows, note, showAddContact, onClose }) => {
+const CardToCardReport: React.FC<CardToCardReportProps> = ({
+    status,
+    rows,
+    note,
+    showAddContact,
+    title,
+    statusMessage,
+}) => {
     const [addContact, setAddContact] = React.useState(false);
 
-    const statusText =
-        status === "success"
+    const displayStatusText =
+        statusMessage ||
+        (status === "success"
             ? t("custom_panels|card_to_card_status_success")
             : status === "failed"
               ? t("custom_panels|card_to_card_status_failed")
-              : t("custom_panels|card_to_card_status_unknown");
+              : t("custom_panels|card_to_card_status_unknown"));
+
+    const displayTitle = title || t("custom_panels|card_to_card_report_title");
 
     const handleShare = (): void => {
         if (typeof navigator !== "undefined" && navigator.share) {
-            void navigator.share({ title: t("custom_panels|card_to_card_report_title"), text: statusText });
+            void navigator.share({ title: displayTitle, text: displayStatusText });
         }
     };
-
-    // onClose is currently unused because this is dialog content with hasCloseButton={false}.
-    // Kept for parity with existing API.
-    void onClose;
 
     return (
         <div className={`mx_CardToCardReport mx_CardToCardReport_${status}`}>
             <div className="mx_CardToCardReport_header">
-                <h1>{t("custom_panels|card_to_card_report_title")}</h1>
+                <h1>{displayTitle}</h1>
             </div>
             <div className="mx_CardToCardReport_body">
                 <div className="mx_CardToCardReport_status">
@@ -67,10 +75,7 @@ const CardToCardReport: React.FC<CardToCardReportProps> = ({ status, rows, note,
                         )}
                         {status === "unknown" && <span className="mx_CardToCardReport_iconCircle">!</span>}
                     </div>
-                    <div className="mx_CardToCardReport_statusText">{statusText}</div>
-                    <div className="mx_CardToCardReport_statusSub">
-                        {t("custom_panels|card_to_card_report_subtitle")}
-                    </div>
+                    <div className="mx_CardToCardReport_statusText">{displayStatusText}</div>
                 </div>
                 <div className="mx_CardToCardReport_rows">
                     {rows.map((row, i) => (

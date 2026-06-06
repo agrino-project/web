@@ -19,6 +19,7 @@ import CheckCircleIcon from "@vector-im/compound-design-tokens/assets/web/icons/
 import { IconButton } from "@vector-im/compound-web";
 import CloseIcon from "@vector-im/compound-design-tokens/assets/web/icons/close";
 import { ExpiryValidationResult, validateJalaliExpiry } from "./jalaliExpiry";
+import CardToCardReport, { type ReportRow } from "./CardToCardReport";
 
 interface Props {
     onClose(): void;
@@ -183,30 +184,48 @@ const BillPaymentCard: React.FC<Props> = ({ onClose }) => {
         setTimeout(() => {
             progressDialog.close();
             setIsSubmitting(false);
-            Modal.createDialog(InfoDialog, {
-                title: t("custom_panels|bill_pay_success"),
-                description: (
-                    <div className="mx_BillPaymentCard_successContent">
-                        <div className="mx_BillPaymentCard_checkmark">
-                            <CheckCircleIcon width="80px" height="80px" className="mx_BillPaymentCard_checkIcon" />
-                        </div>
-                        <p>
-                            <strong>{t("custom_panels|bill_type_label")}</strong> {billLabel}
-                        </p>
-                        <p>
-                            <strong>{t("custom_panels|bill_id_label")}</strong> {billId}
-                        </p>
-                        <p>
-                            <strong>{t("custom_panels|bill_amount_label")}</strong>{" "}
-                            {finalAmount?.toLocaleString("fa-IR")} {t("custom_panels|card_to_card_toman")}
-                        </p>
-                        <p>
-                            <strong>{t("custom_panels|bill_tracking")}</strong> ۸۷۶۵۴۳۲۱۰
-                        </p>
-                    </div>
-                ),
-                hasCloseButton: true,
-            });
+            const typeLabel = billTypeKeys.find((b) => b.key === billType)?.label ?? billType;
+
+            const rows: ReportRow[] = [
+                {
+                    label: t("custom_panels|bill_type_label"),
+                    value: typeLabel,
+                },
+                {
+                    label: t("custom_panels|bill_id_label"),
+                    value: billId,
+                },
+                {
+                    label: t("custom_panels|bill_amount_label"),
+                    value: `${finalAmount?.toLocaleString("fa-IR")} ${t("custom_panels|card_to_card_toman")}`,
+                },
+                {
+                    label: t("custom_panels|bill_tracking"),
+                    value: "۸۷۶۵۴۳۲۱۰",
+                },
+            ];
+
+            let reportDialog: { close: () => void } | undefined;
+            reportDialog = Modal.createDialog(
+                InfoDialog,
+                {
+                    title: "",
+                    description: (
+                        <CardToCardReport
+                            status="success"
+                            rows={rows}
+                            title={t("custom_panels|bill_receipt_title")}
+                            statusMessage={t("custom_panels|bill_pay_success_message")}
+                            showAddContact={false}
+                            onClose={() => reportDialog?.close()}
+                        />
+                    ),
+                    hasCloseButton: false,
+                    button: _t("action|done"),
+                    fixedWidth: true,
+                },
+                "mx_CardToCardCard_reportDialog",
+            );
         }, 2800);
     };
 

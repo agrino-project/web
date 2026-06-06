@@ -289,9 +289,6 @@ Please see LICENSE files in the repository root for full details.
 }
 
 .mx_ChargePurchaseCard_successDialog {
-    direction: rtl;
-    font-family: "Vazirmatn", system-ui, sans-serif;
-
     .mx_ChargePurchaseCard_successContent {
         padding: 20px;
         text-align: center;
@@ -309,6 +306,34 @@ Please see LICENSE files in the repository root for full details.
             }
         }
     }
+}
+
+.mx_ChargePurchaseCard_successDialog {
+    .mx_Dialog_content {
+        background-color: #ffffff !important;
+        border-radius: 20px !important;
+        padding: 30px !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 90%;
+        margin: auto;
+        text-align: center;
+    }
+
+    .mx_Dialog_title {
+        color: #1e293b;
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        border-bottom: none !important;
+    }
+}
+
+.mx_ChargePurchaseCard_successIcon {
+    color: #009951 !important;
+    display: block;
+    margin: 0 auto 10px auto;
+    filter: drop-shadow(0 4px 6px rgba(74, 222, 128, 0.4));
 }
 
 @keyframes checkmarkScale {
@@ -349,5 +374,23 @@ Please see LICENSE files in the repository root for full details.
         .mx_ChargePurchaseCard_formBody {
             padding: 24px 16px;
         }
+    }
+}
+
+.mx_Dialog_primary {
+    background: linear-gradient(135deg, #326430 0%, #2a5428 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 20px;
+    color: white;
+    transition: transform 0.2s;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(50, 100, 48, 0.3);
     }
 }
