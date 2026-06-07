@@ -872,8 +872,11 @@ class LoggedInView extends React.Component<IProps, IState> {
         );
 
         // Chat room / main content
-        const chatRoomElement = <div className="mx_RoomView_wrapper mx_MobileLayout_roomView">{pageElement}</div>;
-
+        const chatRoomElement = (
+            <div className="mx_RoomView_wrapper mx_MobileLayout_roomView">
+                {this.state.greatShopPage ? <GreatShopsForm page={this.state.greatShopPage} /> : pageElement}
+            </div>
+        );
         // Desktop layout (the original full layout)
         const desktopLayout = (
             <>

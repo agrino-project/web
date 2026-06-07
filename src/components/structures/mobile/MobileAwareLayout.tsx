@@ -11,6 +11,9 @@ import { useIsMobile } from "../../../hooks/useMobileCheck";
 import { MobileNavProvider, useMobileNav } from "./MobileNavContext";
 import MobileLayout from "./MobileLayout";
 import PageTypes from "../../../PageTypes";
+import defaultDispatcher from "../../../dispatcher/dispatcher";
+import { Action } from "../../../dispatcher/actions";
+import { useDispatcher } from "../../../hooks/useDispatcher";
 
 interface Props {
     desktopLayout: ReactNode;
@@ -48,16 +51,20 @@ const MobileNavSync: React.FC<Props> = (props) => {
         }
     }, [isMobile, props.pageType, props.currentRoomId]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    useDispatcher(defaultDispatcher, (payload) => {
+        if (!isMobile) return;
+        if (payload.action === Action.ViewRoom && payload.room_id) {
+            navigate("chatRoom");
+        } else if (payload.action === Action.ViewGreatShopPage) {
+            navigate("chatRoom");
+        }
+    });
+
     if (!isMobile) {
         return <>{props.desktopLayout}</>;
     }
 
-    return (
-        <MobileLayout
-            chatListElement={props.chatListElement}
-            chatRoomElement={props.chatRoomElement}
-        />
-    );
+    return <MobileLayout chatListElement={props.chatListElement} chatRoomElement={props.chatRoomElement} />;
 };
 
 const MobileAwareLayout: React.FC<Props> = (props) => {
