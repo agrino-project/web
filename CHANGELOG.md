@@ -23,7 +23,7 @@ Changes in [1.13.0](https://github.com/agrino-project/web/releases/tag/v1.13.0) 
 * Fix multiple UI inconsistencies in bot interaction components.
 * Fix several chat layout and message styling issues.
 
-Changes in [1.14.1](https://github.com/agrino-project/web/releases/tag/v1.14.0) (2026-05-21)
+Changes in [1.14.0](https://github.com/agrino-project/web/releases/tag/v1.14.0) (2026-05-21)
 ================================================================================================
 
 ## ✨ Features
@@ -46,3 +46,73 @@ Changes in [1.14.1](https://github.com/agrino-project/web/releases/tag/v1.14.0) 
 ## 🐛 Bug Fixes
 
 * Fix date input bug in chat.
+
+# Changes in [1.15.0](https://github.com/agrino-project/web/releases/tag/v1.15.0) (2026-06-5)
+
+## ✨ Features
+
+* Remove Device Verification during login.
+* Update Marketplace and Banking Services layout based on the new design.
+* Redesign the Homepage with new business and smart agriculture consultation sections.
+* Add new images for Articles and News sections.
+* Redesign the chat start page.
+* Update chat header according to the latest Figma design.
+* Add alphabetical (A-Z) sorting option in the Social section menu.
+* Synchronize major business modules with the latest Figma designs.
+* Synchronize chat interface with the latest Figma designs.
+
+## 🚀 Improvements
+
+* Update sidebar structure and navigation experience.
+* Simplify Settings by keeping only the Account section.
+* Remove password change functionality.
+* Remove email and personal information sections.
+* Support four-digit CVV2 values in banking services.
+* Add validation for card expiry month and year fields.
+* Improve Banking Services modal behavior after closing dialogs.
+* Update organization interaction and discussion forum buttons.
+* Refresh support section design and content.
+* Update business dashboard and related components based on Figma.
+* Move user search identifier formatting from frontend to backend API.
+* Automatically append required user domain information during user search on the server side.
+* Improve chat header actions and interactions.
+
+## 🐛 Bug Fixes
+
+* Fix navigation issue where closing Banking Services redirects users to the Social section.
+* Remove "Recommended for You" section.
+* Remove dropdown data display from major business categories.
+* Fix incorrect Persian translation of "Forward" and replace it with "بازنشر".
+* Remove Share and View Source actions where no longer required.
+* Fix multiple UI inconsistencies across homepage, chat, and business sections.
+* Remove Thread functionality from Social chats.
+* Remove Thread-related actions from hover menus.
+* Remove Dark Mode support and related UI inconsistencies.
+* Fix several design mismatches between implementation and Figma.
+
+# Changes in [1.16.0](https://github.com/agrino-project/web/releases/tag/v1.16.0) (2026-06-8)
+
+## ✨ Features
+
+* Add card expiry date and CVV2 validation to Top-up Purchase and Bill Payment pages and implement the related validation logic.
+* Add successful payment pages for Top-up Purchase, Bill Payment, and Card-to-Card Transfer flows and implement the related payment logic.
+* Restore user verification during the login process.
+* Add a back-to-top button to the Major Business form page in mobile view, allowing users to quickly return to the business selection page.
+* Redesign chat date separators (e.g. "Thursday, 23 Tir") and system notifications (e.g. "This number joined the chat") according to the latest Figma design.
+
+## 🚀 Improvements
+
+* Complete the removal of password change functionality.
+* Complete the removal of email and personal information sections.
+* Improve payment flow validation and handling across banking services.
+* Update chat system messages and timeline presentation according to Figma specifications.
+* Remove expand and collapse actions from chat system notifications.
+
+## 🐛 Bug Fixes
+
+* Fix user list menu shrinking when resizing the browser from mobile view to desktop view.
+* Fix issue causing navigation from the Home page to Chat and opening an empty dialog when resizing the browser from mobile view to desktop view.
+* Fix issue causing navigation from Chat to Home when resizing the browser from desktop view to mobile view.
+* Fix issue preventing chats from reopening after leaving them in mobile view.
+* Fix issue preventing the Major Business form page from opening in mobile view.
+* Fix responsive layout issues related to mobile and desktop viewport transitions.
