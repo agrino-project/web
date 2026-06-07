@@ -28,14 +28,8 @@ Please see LICENSE files in the repository root for full details.
         text-decoration: none;
         color: $secondary-content;
         transition: color ease 0.15s;
-        gap: 2px;
+        gap: 4px;
         max-width: 100%;
-
-        // avoid overflow with wide content
-
-        &:hover {
-            color: $primary-content;
-        }
     }
 
     .mx_RedactedBody {
@@ -121,6 +115,7 @@ Please see LICENSE files in the repository root for full details.
         align-items: center;
         gap: 4px;
         justify-content: flex-end;
+        padding-inline-start: 10px;
 
         .mx_DisambiguatedProfile {
             font: var(--cpd-font-body-md-regular);
