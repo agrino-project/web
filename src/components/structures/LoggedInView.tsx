@@ -134,6 +134,9 @@ interface IState {
 }
 
 const NEW_ROOM_LIST_MIN_WIDTH = 224;
+// Keep in sync with the breakpoint in useMobileCheck: at/below this width the mobile
+// layout is shown and the desktop left-panel resize container is unmounted.
+const MOBILE_BREAKPOINT = 768;
 /**
  * This is what our MatrixChat shows when we are logged in. The precise view is
  * determined by the page_type property.
@@ -155,6 +158,7 @@ class LoggedInView extends React.Component<IProps, IState> {
     protected backgroundImageWatcherRef?: string;
     protected timezoneProfileUpdateRef?: string[];
     protected resizer?: Resizer<ICollapseConfig, CollapseItem>;
+    protected wasDesktopWidth = window.innerWidth > MOBILE_BREAKPOINT;
 
     public static contextType = SDKContext;
     declare public context: React.ContextType<typeof SDKContext>;
@@ -184,6 +188,7 @@ class LoggedInView extends React.Component<IProps, IState> {
 
     public componentDidMount(): void {
         document.addEventListener("keydown", this.onNativeKeyDown, false);
+        window.addEventListener("resize", this.onWindowResize);
         LegacyCallHandler.instance.addListener(LegacyCallHandlerEvent.CallState, this.onCallState);
 
         this.updateServerNoticeEvents();
@@ -224,6 +229,14 @@ class LoggedInView extends React.Component<IProps, IState> {
         dis.register(this.onDispatcher);
     }
 
+    private onWindowResize = (): void => {
+        const isDesktopWidth = window.innerWidth > MOBILE_BREAKPOINT;
+        if (isDesktopWidth && !this.wasDesktopWidth) {
+            // Defer so the desktop layout has rendered its resize container first.
+            setTimeout(() => this.loadResizer(), 0);
+        }
+        this.wasDesktopWidth = isDesktopWidth;
+    };
     /**
      * Load or reload the resizer for the left panel
      */
@@ -287,6 +300,7 @@ class LoggedInView extends React.Component<IProps, IState> {
 
     public componentWillUnmount(): void {
         document.removeEventListener("keydown", this.onNativeKeyDown, false);
+        window.removeEventListener("resize", this.onWindowResize);
         LegacyCallHandler.instance.removeListener(LegacyCallHandlerEvent.CallState, this.onCallState);
         RightPanelStore.instance.off(UPDATE_EVENT, this.onRightPanelStoreUpdate);
         this._matrixClient.removeListener(ClientEvent.AccountData, this.onAccountData);
@@ -910,11 +924,11 @@ class LoggedInView extends React.Component<IProps, IState> {
                     )}
                     <div className="mx_RoomView_wrapper">
                         {(() => {
-                           const onClose = (): void => {
-                               RightPanelStore.instance.setCard({
-                                   phase: RightPanelPhases.Services,
-                               });
-                           };
+                            const onClose = (): void => {
+                                RightPanelStore.instance.setCard({
+                                    phase: RightPanelPhases.Services,
+                                });
+                            };
                             switch (this.state.desktopPage) {
                                 case "services":
                                     return <ServicesPage />;

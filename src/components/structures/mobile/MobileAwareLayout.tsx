@@ -46,10 +46,11 @@ const MobileNavSync: React.FC<Props> = (props) => {
     // Sync room navigation
     useEffect(() => {
         if (!isMobile) return;
+        if (props.desktopPage !== "default") return;
         if (props.pageType === PageTypes.RoomView && props.currentRoomId && currentPage !== "chatRoom") {
             navigate("chatRoom");
         }
-    }, [isMobile, props.pageType, props.currentRoomId]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [isMobile, props.pageType, props.currentRoomId, props.desktopPage]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useDispatcher(defaultDispatcher, (payload) => {
         if (!isMobile) return;

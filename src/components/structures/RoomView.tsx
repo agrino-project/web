@@ -2558,7 +2558,19 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
             );
         }
 
-        const showRightPanel = !isRoomEncryptionLoading && this.state.room && this.state.showRightPanel;
+        const fullPagePhases: RightPanelPhases[] = [
+            RightPanelPhases.Services,
+            RightPanelPhases.Agriculture,
+            RightPanelPhases.CardToCard,
+            RightPanelPhases.ChargePurchase,
+            RightPanelPhases.BillPayment,
+        ];
+        const currentPhase = this.context.rightPanelStore.currentCard?.phase;
+        const showRightPanel =
+            !isRoomEncryptionLoading &&
+            this.state.room &&
+            this.state.showRightPanel &&
+            !(currentPhase && fullPagePhases.includes(currentPhase));
         const rightPanelModal = showRightPanel
             ? createPortal(
                   <div

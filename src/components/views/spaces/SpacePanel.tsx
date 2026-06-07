@@ -70,6 +70,7 @@ import { ReleaseAnnouncement } from "../../structures/ReleaseAnnouncement";
 import RightPanelStore from "../../../stores/right-panel/RightPanelStore";
 import { RightPanelPhases } from "../../../stores/right-panel/RightPanelStorePhases";
 import { UPDATE_EVENT } from "../../../stores/AsyncStore";
+import { SdkContextClass } from "../../../contexts/SDKContext";
 
 const useSpaces = (): [Room[], MetaSpace[], Room[], SpaceKey] => {
     const invites = useEventEmitterState<Room[]>(SpaceStore.instance, UPDATE_INVITED_SPACES, () => {
@@ -698,6 +699,7 @@ const SpacePanel: React.FC = () => {
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        if (SdkContextClass.instance.roomViewStore.getRoomId()) return;
         RightPanelStore.instance.setCard({ phase: RightPanelPhases.Agriculture }, true);
     }, []);
 
