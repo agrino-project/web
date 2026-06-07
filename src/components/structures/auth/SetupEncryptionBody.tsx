@@ -66,13 +66,13 @@ export default class SetupEncryptionBody extends React.Component<IProps, IState>
         };
     }
 
-    // public componentDidMount(): void {
-    //     const store = SetupEncryptionStore.sharedInstance();
-    //     store.on("update", this.onStoreUpdate);
-    // }
     public componentDidMount(): void {
-        window.location.href = "/#/home";
+        const store = SetupEncryptionStore.sharedInstance();
+        store.on("update", this.onStoreUpdate);
     }
+    // public componentDidMount(): void {
+    //     window.location.href = "/#/home";
+    // }
 
     private onStoreUpdate = (): void => {
         const store = SetupEncryptionStore.sharedInstance();
