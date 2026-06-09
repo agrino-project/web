@@ -377,16 +377,23 @@ export default class UserMenu extends React.Component<IProps, IState> {
             },
         );
 
+        const avatarSize = 32;
+        const userId = MatrixClientPeg.safeGet().getSafeUserId();
+        const displayName = OwnProfileStore.instance.displayName || userId;
+        const avatarUrl = OwnProfileStore.instance.getHttpAvatarUrl(avatarSize);
         return (
             <IconizedContextMenu {...position} onFinished={this.onCloseMenu} className="mx_UserMenu_contextMenu">
                 <div className="mx_UserMenu_contextMenu_header">
-                    <div className="mx_UserMenu_contextMenu_name">
-                        <span className="mx_UserMenu_contextMenu_displayName">
-                            {OwnProfileStore.instance.displayName}
-                        </span>
-                        <span className="mx_UserMenu_contextMenu_userId" title={userIdentifierString || ""}>
-                            {userIdentifierString}
-                        </span>
+                    <div className="mx_MobileBottomNav_menuProfile">
+                        <BaseAvatar idName={userId} name={displayName} url={avatarUrl} size="45px" />
+                        <div className="mx_UserMenu_contextMenu_name">
+                            <span className="mx_UserMenu_contextMenu_displayName">
+                                {OwnProfileStore.instance.displayName}
+                            </span>
+                            <span className="mx_UserMenu_contextMenu_userId" title={userIdentifierString || ""}>
+                                {userIdentifierString}
+                            </span>
+                        </div>
                     </div>
 
                     {/* <RovingAccessibleButton

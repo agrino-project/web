@@ -20,14 +20,16 @@ import { OwnProfileStore } from "../../../stores/OwnProfileStore";
 import { UPDATE_EVENT } from "../../../stores/AsyncStore";
 import { useEventEmitter } from "../../../hooks/useEventEmitter";
 import BaseAvatar from "../avatars/BaseAvatar";
-import { useMatrixClientContext } from "../../../contexts/MatrixClientContext";
+import UserIdentifierCustomisations from "../../../customisations/UserIdentifier";
+import { MatrixClientPeg } from "../../../MatrixClientPeg";
 
 const MobileBottomNav: React.FC = () => {
     const { activeTab, navigate } = useMobileNav();
     const [moreOpen, setMoreOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
-    const cli = useMatrixClientContext();
-    const userId = cli.getUserId() ?? "";
+    const userId = UserIdentifierCustomisations.getDisplayUserIdentifier(MatrixClientPeg.safeGet().getSafeUserId(), {
+        withDisplayName: true,
+    }) ?? "";
 
     // User profile
     const [displayName, setDisplayName] = useState(OwnProfileStore.instance.displayName || userId);
@@ -94,7 +96,7 @@ const MobileBottomNav: React.FC = () => {
                 {moreOpen && (
                     <div className="mx_MobileBottomNav_moreMenu">
                         <div className="mx_MobileBottomNav_menuProfile">
-                            <BaseAvatar idName={userId} name={displayName} url={avatarUrl} size="36px" />
+                            <BaseAvatar idName={userId} name={displayName} url={avatarUrl} size="38px" />
                             <div className="mx_MobileBottomNav_menuProfileInfo">
                                 <span className="mx_MobileBottomNav_menuProfileName">{displayName}</span>
                                 <span className="mx_MobileBottomNav_menuProfileId">{userId}</span>

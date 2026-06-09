@@ -54,11 +54,16 @@ Please see LICENSE files in the repository root for full details.
     }
 
     .mx_UserMenu_contextMenu_header {
-        padding: 20px;
-
         /* Create a flexbox to organize the header a bit easier */
         display: flex;
         align-items: center;
+
+        .mx_MobileBottomNav_menuProfile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+        }
 
         .mx_UserMenu_contextMenu_name {
             /* Create another flexbox of columns to handle large user IDs */
@@ -66,17 +71,20 @@ Please see LICENSE files in the repository root for full details.
             flex-direction: column;
             width: calc(100% - 40px); /* 40px = 32px theme button + 8px margin to theme button */
 
-            .mx_UserMenu_contextMenu_displayName,
-            .mx_UserMenu_contextMenu_userId {
-                font: var(--cpd-font-body-lg-regular);
-
-                /* Automatically grow subelements to fit the container */
-                flex: 1;
-                width: 100%;
-
-                /* Ellipsize text overflow */
-                text-overflow: ellipsis;
+            .mx_UserMenu_contextMenu_displayName {
+                font-size: 16px;
+                font-weight: 600;
+                color: $primary-content;
                 overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .mx_UserMenu_contextMenu_userId {
+                font-size: 14px;
+                color: $secondary-content;
+                overflow: hidden;
+                text-overflow: ellipsis;
                 white-space: nowrap;
             }
 

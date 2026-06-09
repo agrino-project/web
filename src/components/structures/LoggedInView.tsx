@@ -774,7 +774,7 @@ class LoggedInView extends React.Component<IProps, IState> {
                     break;
             }
         }
-        this.setState({ desktopPage });
+        this.setState({ desktopPage, greatShopPage: desktopPage !== "default" ? null : this.state.greatShopPage });
     };
 
     private onDispatcher = (payload: any): void => {
