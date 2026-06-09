@@ -93,20 +93,87 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         this.forceUpdate();
     };
 
+    /** Render inline markup found in bot question bodies: **bold** and _hint_. */
+    private renderInlineMarkup(text: string): React.ReactNode {
+        const parts: React.ReactNode[] = [];
+        const regex = /(\*\*[^*]+\*\*|_[^_]+_)/g;
+        let lastIndex = 0;
+        let key = 0;
+        let match: RegExpExecArray | null;
+        while ((match = regex.exec(text)) !== null) {
+            if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
+            const token = match[0];
+            if (token.startsWith("**")) {
+                parts.push(<strong key={key++}>{token.slice(2, -2)}</strong>);
+            } else {
+                const hint = token.slice(1, -1).replace(/^\(([\s\S]*)\)$/, "$1");
+                parts.push(
+                    <span key={key++} className="mx_BotQuestion_hint">
+                        {hint}
+                    </span>,
+                );
+            }
+            lastIndex = regex.lastIndex;
+        }
+        if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+        return parts;
+    }
+
+    /**
+     * Render the question prompt (content.body) preserving line breaks and basic markup.
+     * The bot bundles the whole prompt into the body, so we strip the parts we already
+     * render with dedicated UI to avoid showing them twice:
+     *  - the validation error (shown in its own styled box) which precedes the "📝" marker
+     *  - the textual option list (shown as buttons) for option questions
+     *  - the "send empty to skip" note (replaced by the "بعدی" button)
+     */
+    private renderQuestionBody(body?: string, hasOptions = false): React.ReactNode {
+        if (!body) return null;
+        let lines = body.split("\n");
+        const qIdx = lines.findIndex((l) => l.includes("📝"));
+        if (qIdx > 0) lines = lines.slice(qIdx);
+        lines = lines.filter((line) => {
+            const t = line.trim();
+            if (!t) return false;
+            if (t.includes("خالی ارسال") || t.includes("رد شدن")) return false;
+            if (hasOptions) {
+                if (t.includes(" | ")) return false; // option list
+                if (t.endsWith(":")) return false; // option list label, e.g. "استان‌ها:"
+                if (t.includes("دیگر")) return false; // "...و N شهر دیگر"
+            }
+            return true;
+        });
+        return lines.map((line, i) => (
+            <div key={i} className="mx_BotQuestion_line">
+                {this.renderInlineMarkup(line)}
+            </div>
+        ));
+    }
+
     private renderInteractiveQuestion(content: any): JSX.Element {
         const field = content.custom_meta_data?.data?.field;
         const progress = content.custom_meta_data?.data?.progress;
         const error = content.custom_meta_data?.error;
 
+        const progressPct = progress?.total > 0 ? Math.round(((progress.current ?? 0) / progress.total) * 100) : 0;
+
         return (
             <div className="mx_BotQuestion">
-                {error?.message && <div className="mx_BotQuestion_error">{error.message}</div>}
-                <div className="mx_BotQuestion_header">
+                {progress?.total > 0 && (
                     <div className="mx_BotQuestion_progress">
-                        {progress?.current} / {progress?.total}
+                        <div className="mx_BotQuestion_progressTrack">
+                            <div className="mx_BotQuestion_progressFill" style={{ width: `${progressPct}%` }} />
+                        </div>
+                        <span className="mx_BotQuestion_progressLabel">
+                            سوال {progress.current} از {progress.total}
+                        </span>
                     </div>
+                )}
 
-                    <div className="mx_BotQuestion_title">{field?.name}</div>
+                {error?.message && <div className="mx_BotQuestion_error">{error.message}</div>}
+
+                <div className="mx_BotQuestion_text">
+                    {this.renderQuestionBody(content.body, field?.options?.length > 0)}
                 </div>
 
                 {/* OPTIONS */}
@@ -149,7 +216,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             </button>
                         )}
                         {field?.required === false && (
-                            <button className="mx_BotQuestion_submit" onClick={this.sendNullAnswer}>
+                            <button className="mx_BotQuestion_submit mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
                                 بعدی
                             </button>
                         )}
@@ -180,7 +247,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             ارسال
                         </button>
                         {field?.required === false && (
-                            <button className="mx_BotQuestion_submit" onClick={this.sendNullAnswer}>
+                            <button className="mx_BotQuestion_submit mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
                                 بعدی
                             </button>
                         )}
@@ -214,14 +281,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                 if (max != null && num > max) e.target.value = max.toString();
                             }}
                         />
-                        {(field?.min !== null || field?.max !== null) && (
-                            <div className="mx_BotQuestion_range">
-                                🔢 محدوده مجاز:
-                                {field.min !== null && ` از ${field.min}`}
-                                {field.max !== null && ` تا ${field.max}`}
-                            </div>
-                        )}
-
                         <button
                             className="mx_BotQuestion_submit"
                             onClick={() => {
@@ -236,7 +295,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             ارسال
                         </button>
                         {field?.required === false && (
-                            <button className="mx_BotQuestion_submit" onClick={this.sendNullAnswer}>
+                            <button className="mx_BotQuestion_submit mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
                                 بعدی
                             </button>
                         )}
@@ -268,7 +327,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             ارسال
                         </button>
                         {field?.required === false && (
-                            <button className="mx_BotQuestion_submit" onClick={this.sendNullAnswer}>
+                            <button className="mx_BotQuestion_submit mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
                                 بعدی
                             </button>
                         )}
@@ -278,12 +337,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 {/* DATE INPUT */}
                 {field?.ui_type === "date_input" && (
                     <div className="mx_BotQuestion_inputWrapper">
-                        <div className="mx_BotQuestion_instruction">
-                            <small>(فرمت: DD/MM/YYYY یا DD-MM-YYYY)</small>
-                            <br />
-                            <small>(شمسی: ۱۵/۰۳/۱۴۰۳ — میلادی: ۱۵/۰۳/۲۰۲۴)</small>
-                        </div>
-
                         <DatePicker
                             calendar={persian}
                             locale={persian_fa}
@@ -297,14 +350,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             placeholder="مثال: 15/03/1403"
                         />
 
-                        {field?.date_min || field?.date_max ? (
-                            <div className="mx_BotQuestion_range">
-                                📅 محدوده مجاز:
-                                {field.date_min && ` از: ${field.date_min}`}
-                                {field.date_max && ` | تا: ${field.date_max}`}
-                            </div>
-                        ) : null}
-
                         <button
                             className="mx_BotQuestion_submit"
                             onClick={() => {
@@ -317,7 +362,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         </button>
 
                         {field?.required === false && (
-                            <button className="mx_BotQuestion_submit" onClick={this.sendNullAnswer}>
+                            <button className="mx_BotQuestion_submit mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
                                 بعدی
                             </button>
                         )}
@@ -330,6 +375,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     private renderCategoryMenu(content: any): JSX.Element {
         const categories = content.custom_meta_data?.data?.categories || [];
         const error = content.custom_meta_data?.error;
+        console.log(content);
         return (
             <div className="mx_CategoryMenu">
                 {error?.message && <div className="mx_BotQuestion_error">{error.message}</div>}
