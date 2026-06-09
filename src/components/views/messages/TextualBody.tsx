@@ -107,11 +107,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 parts.push(<strong key={key++}>{token.slice(2, -2)}</strong>);
             } else {
                 const hint = token.slice(1, -1).replace(/^\(([\s\S]*)\)$/, "$1");
-                parts.push(
-                    <span key={key++} className="mx_BotQuestion_hint">
-                        {hint}
-                    </span>,
-                );
+                parts.push(hint);
             }
             lastIndex = regex.lastIndex;
         }
@@ -120,27 +116,42 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     }
 
     /**
-     * Render the question prompt (content.body) preserving line breaks and basic markup.
+     * The bot prepends validation errors to the body (a line starting with "⚠️") and
+     * sometimes also exposes them in custom_meta_data.error. Return whichever is present
+     * so we can render it once in a styled box.
+     */
+    private extractError(content: any): string | undefined {
+        const metaError = content.custom_meta_data?.error?.message;
+        if (metaError) return metaError;
+        const body: string = content.body || "";
+        return body
+            .split("\n")
+            .map((l) => l.trim())
+            .find((l) => l.startsWith("⚠️"));
+    }
+
+    /**
+     * Render a bot prompt (content.body) preserving line breaks and basic markup.
      * The bot bundles the whole prompt into the body, so we strip the parts we already
      * render with dedicated UI to avoid showing them twice:
-     *  - the validation error (shown in its own styled box) which precedes the "📝" marker
+     *  - the validation error line (shown in its own styled box, see {@link extractError})
      *  - the textual option list (shown as buttons) for option questions
+     *  - the numbered category list (shown as buttons) for category menus
      *  - the "send empty to skip" note (replaced by the "بعدی" button)
      */
-    private renderQuestionBody(body?: string, hasOptions = false): React.ReactNode {
+    private renderBody(body?: string, opts: { hasOptions?: boolean; hasCategories?: boolean } = {}): React.ReactNode {
         if (!body) return null;
-        let lines = body.split("\n");
-        const qIdx = lines.findIndex((l) => l.includes("📝"));
-        if (qIdx > 0) lines = lines.slice(qIdx);
-        lines = lines.filter((line) => {
+        const lines = body.split("\n").filter((line) => {
             const t = line.trim();
             if (!t) return false;
-            if (t.includes("خالی ارسال") || t.includes("رد شدن")) return false;
-            if (hasOptions) {
+            if (t.startsWith("⚠️")) return false; // validation error → shown in its own box
+            if (t.includes("خالی ارسال") || t.includes("رد شدن")) return false; // skip note → "بعدی" button
+            if (opts.hasOptions) {
                 if (t.includes(" | ")) return false; // option list
                 if (t.endsWith(":")) return false; // option list label, e.g. "استان‌ها:"
                 if (t.includes("دیگر")) return false; // "...و N شهر دیگر"
             }
+            if (opts.hasCategories && /^\d+[.\-)]/.test(t)) return false; // numbered category items
             return true;
         });
         return lines.map((line, i) => (
@@ -153,7 +164,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     private renderInteractiveQuestion(content: any): JSX.Element {
         const field = content.custom_meta_data?.data?.field;
         const progress = content.custom_meta_data?.data?.progress;
-        const error = content.custom_meta_data?.error;
+        const errorMessage = this.extractError(content);
 
         const progressPct = progress?.total > 0 ? Math.round(((progress.current ?? 0) / progress.total) * 100) : 0;
 
@@ -170,10 +181,10 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     </div>
                 )}
 
-                {error?.message && <div className="mx_BotQuestion_error">{error.message}</div>}
+                {errorMessage && <div className="mx_BotQuestion_error">{errorMessage}</div>}
 
                 <div className="mx_BotQuestion_text">
-                    {this.renderQuestionBody(content.body, field?.options?.length > 0)}
+                    {this.renderBody(content.body, { hasOptions: field?.options?.length > 0 })}
                 </div>
 
                 {/* OPTIONS */}
@@ -374,11 +385,11 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
 
     private renderCategoryMenu(content: any): JSX.Element {
         const categories = content.custom_meta_data?.data?.categories || [];
-        const error = content.custom_meta_data?.error;
-        console.log(content);
+        const errorMessage = this.extractError(content);
         return (
             <div className="mx_CategoryMenu">
-                {error?.message && <div className="mx_BotQuestion_error">{error.message}</div>}
+                {errorMessage && <div className="mx_BotQuestion_error">{errorMessage}</div>}
+                <div className="mx_BotQuestion_text">{this.renderBody(content.body, { hasCategories: true })}</div>
                 {categories.map((cat: any) => (
                     <button key={cat.id} className="mx_CategoryMenu_item" onClick={() => this.sendBotAnswer(cat.name)}>
                         {cat.index}. {cat.name}
