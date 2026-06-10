@@ -18,6 +18,10 @@ import { getKeyBindingsManager } from "../../../../KeyBindingsManager";
 import { KeyBindingAction } from "../../../../accessibility/KeyboardShortcuts";
 import { Landmark, LandmarkNavigation } from "../../../../accessibility/LandmarkNavigation";
 import { type IState as IRovingTabIndexState } from "../../../../accessibility/RovingTabIndex";
+import { useEventEmitterState } from "../../../../hooks/useEventEmitter";
+import RightPanelStore from "../../../../stores/right-panel/RightPanelStore";
+import { RightPanelPhases } from "../../../../stores/right-panel/RightPanelStorePhases";
+import { UPDATE_EVENT } from "../../../../stores/AsyncStore";
 
 type RoomListPanelProps = {
     /**
@@ -25,20 +29,17 @@ type RoomListPanelProps = {
      * See {@link RoomListSearch}
      */
     activeSpace: string;
-    /** True when the Great Shops section is active (shop list shown instead of the room list). */
-    greatShopsActive?: boolean;
-    /** Active Great Shop sub-page id, or null when no shop form is selected. */
-    greatShopPage?: string | null;
 };
 
 /**
  * The panel of the room list
  */
-export const RoomListPanel: React.FC<RoomListPanelProps> = ({
-    activeSpace,
-    greatShopsActive = false,
-    greatShopPage = null,
-}) => {
+export const RoomListPanel: React.FC<RoomListPanelProps> = ({ activeSpace }) => {
+    const greatShopsActive = useEventEmitterState(
+        RightPanelStore.instance,
+        UPDATE_EVENT,
+        () => RightPanelStore.instance.isOpen && RightPanelStore.instance.currentCard.phase === RightPanelPhases.GreatShops,
+    );
     const displayRoomSearch = shouldShowComponent(UIComponent.FilterContainer);
     const [focusedElement, setFocusedElement] = useState<Element | null>(null);
 
@@ -79,7 +80,7 @@ export const RoomListPanel: React.FC<RoomListPanelProps> = ({
         >
             {!greatShopsActive && <RoomListHeaderView />}
             {displayRoomSearch && !greatShopsActive && <RoomListSearch activeSpace={activeSpace} />}
-            <RoomListView greatShopsActive={greatShopsActive} greatShopPage={greatShopPage} />
+            <RoomListView />
         </Flex>
     );
 };

@@ -2,8 +2,8 @@ import React from "react";
 
 import { _t } from "../../../../../languageHandler";
 import { useMobileNav } from "../../../../structures/mobile/MobileNavContext";
-import defaultDispatcher from "../../../../../dispatcher/dispatcher";
-import { Action } from "../../../../../dispatcher/actions";
+import RightPanelStore from "../../../../../stores/right-panel/RightPanelStore";
+import { RightPanelPhases } from "../../../../../stores/right-panel/RightPanelStorePhases";
 
 export const greatShopWrapperStyle: React.CSSProperties = { display: "flex", flexDirection: "column", height: "100%" };
 
@@ -13,7 +13,7 @@ export function GreatShopsHeader({ title }: { title: string }) {
     const onBack = (): void => {
         // Clear the selected shop form and return to the shop list, staying within
         // the Great Shops section.
-        defaultDispatcher.dispatch({ action: Action.ClearGreatShopPage });
+        RightPanelStore.instance.setCard({ phase: RightPanelPhases.GreatShops, state: { greatShopPage: null } });
         navigate("greatShops");
     };
 

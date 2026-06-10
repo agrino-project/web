@@ -38,8 +38,6 @@ import { _t } from "../../../languageHandler";
 import { useMobileNav } from "../../structures/mobile/MobileNavContext";
 import RightPanelStore from "../../../stores/right-panel/RightPanelStore";
 import { RightPanelPhases } from "../../../stores/right-panel/RightPanelStorePhases";
-import dispatcher from "../../../dispatcher/dispatcher";
-import { Action } from "../../../dispatcher/actions";
 
 interface AgricultureCardProps {
     title: string;
@@ -209,7 +207,7 @@ const AgriculturePage: React.FC = () => {
 
     const handleGreatShopsClick = useCallback((): void => {
         exitAgricultureView();
-        dispatcher.dispatch({ action: Action.ViewGreatShops });
+        RightPanelStore.instance.setCard({ phase: RightPanelPhases.GreatShops }, true, undefined);
         navigate("greatShops");
     }, [navigate, exitAgricultureView]);
 

@@ -152,8 +152,8 @@ const HomeButton: React.FC<MetaSpaceButtonProps> = ({ selected, isPanelCollapsed
 
     const onHomeClick = (): void => {
         SpaceStore.instance.setActiveSpace(MetaSpace.Home);
+        // hide() closes the right panel which is also where GreatShops phase lives, so this covers both.
         RightPanelStore.instance.hide(null);
-        defaultDispatcher.dispatch({ action: Action.LeaveGreatShops });
         // On mobile, show the room list when Home is clicked
         defaultDispatcher.dispatch({ action: "show_left_panel" });
     };
@@ -483,10 +483,9 @@ const GreatShopsButton: React.FC<Pick<IInnerSpacePanelProps, "isPanelCollapsed">
     selected,
 }) => {
     const onGreatShopsClick = (): void => {
-        // Close any open custom section and make sure the left panel (shop list) is visible.
-        RightPanelStore.instance.hide(null);
+        // Switch the active phase to GreatShops; this is what the room list and main content key off of.
+        RightPanelStore.instance.setCard({ phase: RightPanelPhases.GreatShops }, true, undefined);
         defaultDispatcher.dispatch({ action: "show_left_panel" });
-        defaultDispatcher.dispatch({ action: Action.ViewGreatShops });
     };
 
     return (
@@ -629,18 +628,9 @@ const InnerSpacePanel = React.memo<IInnerSpacePanelProps>(
         );
         const isCustomPanelOpen =
             RightPanelStore.instance.isOpen && CUSTOM_PHASES.includes(currentCard.phase as RightPanelPhases);
-
-        // Track whether the Great Shops section is active so we can highlight its button
-        // and deselect the meta-space buttons while it's open.
-        const [greatShopsActive, setGreatShopsActive] = useState(false);
-        useDispatcher(defaultDispatcher, (payload: ActionPayload) => {
-            if (payload.action === Action.ViewGreatShops) setGreatShopsActive(true);
-            else if (payload.action === Action.LeaveGreatShops || payload.action === Action.ViewRoom)
-                setGreatShopsActive(false);
-        });
-        useEffect(() => {
-            if (isCustomPanelOpen) setGreatShopsActive(false);
-        }, [isCustomPanelOpen]);
+        // GreatShops is its own phase too — highlight the button and deselect meta-spaces while it's active.
+        const greatShopsActive =
+            RightPanelStore.instance.isOpen && currentCard.phase === RightPanelPhases.GreatShops;
 
         const moduleSpaceItems = useModuleSpacePanelItems(ModuleApi.instance.extras);
 

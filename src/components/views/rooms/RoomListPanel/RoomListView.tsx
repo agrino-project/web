@@ -14,23 +14,29 @@ import { RoomListPrimaryFilters } from "./RoomListPrimaryFilters";
 import { _t } from "../../../../languageHandler";
 import { ReleaseAnnouncement } from "../../../structures/ReleaseAnnouncement";
 import { GreatShopsView } from "./GreatShopsView";
-
-type RoomListViewProps = {
-    /** True when the Great Shops section is active (shop list shown instead of the room list). */
-    greatShopsActive?: boolean;
-    /** Active Great Shop sub-page id, or null when no shop form is selected. */
-    greatShopPage?: string | null;
-};
+import { useEventEmitterState } from "../../../../hooks/useEventEmitter";
+import RightPanelStore from "../../../../stores/right-panel/RightPanelStore";
+import { RightPanelPhases } from "../../../../stores/right-panel/RightPanelStorePhases";
+import { UPDATE_EVENT } from "../../../../stores/AsyncStore";
 
 /**
  * Host the room list and the (future) room filters
  */
-export function RoomListView({ greatShopsActive = false, greatShopPage = null }: RoomListViewProps): JSX.Element {
+export function RoomListView(): JSX.Element {
     const vm = useRoomListViewModel();
     const isRoomListEmpty = vm.roomsResult.rooms.length === 0;
+    const { greatShopsActive, greatShopPage } = useEventEmitterState(
+        RightPanelStore.instance,
+        UPDATE_EVENT,
+        () => {
+            const card = RightPanelStore.instance.currentCard;
+            const active = RightPanelStore.instance.isOpen && card.phase === RightPanelPhases.GreatShops;
+            return { greatShopsActive: active, greatShopPage: active ? card.state?.greatShopPage ?? null : null };
+        },
+    );
     let listBody;
     if (greatShopsActive) {
-        listBody = <GreatShopsView selectedId={greatShopPage} />;
+        listBody = <GreatShopsView />;
     } else if (vm.isLoadingRooms) {
         listBody = <div className="mx_RoomListSkeleton" />;
     } else if (isRoomListEmpty) {

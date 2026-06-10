@@ -12,6 +12,8 @@ import { _t, type TranslationKey } from "../../../languageHandler";
 import { useMobileNav } from "../../structures/mobile/MobileNavContext";
 import defaultDispatcher from "../../../dispatcher/dispatcher";
 import { Action } from "../../../dispatcher/actions";
+import RightPanelStore from "../../../stores/right-panel/RightPanelStore";
+import { RightPanelPhases } from "../../../stores/right-panel/RightPanelStorePhases";
 import { type OpenToTabPayload } from "../../../dispatcher/payloads/OpenToTabPayload";
 import { UserTab } from "../dialogs/UserTab";
 import Modal from "../../../Modal";
@@ -67,7 +69,12 @@ const MobileBottomNav: React.FC = () => {
             <button
                 className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "agriculture" })}
                 onClick={() => {
-                    defaultDispatcher.dispatch({ action: Action.LeaveGreatShops });
+                    if (
+                        RightPanelStore.instance.isOpen &&
+                        RightPanelStore.instance.currentCard.phase === RightPanelPhases.GreatShops
+                    ) {
+                        RightPanelStore.instance.hide(null);
+                    }
                     navigate("agriculture");
                 }}
             >
@@ -77,7 +84,12 @@ const MobileBottomNav: React.FC = () => {
             <button
                 className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "chat" })}
                 onClick={() => {
-                    defaultDispatcher.dispatch({ action: Action.LeaveGreatShops });
+                    if (
+                        RightPanelStore.instance.isOpen &&
+                        RightPanelStore.instance.currentCard.phase === RightPanelPhases.GreatShops
+                    ) {
+                        RightPanelStore.instance.hide(null);
+                    }
                     navigate("chatList");
                 }}
             >
@@ -87,7 +99,7 @@ const MobileBottomNav: React.FC = () => {
             <button
                 className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "greatShops" })}
                 onClick={() => {
-                    defaultDispatcher.dispatch({ action: Action.ViewGreatShops });
+                    RightPanelStore.instance.setCard({ phase: RightPanelPhases.GreatShops }, true, undefined);
                     navigate("greatShops");
                 }}
             >
@@ -97,7 +109,12 @@ const MobileBottomNav: React.FC = () => {
             <button
                 className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "services" })}
                 onClick={() => {
-                    defaultDispatcher.dispatch({ action: Action.LeaveGreatShops });
+                    if (
+                        RightPanelStore.instance.isOpen &&
+                        RightPanelStore.instance.currentCard.phase === RightPanelPhases.GreatShops
+                    ) {
+                        RightPanelStore.instance.hide(null);
+                    }
                     navigate("services");
                 }}
             >

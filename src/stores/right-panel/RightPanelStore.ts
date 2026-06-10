@@ -404,7 +404,8 @@ export default class RightPanelStore extends ReadyWatchingStore {
             targetPhase === RightPanelPhases.ChargePurchase ||
             targetPhase === RightPanelPhases.BillPayment ||
             targetPhase === RightPanelPhases.Services ||
-            targetPhase === RightPanelPhases.Agriculture
+            targetPhase === RightPanelPhases.Agriculture ||
+            targetPhase === RightPanelPhases.GreatShops
         ) {
             return true;
         }

@@ -130,9 +130,6 @@ interface IState {
     backgroundImage?: string;
     /** What the desktop main content area currently shows */
     desktopPage: DesktopPage;
-    /** True when the Great Shops section is active (shop list shown in the left panel). */
-    greatShopsActive: boolean;
-    greatShopPage: string | null;
 }
 
 const NEW_ROOM_LIST_MIN_WIDTH = 224;
@@ -175,8 +172,6 @@ class LoggedInView extends React.Component<IProps, IState> {
             usageLimitDismissed: false,
             activeCalls: LegacyCallHandler.instance.getAllActiveCalls(),
             desktopPage: "default",
-            greatShopsActive: false,
-            greatShopPage: null,
         };
 
         // stash the MatrixClient in case we log out before we are unmounted
@@ -228,8 +223,6 @@ class LoggedInView extends React.Component<IProps, IState> {
 
         RightPanelStore.instance.on(UPDATE_EVENT, this.onRightPanelStoreUpdate);
         this.onRightPanelStoreUpdate();
-
-        dis.register(this.onDispatcher);
     }
 
     private onWindowResize = (): void => {
@@ -264,13 +257,6 @@ class LoggedInView extends React.Component<IProps, IState> {
             setTimeout(() => this.loadResizer(), 0);
         }
 
-        if (nextProps.currentRoomId !== this.props.currentRoomId) {
-            this.setState({ greatShopPage: null });
-        }
-
-        if (nextProps.page_type !== this.props.page_type) {
-            this.setState({ greatShopsActive: false, greatShopPage: null });
-        }
     }
 
     private onTimezoneUpdate = async (): Promise<void> => {
@@ -777,41 +763,16 @@ class LoggedInView extends React.Component<IProps, IState> {
                     break;
             }
         }
-        // Opening a custom section (services/agriculture/…) leaves the Great Shops section.
-        const leavingGreatShops = desktopPage !== "default";
-        this.setState({
-            desktopPage,
-            greatShopsActive: leavingGreatShops ? false : this.state.greatShopsActive,
-            greatShopPage: desktopPage !== "default" ? null : this.state.greatShopPage,
-        });
-    };
-
-    private onDispatcher = (payload: any): void => {
-        switch (payload.action) {
-            case Action.ViewGreatShops:
-                // Enter the Great Shops section: show the shop list, no form selected yet.
-                this.setState({ greatShopsActive: true, greatShopPage: null });
-                return;
-            case Action.LeaveGreatShops:
-                this.setState({ greatShopsActive: false, greatShopPage: null });
-                return;
-            case Action.ViewGreatShopPage:
-                // Select a shop: keep the section active and show its form.
-                this.setState({ greatShopsActive: true, greatShopPage: payload.page });
-                return;
-            case Action.ClearGreatShopPage:
-                // Back from a shop form to the shop list; stay in the section.
-                this.setState({ greatShopPage: null });
-                return;
-            case Action.ViewRoom:
-                if (this.state.greatShopsActive || this.state.greatShopPage) {
-                    this.setState({ greatShopsActive: false, greatShopPage: null });
-                }
-                return;
-        }
+        // forceUpdate so the GreatShops phase transitions repaint even when desktopPage doesn't change.
+        if (desktopPage === this.state.desktopPage) this.forceUpdate();
+        else this.setState({ desktopPage });
     };
 
     public render(): React.ReactNode {
+        const rpsCard = RightPanelStore.instance.currentCard;
+        const greatShopsActive =
+            RightPanelStore.instance.isOpen && rpsCard.phase === RightPanelPhases.GreatShops;
+        const greatShopPage = greatShopsActive ? rpsCard.state?.greatShopPage ?? null : null;
         let pageElement;
 
         const moduleRenderer = this.props.page_type
@@ -888,8 +849,6 @@ class LoggedInView extends React.Component<IProps, IState> {
                             pageType={this.props.page_type as PageTypes}
                             isMinimized={false}
                             resizeNotifier={this.context.resizeNotifier}
-                            greatShopsActive={this.state.greatShopsActive}
-                            greatShopPage={this.state.greatShopPage}
                         />
                     </div>
                 </div>
@@ -899,7 +858,7 @@ class LoggedInView extends React.Component<IProps, IState> {
         // Chat room / main content
         const chatRoomElement = (
             <div className="mx_RoomView_wrapper mx_MobileLayout_roomView">
-                {this.state.greatShopsActive ? <GreatShopsForm page={this.state.greatShopPage} /> : pageElement}
+                {greatShopsActive ? <GreatShopsForm page={greatShopPage} /> : pageElement}
             </div>
         );
         // Desktop layout (the original full layout)
@@ -924,8 +883,6 @@ class LoggedInView extends React.Component<IProps, IState> {
                                         pageType={this.props.page_type as PageTypes}
                                         isMinimized={shouldUseMinimizedUI || false}
                                         resizeNotifier={this.context.resizeNotifier}
-                                        greatShopsActive={this.state.greatShopsActive}
-                                        greatShopPage={this.state.greatShopPage}
                                     />
                                 </div>
                             )}
@@ -953,8 +910,8 @@ class LoggedInView extends React.Component<IProps, IState> {
                                 case "billPayment":
                                     return <BillPaymentCard onClose={onClose} />;
                                 default:
-                                    return this.state.greatShopsActive ? (
-                                        <GreatShopsForm page={this.state.greatShopPage} />
+                                    return greatShopsActive ? (
+                                        <GreatShopsForm page={greatShopPage} />
                                     ) : (
                                         pageElement
                                     );

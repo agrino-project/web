@@ -14,6 +14,10 @@ import PageTypes from "../../../PageTypes";
 import defaultDispatcher from "../../../dispatcher/dispatcher";
 import { Action } from "../../../dispatcher/actions";
 import { useDispatcher } from "../../../hooks/useDispatcher";
+import { useEventEmitter } from "../../../hooks/useEventEmitter";
+import RightPanelStore from "../../../stores/right-panel/RightPanelStore";
+import { RightPanelPhases } from "../../../stores/right-panel/RightPanelStorePhases";
+import { UPDATE_EVENT } from "../../../stores/AsyncStore";
 
 interface Props {
     desktopLayout: ReactNode;
@@ -56,11 +60,15 @@ const MobileNavSync: React.FC<Props> = (props) => {
         if (!isMobile) return;
         if (payload.action === Action.ViewRoom && payload.room_id) {
             navigate("chatRoom");
-        } else if (payload.action === Action.ViewGreatShops) {
-            navigate("greatShops");
-        } else if (payload.action === Action.ViewGreatShopPage) {
-            navigate("greatShopForm");
         }
+    });
+
+    // Mirror GreatShops phase transitions into mobile nav.
+    useEventEmitter(RightPanelStore.instance, UPDATE_EVENT, () => {
+        if (!isMobile) return;
+        const card = RightPanelStore.instance.currentCard;
+        if (!RightPanelStore.instance.isOpen || card.phase !== RightPanelPhases.GreatShops) return;
+        navigate(card.state?.greatShopPage ? "greatShopForm" : "greatShops");
     });
 
     if (!isMobile) {

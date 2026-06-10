@@ -1,6 +1,8 @@
 import React, { JSX } from "react";
-import dis from "../../../../dispatcher/dispatcher";
-import { Action } from "../../../../dispatcher/actions";
+import { useEventEmitterState } from "../../../../hooks/useEventEmitter";
+import RightPanelStore from "../../../../stores/right-panel/RightPanelStore";
+import { RightPanelPhases } from "../../../../stores/right-panel/RightPanelStorePhases";
+import { UPDATE_EVENT } from "../../../../stores/AsyncStore";
 import kallehLogo from "../../../../../res/img/great-shops/kalleh.png";
 import rozhinLogo from "../../../../../res/img/great-shops/rozhin.png";
 import harazLogo from "../../../../../res/img/great-shops/haraz.png";
@@ -29,7 +31,12 @@ const shopItems = [
     },
 ];
 
-export function GreatShopsView({ selectedId = null }: { selectedId?: string | null }): JSX.Element {
+export function GreatShopsView(): JSX.Element {
+    const selectedId = useEventEmitterState(RightPanelStore.instance, UPDATE_EVENT, () => {
+        const card = RightPanelStore.instance.currentCard;
+        if (!RightPanelStore.instance.isOpen || card.phase !== RightPanelPhases.GreatShops) return null;
+        return card.state?.greatShopPage ?? null;
+    });
     return (
         <div
             style={{
@@ -52,9 +59,9 @@ export function GreatShopsView({ selectedId = null }: { selectedId?: string | nu
                     <div
                         key={item.id}
                         onClick={() => {
-                            dis.dispatch({
-                                action: Action.ViewGreatShopPage,
-                                page: item.id,
+                            RightPanelStore.instance.setCard({
+                                phase: RightPanelPhases.GreatShops,
+                                state: { greatShopPage: item.id },
                             });
                         }}
                         style={{

@@ -381,23 +381,4 @@ export enum Action {
      */
     CreateRoom = "view_create_room",
 
-    /**
-     * Open the great shops page
-     */
-    ViewGreatShopPage = "view_greatshop_page",
-
-    /**
-     * Clear the selected great shop form and return to the shop list.
-     */
-    ClearGreatShopPage = "clear_greatshop_page",
-
-    /**
-     * Enter the Great Shops section (shows the shop list in the left panel).
-     */
-    ViewGreatShops = "view_greatshops",
-
-    /**
-     * Leave the Great Shops section and return to the regular chat view.
-     */
-    LeaveGreatShops = "leave_greatshops",
 }

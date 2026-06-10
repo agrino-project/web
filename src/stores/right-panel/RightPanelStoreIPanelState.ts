@@ -25,6 +25,8 @@ export interface IRightPanelCardState {
     initialEventScrollIntoView?: boolean;
     // room summary
     focusRoomSearch?: boolean;
+    // GreatShops sub-page id (e.g. "kalleh", "rozhin"); null/undefined means "shop list".
+    greatShopPage?: string | null;
 }
 
 export interface IRightPanelCardStateStored {
