@@ -35,7 +35,7 @@ export function GreatShopsView({ selectedId = null }: { selectedId?: string | nu
             style={{
                 height: "100%",
                 overflowY: "auto",
-                paddingInline: "16px",
+                padding: "16px",
                 boxSizing: "border-box",
             }}
         >

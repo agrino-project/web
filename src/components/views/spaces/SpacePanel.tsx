@@ -675,7 +675,6 @@ const InnerSpacePanel = React.memo<IInnerSpacePanelProps>(
                     aria-label={_t("common|spaces")}
                 >
                     <AgricultureButton isPanelCollapsed={isPanelCollapsed} />
-                    <GreatShopsButton isPanelCollapsed={isPanelCollapsed} selected={greatShopsActive} />
                     {metaSpacesSection}
                     {invites.map((s) => (
                         <SpaceItem
@@ -729,6 +728,7 @@ const InnerSpacePanel = React.memo<IInnerSpacePanelProps>(
                     <CreateSpaceButton isPanelCollapsed={isPanelCollapsed} setPanelCollapsed={setPanelCollapsed} />
                 )} */}
                     <ServicesButton isPanelCollapsed={isPanelCollapsed} />
+                    <GreatShopsButton isPanelCollapsed={isPanelCollapsed} selected={greatShopsActive} />
                     {/* <CardToCardButton isPanelCollapsed={isPanelCollapsed} />
                 <ChargePurchaseButton isPanelCollapsed={isPanelCollapsed} />
                 <BillPaymentButton isPanelCollapsed={isPanelCollapsed} /> */}
