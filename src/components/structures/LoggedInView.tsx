@@ -130,6 +130,8 @@ interface IState {
     backgroundImage?: string;
     /** What the desktop main content area currently shows */
     desktopPage: DesktopPage;
+    /** True when the Great Shops section is active (shop list shown in the left panel). */
+    greatShopsActive: boolean;
     greatShopPage: string | null;
 }
 
@@ -173,6 +175,7 @@ class LoggedInView extends React.Component<IProps, IState> {
             usageLimitDismissed: false,
             activeCalls: LegacyCallHandler.instance.getAllActiveCalls(),
             desktopPage: "default",
+            greatShopsActive: false,
             greatShopPage: null,
         };
 
@@ -266,7 +269,7 @@ class LoggedInView extends React.Component<IProps, IState> {
         }
 
         if (nextProps.page_type !== this.props.page_type) {
-            this.setState({ greatShopPage: null });
+            this.setState({ greatShopsActive: false, greatShopPage: null });
         }
     }
 
@@ -774,22 +777,37 @@ class LoggedInView extends React.Component<IProps, IState> {
                     break;
             }
         }
-        this.setState({ desktopPage, greatShopPage: desktopPage !== "default" ? null : this.state.greatShopPage });
+        // Opening a custom section (services/agriculture/…) leaves the Great Shops section.
+        const leavingGreatShops = desktopPage !== "default";
+        this.setState({
+            desktopPage,
+            greatShopsActive: leavingGreatShops ? false : this.state.greatShopsActive,
+            greatShopPage: desktopPage !== "default" ? null : this.state.greatShopPage,
+        });
     };
 
     private onDispatcher = (payload: any): void => {
-        if (payload.action === Action.ViewGreatShopPage) {
-            this.setState({
-                greatShopPage: payload.page,
-            });
-            return;
-        }
-
-        if (
-            this.state.greatShopPage &&
-            (payload.action === Action.ViewRoom || payload.action === Action.ClearGreatShopPage)
-        ) {
-            this.setState({ greatShopPage: null });
+        switch (payload.action) {
+            case Action.ViewGreatShops:
+                // Enter the Great Shops section: show the shop list, no form selected yet.
+                this.setState({ greatShopsActive: true, greatShopPage: null });
+                return;
+            case Action.LeaveGreatShops:
+                this.setState({ greatShopsActive: false, greatShopPage: null });
+                return;
+            case Action.ViewGreatShopPage:
+                // Select a shop: keep the section active and show its form.
+                this.setState({ greatShopsActive: true, greatShopPage: payload.page });
+                return;
+            case Action.ClearGreatShopPage:
+                // Back from a shop form to the shop list; stay in the section.
+                this.setState({ greatShopPage: null });
+                return;
+            case Action.ViewRoom:
+                if (this.state.greatShopsActive || this.state.greatShopPage) {
+                    this.setState({ greatShopsActive: false, greatShopPage: null });
+                }
+                return;
         }
     };
 
@@ -802,29 +820,21 @@ class LoggedInView extends React.Component<IProps, IState> {
 
         switch (this.props.page_type) {
             case PageTypes.RoomView:
-                if (this.state.greatShopPage) {
-                    pageElement = <GreatShopsForm page={this.state.greatShopPage} />;
-                } else {
-                    pageElement = (
-                        <RoomView
-                            ref={this._roomView}
-                            onRegistered={this.props.onRegistered}
-                            threepidInvite={this.props.threepidInvite}
-                            oobData={this.props.roomOobData}
-                            key={this.props.currentRoomId || "roomview"}
-                            justCreatedOpts={this.props.roomJustCreatedOpts}
-                            forceTimeline={this.props.forceTimeline}
-                        />
-                    );
-                }
+                pageElement = (
+                    <RoomView
+                        ref={this._roomView}
+                        onRegistered={this.props.onRegistered}
+                        threepidInvite={this.props.threepidInvite}
+                        oobData={this.props.roomOobData}
+                        key={this.props.currentRoomId || "roomview"}
+                        justCreatedOpts={this.props.roomJustCreatedOpts}
+                        forceTimeline={this.props.forceTimeline}
+                    />
+                );
                 break;
 
             case PageTypes.HomePage:
-                if (this.state.greatShopPage) {
-                    pageElement = <GreatShopsForm page={this.state.greatShopPage} />;
-                } else {
-                    pageElement = <HomePage justRegistered={this.props.justRegistered} />;
-                }
+                pageElement = <HomePage justRegistered={this.props.justRegistered} />;
                 break;
 
             case PageTypes.UserView:
@@ -878,6 +888,7 @@ class LoggedInView extends React.Component<IProps, IState> {
                             pageType={this.props.page_type as PageTypes}
                             isMinimized={false}
                             resizeNotifier={this.context.resizeNotifier}
+                            greatShopsActive={this.state.greatShopsActive}
                             greatShopPage={this.state.greatShopPage}
                         />
                     </div>
@@ -888,7 +899,7 @@ class LoggedInView extends React.Component<IProps, IState> {
         // Chat room / main content
         const chatRoomElement = (
             <div className="mx_RoomView_wrapper mx_MobileLayout_roomView">
-                {this.state.greatShopPage ? <GreatShopsForm page={this.state.greatShopPage} /> : pageElement}
+                {this.state.greatShopsActive ? <GreatShopsForm page={this.state.greatShopPage} /> : pageElement}
             </div>
         );
         // Desktop layout (the original full layout)
@@ -913,6 +924,7 @@ class LoggedInView extends React.Component<IProps, IState> {
                                         pageType={this.props.page_type as PageTypes}
                                         isMinimized={shouldUseMinimizedUI || false}
                                         resizeNotifier={this.context.resizeNotifier}
+                                        greatShopsActive={this.state.greatShopsActive}
                                         greatShopPage={this.state.greatShopPage}
                                     />
                                 </div>
@@ -941,7 +953,11 @@ class LoggedInView extends React.Component<IProps, IState> {
                                 case "billPayment":
                                     return <BillPaymentCard onClose={onClose} />;
                                 default:
-                                    return pageElement;
+                                    return this.state.greatShopsActive ? (
+                                        <GreatShopsForm page={this.state.greatShopPage} />
+                                    ) : (
+                                        pageElement
+                                    );
                             }
                         })()}
                     </div>

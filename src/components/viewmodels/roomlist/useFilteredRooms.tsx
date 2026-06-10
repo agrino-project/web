@@ -15,9 +15,6 @@ import RoomListStoreV3, {
     type RoomsResult,
 } from "../../../stores/room-list-v3/RoomListStoreV3";
 import { useEventEmitter } from "../../../hooks/useEventEmitter";
-import { useDispatcher } from "../../../hooks/useDispatcher";
-import dispatcher from "../../../dispatcher/dispatcher";
-import { Action } from "../../../dispatcher/actions";
 
 /**
  * Provides information about a primary filter.
@@ -51,7 +48,6 @@ const filterKeyToNameMap: Map<FilterKey, TranslationKey> = new Map([
     // [FilterKey.UnreadFilter, _td("room_list|filters|unread")],
     [FilterKey.PeopleFilter, _td("room_list|filters|people")],
     [FilterKey.RoomsFilter, _td("room_list|filters|rooms")],
-    [FilterKey.GreatShops, _td("room_list|filters|GreatShops")],
     // [FilterKey.FavouriteFilter, _td("room_list|filters|favourite")],
     // [FilterKey.MentionsFilter, _td("room_list|filters|mentions")],
     // [FilterKey.InvitesFilter, _td("room_list|filters|invites")],
@@ -98,13 +94,6 @@ export function useFilteredRooms(): FilteredRooms {
         setIsLoadingRooms(false);
     });
 
-    useDispatcher(dispatcher, (payload) => {
-        if (payload.action === Action.ActivateGreatShopsFilter) {
-            setPrimaryFilter(FilterKey.GreatShops);
-            updateRoomsFromStore([FilterKey.GreatShops]);
-        }
-    });
-
     /**
      * This tells the view which primary filters are available, how to toggle them
      * and whether a given primary filter is active. @see {@link PrimaryFilter}
@@ -115,9 +104,6 @@ export function useFilteredRooms(): FilteredRooms {
                 toggle: () => {
                     setPrimaryFilter((currentFilter) => {
                         const filter = currentFilter === key ? undefined : key;
-                        if (currentFilter === FilterKey.GreatShops) {
-                            dispatcher.dispatch({ action: Action.ClearGreatShopPage });
-                        }
                         updateRoomsFromStore(filterUndefined([filter]));
                         return filter;
                     });

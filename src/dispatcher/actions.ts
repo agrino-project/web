@@ -387,12 +387,17 @@ export enum Action {
     ViewGreatShopPage = "view_greatshop_page",
 
     /**
-     * Leave the great shops overlay and return to the active room view.
+     * Clear the selected great shop form and return to the shop list.
      */
     ClearGreatShopPage = "clear_greatshop_page",
 
     /**
-     * Activate the GreatShops primary filter in the room list.
+     * Enter the Great Shops section (shows the shop list in the left panel).
      */
-    ActivateGreatShopsFilter = "activate_greatshops_filter",
+    ViewGreatShops = "view_greatshops",
+
+    /**
+     * Leave the Great Shops section and return to the regular chat view.
+     */
+    LeaveGreatShops = "leave_greatshops",
 }

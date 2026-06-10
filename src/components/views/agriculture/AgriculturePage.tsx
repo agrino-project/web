@@ -209,8 +209,8 @@ const AgriculturePage: React.FC = () => {
 
     const handleGreatShopsClick = useCallback((): void => {
         exitAgricultureView();
-        navigate("chatList");
-        dispatcher.dispatch({ action: Action.ActivateGreatShopsFilter });
+        dispatcher.dispatch({ action: Action.ViewGreatShops });
+        navigate("greatShops");
     }, [navigate, exitAgricultureView]);
 
     const bannerSlides = [

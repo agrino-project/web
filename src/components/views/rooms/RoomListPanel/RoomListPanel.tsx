@@ -25,14 +25,20 @@ type RoomListPanelProps = {
      * See {@link RoomListSearch}
      */
     activeSpace: string;
-    /** Active Great Shop sub-page id, or null when showing the default room view. */
-    greatShopPage: string | null;
+    /** True when the Great Shops section is active (shop list shown instead of the room list). */
+    greatShopsActive?: boolean;
+    /** Active Great Shop sub-page id, or null when no shop form is selected. */
+    greatShopPage?: string | null;
 };
 
 /**
  * The panel of the room list
  */
-export const RoomListPanel: React.FC<RoomListPanelProps> = ({ activeSpace, greatShopPage }) => {
+export const RoomListPanel: React.FC<RoomListPanelProps> = ({
+    activeSpace,
+    greatShopsActive = false,
+    greatShopPage = null,
+}) => {
     const displayRoomSearch = shouldShowComponent(UIComponent.FilterContainer);
     const [focusedElement, setFocusedElement] = useState<Element | null>(null);
 
@@ -72,8 +78,8 @@ export const RoomListPanel: React.FC<RoomListPanelProps> = ({ activeSpace, great
             onKeyDown={onKeyDown}
         >
             <RoomListHeaderView />
-            {displayRoomSearch && <RoomListSearch activeSpace={activeSpace} />}
-            <RoomListView greatShopPage={greatShopPage} />
+            {displayRoomSearch && !greatShopsActive && <RoomListSearch activeSpace={activeSpace} />}
+            <RoomListView greatShopsActive={greatShopsActive} greatShopPage={greatShopPage} />
         </Flex>
     );
 };

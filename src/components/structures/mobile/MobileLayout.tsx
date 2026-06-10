@@ -37,6 +37,14 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ chatListElement, chatRoomEl
         case "chatRoom":
             content = <div className="mx_MobileLayout_page">{chatRoomElement}</div>;
             break;
+        case "greatShops":
+            // The left panel renders the Great Shops list when the section is active.
+            content = <div className="mx_MobileLayout_page">{chatListElement}</div>;
+            break;
+        case "greatShopForm":
+            // The room view wrapper renders the selected shop's form when the section is active.
+            content = <div className="mx_MobileLayout_page">{chatRoomElement}</div>;
+            break;
         case "services":
             content = (
                 <div className="mx_MobileLayout_page mx_MobileLayout_page--scrollable">

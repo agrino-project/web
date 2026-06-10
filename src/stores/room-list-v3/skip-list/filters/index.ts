@@ -14,7 +14,6 @@ export const enum FilterKey {
     LowPriorityFilter,
     MentionsFilter,
     InvitesFilter,
-    GreatShops,
 }
 
 export interface Filter {

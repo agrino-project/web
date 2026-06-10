@@ -13,24 +13,24 @@ import { EmptyRoomList } from "./EmptyRoomList";
 import { RoomListPrimaryFilters } from "./RoomListPrimaryFilters";
 import { _t } from "../../../../languageHandler";
 import { ReleaseAnnouncement } from "../../../structures/ReleaseAnnouncement";
-import { FilterKey } from "../../../../stores/room-list-v3/skip-list/filters";
 import { GreatShopsView } from "./GreatShopsView";
 
 type RoomListViewProps = {
-    /** Active Great Shop sub-page id, or null when showing the default room view. */
-    greatShopPage: string | null;
+    /** True when the Great Shops section is active (shop list shown instead of the room list). */
+    greatShopsActive?: boolean;
+    /** Active Great Shop sub-page id, or null when no shop form is selected. */
+    greatShopPage?: string | null;
 };
 
 /**
  * Host the room list and the (future) room filters
  */
-export function RoomListView({ greatShopPage }: RoomListViewProps): JSX.Element {
+export function RoomListView({ greatShopsActive = false, greatShopPage = null }: RoomListViewProps): JSX.Element {
     const vm = useRoomListViewModel();
     const isRoomListEmpty = vm.roomsResult.rooms.length === 0;
-    const isGreatShops = vm.activePrimaryFilter?.key === FilterKey.GreatShops;
     let listBody;
-    if (isGreatShops) {
-        listBody = <GreatShopsView />;
+    if (greatShopsActive) {
+        listBody = <GreatShopsView selectedId={greatShopPage} />;
     } else if (vm.isLoadingRooms) {
         listBody = <div className="mx_RoomListSkeleton" />;
     } else if (isRoomListEmpty) {
@@ -40,17 +40,19 @@ export function RoomListView({ greatShopPage }: RoomListViewProps): JSX.Element 
     }
     return (
         <>
-            <ReleaseAnnouncement
-                feature="newRoomList_filter"
-                header={_t("room_list|release_announcement|filter|title")}
-                description={_t("room_list|release_announcement|filter|description")}
-                closeLabel={_t("room_list|release_announcement|next")}
-                placement="right"
-            >
-                <div>
-                    <RoomListPrimaryFilters vm={vm} />
-                </div>
-            </ReleaseAnnouncement>
+            {!greatShopsActive && (
+                <ReleaseAnnouncement
+                    feature="newRoomList_filter"
+                    header={_t("room_list|release_announcement|filter|title")}
+                    description={_t("room_list|release_announcement|filter|description")}
+                    closeLabel={_t("room_list|release_announcement|next")}
+                    placement="right"
+                >
+                    <div>
+                        <RoomListPrimaryFilters vm={vm} />
+                    </div>
+                </ReleaseAnnouncement>
+            )}
             {listBody}
         </>
     );

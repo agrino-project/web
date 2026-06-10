@@ -56,8 +56,10 @@ const MobileNavSync: React.FC<Props> = (props) => {
         if (!isMobile) return;
         if (payload.action === Action.ViewRoom && payload.room_id) {
             navigate("chatRoom");
+        } else if (payload.action === Action.ViewGreatShops) {
+            navigate("greatShops");
         } else if (payload.action === Action.ViewGreatShopPage) {
-            navigate("chatRoom");
+            navigate("greatShopForm");
         }
     });
 

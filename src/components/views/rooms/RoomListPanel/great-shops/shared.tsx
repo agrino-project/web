@@ -11,14 +11,10 @@ export function GreatShopsHeader({ title }: { title: string }) {
     const { navigate } = useMobileNav();
 
     const onBack = (): void => {
-        // Clear the form state and return to the shop selection grid (chat list).
-        // The chat list is unmounted while the form is shown, so its primary filter
-        // state is lost; re-activate the Great Shops filter (dispatched async, it
-        // arrives after the chat list re-mounts) so we land back on the shop grid
-        // rather than the regular chat list.
+        // Clear the selected shop form and return to the shop list, staying within
+        // the Great Shops section.
         defaultDispatcher.dispatch({ action: Action.ClearGreatShopPage });
-        navigate("chatList");
-        defaultDispatcher.dispatch({ action: Action.ActivateGreatShopsFilter });
+        navigate("greatShops");
     };
 
     return (

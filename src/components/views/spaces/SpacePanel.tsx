@@ -153,6 +153,7 @@ const HomeButton: React.FC<MetaSpaceButtonProps> = ({ selected, isPanelCollapsed
     const onHomeClick = (): void => {
         SpaceStore.instance.setActiveSpace(MetaSpace.Home);
         RightPanelStore.instance.hide(null);
+        defaultDispatcher.dispatch({ action: Action.LeaveGreatShops });
         // On mobile, show the room list when Home is clicked
         defaultDispatcher.dispatch({ action: "show_left_panel" });
     };
@@ -477,6 +478,38 @@ const AgricultureButton: React.FC<Pick<IInnerSpacePanelProps, "isPanelCollapsed"
     );
 };
 
+const GreatShopsButton: React.FC<Pick<IInnerSpacePanelProps, "isPanelCollapsed"> & { selected: boolean }> = ({
+    isPanelCollapsed,
+    selected,
+}) => {
+    const onGreatShopsClick = (): void => {
+        // Close any open custom section and make sure the left panel (shop list) is visible.
+        RightPanelStore.instance.hide(null);
+        defaultDispatcher.dispatch({ action: "show_left_panel" });
+        defaultDispatcher.dispatch({ action: Action.ViewGreatShops });
+    };
+
+    return (
+        <li
+            className={classNames("mx_SpaceItem", {
+                collapsed: isPanelCollapsed,
+            })}
+            role="treeitem"
+            aria-selected={selected}
+        >
+            <SpaceButton
+                data-testid="great-shops-button"
+                className="mx_SpaceButton_greatShops"
+                label={_t("custom_panels|greatShops")}
+                onClick={onGreatShopsClick}
+                isNarrow={isPanelCollapsed}
+                selected={selected}
+                size="32px"
+            />
+        </li>
+    );
+};
+
 const SettingsButton: React.FC<Pick<IInnerSpacePanelProps, "isPanelCollapsed">> = ({ isPanelCollapsed }) => {
     const onSettingsClick = (): void => {
         defaultDispatcher.dispatch({
@@ -597,6 +630,18 @@ const InnerSpacePanel = React.memo<IInnerSpacePanelProps>(
         const isCustomPanelOpen =
             RightPanelStore.instance.isOpen && CUSTOM_PHASES.includes(currentCard.phase as RightPanelPhases);
 
+        // Track whether the Great Shops section is active so we can highlight its button
+        // and deselect the meta-space buttons while it's open.
+        const [greatShopsActive, setGreatShopsActive] = useState(false);
+        useDispatcher(defaultDispatcher, (payload: ActionPayload) => {
+            if (payload.action === Action.ViewGreatShops) setGreatShopsActive(true);
+            else if (payload.action === Action.LeaveGreatShops || payload.action === Action.ViewRoom)
+                setGreatShopsActive(false);
+        });
+        useEffect(() => {
+            if (isCustomPanelOpen) setGreatShopsActive(false);
+        }, [isCustomPanelOpen]);
+
         const moduleSpaceItems = useModuleSpacePanelItems(ModuleApi.instance.extras);
 
         const metaSpacesSection = metaSpaces
@@ -606,7 +651,7 @@ const InnerSpacePanel = React.memo<IInnerSpacePanelProps>(
                 return (
                     <Component
                         key={key}
-                        selected={!isCustomPanelOpen && activeSpace === key}
+                        selected={!isCustomPanelOpen && !greatShopsActive && activeSpace === key}
                         isPanelCollapsed={isPanelCollapsed}
                     />
                 );
@@ -630,6 +675,7 @@ const InnerSpacePanel = React.memo<IInnerSpacePanelProps>(
                     aria-label={_t("common|spaces")}
                 >
                     <AgricultureButton isPanelCollapsed={isPanelCollapsed} />
+                    <GreatShopsButton isPanelCollapsed={isPanelCollapsed} selected={greatShopsActive} />
                     {metaSpacesSection}
                     {invites.map((s) => (
                         <SpaceItem

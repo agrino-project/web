@@ -43,7 +43,9 @@ interface IProps {
     isMinimized: boolean;
     pageType: PageType;
     resizeNotifier: ResizeNotifier;
-    /** Active Great Shop sub-page id, or null when showing the default room view. */
+    /** True when the Great Shops section is active (shop list shown instead of the room list). */
+    greatShopsActive: boolean;
+    /** Active Great Shop sub-page id, or null when no shop form is selected. */
     greatShopPage: string | null;
 }
 
@@ -395,6 +397,7 @@ export default class LeftPanel extends React.Component<IProps, IState> {
                     <div className="mx_LeftPanel_roomListContainer">
                         <RoomListPanel
                             activeSpace={this.state.activeSpace}
+                            greatShopsActive={this.props.greatShopsActive}
                             greatShopPage={this.props.greatShopPage}
                         />
                     </div>

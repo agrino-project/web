@@ -29,7 +29,7 @@ const shopItems = [
     },
 ];
 
-export function GreatShopsView(): JSX.Element {
+export function GreatShopsView({ selectedId = null }: { selectedId?: string | null }): JSX.Element {
     return (
         <div
             style={{
@@ -46,7 +46,9 @@ export function GreatShopsView(): JSX.Element {
                     gap: "14px",
                 }}
             >
-                {shopItems.map((item) => (
+                {shopItems.map((item) => {
+                    const isSelected = item.id === selectedId;
+                    return (
                     <div
                         key={item.id}
                         onClick={() => {
@@ -59,8 +61,8 @@ export function GreatShopsView(): JSX.Element {
                             borderRadius: "14px",
                             height: "140px",
                             cursor: "pointer",
-                            border: "1px solid #e6e6e6",
-                            boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
+                            border: isSelected ? "2px solid #326430" : "1px solid #e6e6e6",
+                            boxShadow: isSelected ? "0 4px 8px rgba(50,100,48,0.20)" : "0 2px 6px rgba(0,0,0,0.06)",
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
@@ -68,7 +70,11 @@ export function GreatShopsView(): JSX.Element {
                             transition: "all 0.2s ease",
                         }}
                         onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.15)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)")}
+                        onMouseLeave={(e) =>
+                            (e.currentTarget.style.boxShadow = isSelected
+                                ? "0 4px 8px rgba(50,100,48,0.20)"
+                                : "0 1px 3px rgba(0,0,0,0.1)")
+                        }
                     >
                         {/* Logo */}
                         <div
@@ -103,7 +109,8 @@ export function GreatShopsView(): JSX.Element {
                             {item.title}
                         </span>
                     </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );

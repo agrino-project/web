@@ -66,21 +66,40 @@ const MobileBottomNav: React.FC = () => {
         <nav className="mx_MobileBottomNav">
             <button
                 className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "agriculture" })}
-                onClick={() => navigate("agriculture")}
+                onClick={() => {
+                    defaultDispatcher.dispatch({ action: Action.LeaveGreatShops });
+                    navigate("agriculture");
+                }}
             >
                 <div className="mx_MobileBottomNav_icon mx_MobileBottomNav_icon_agriculture" />
                 <span className="mx_MobileBottomNav_label">{_t("custom_panels|agriculture")}</span>
             </button>
             <button
                 className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "chat" })}
-                onClick={() => navigate("chatList")}
+                onClick={() => {
+                    defaultDispatcher.dispatch({ action: Action.LeaveGreatShops });
+                    navigate("chatList");
+                }}
             >
                 <div className="mx_MobileBottomNav_icon mx_MobileBottomNav_icon_chat" />
                 <span className="mx_MobileBottomNav_label">{_t("common|social" as TranslationKey)}</span>
             </button>
             <button
+                className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "greatShops" })}
+                onClick={() => {
+                    defaultDispatcher.dispatch({ action: Action.ViewGreatShops });
+                    navigate("greatShops");
+                }}
+            >
+                <div className="mx_MobileBottomNav_icon mx_MobileBottomNav_icon_greatShops" />
+                <span className="mx_MobileBottomNav_label">{_t("custom_panels|greatShops")}</span>
+            </button>
+            <button
                 className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "services" })}
-                onClick={() => navigate("services")}
+                onClick={() => {
+                    defaultDispatcher.dispatch({ action: Action.LeaveGreatShops });
+                    navigate("services");
+                }}
             >
                 <div className="mx_MobileBottomNav_icon mx_MobileBottomNav_icon_services" />
                 <span className="mx_MobileBottomNav_label">{_t("custom_panels|services")}</span>
