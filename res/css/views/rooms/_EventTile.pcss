@@ -1448,9 +1448,9 @@ $left-gutter: 64px;
 
 /* Received messages: white bubble */
 .mx_EventTile[data-self="false"] .mx_EventTile_line {
-    background-color: #ffffff !important;
+    background-color: var(--agrino-bubble-incoming-bg) !important;
     border-radius: 18px 18px 18px 2px !important;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--agrino-bubble-incoming-border);
     margin-inline-end: 42px;
 }
 
@@ -1530,7 +1530,7 @@ $left-gutter: 64px;
 
 /* Keep bubble colors on hover — don't let hover change backgrounds */
 .mx_EventTile[data-self="false"]:hover .mx_EventTile_line {
-    background-color: #ffffff !important;
+    background-color: var(--agrino-bubble-incoming-bg) !important;
     box-shadow: none !important;
 }
 
