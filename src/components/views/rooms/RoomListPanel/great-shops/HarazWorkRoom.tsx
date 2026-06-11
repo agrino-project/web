@@ -79,7 +79,6 @@ export function HarazWorkRoom() {
                             display: "flex",
                             alignItems: "flex-start",
                             gap: 16,
-                            backgroundColor: "white",
                             border: "1px solid #e6e6e6",
                             boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                             borderRadius: 12,

@@ -351,11 +351,19 @@ export async function setTheme(theme?: string): Promise<void> {
     styleSheet.disabled = false;
 
     /**
-     * Adds the Compound theme class to the top-most element in the document
+     * Adds the Compound theme class to the top-most element in the document.
      * This will automatically refresh the colour scales based on the OS or user
-     * preferences
+     * preferences.
+     *
+     * We set it on both <html> and <body>: context menus, tooltips and other
+     * portals are appended to <body> as siblings of the app, and some render
+     * even higher; putting the class on <html> guarantees every portal inherits
+     * the Compound theme tokens instead of falling back to the light default.
      */
-    document.body.classList.remove("cpd-theme-light", "cpd-theme-dark", "cpd-theme-light-hc", "cpd-theme-dark-hc");
+    const themeRoots = [document.documentElement, document.body];
+    themeRoots.forEach((el) =>
+        el.classList.remove("cpd-theme-light", "cpd-theme-dark", "cpd-theme-light-hc", "cpd-theme-dark-hc"),
+    );
 
     let compoundThemeClassName = `cpd-theme-` + (stylesheetName.includes("light") ? "light" : "dark");
     // Always respect user OS preference!
@@ -363,7 +371,7 @@ export async function setTheme(theme?: string): Promise<void> {
         compoundThemeClassName += "-hc";
     }
 
-    document.body.classList.add(compoundThemeClassName);
+    themeRoots.forEach((el) => el.classList.add(compoundThemeClassName));
 
     return new Promise((resolve, reject) => {
         const switchTheme = function (): void {

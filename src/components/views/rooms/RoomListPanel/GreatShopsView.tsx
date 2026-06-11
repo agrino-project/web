@@ -109,7 +109,6 @@ export function GreatShopsView(): JSX.Element {
                         <span
                             style={{
                                 fontSize: "15px",
-                                color: "#222",
                                 fontWeight: 500,
                             }}
                         >
