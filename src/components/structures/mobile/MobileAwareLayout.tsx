@@ -29,6 +29,13 @@ interface Props {
     desktopPage: string;
 }
 
+/** The mobile page the GreatShops card maps to, or null when the card is not open. */
+function greatShopsPage(): "greatShops" | "greatShopForm" | null {
+    const card = RightPanelStore.instance.currentCard;
+    if (!RightPanelStore.instance.isOpen || card.phase !== RightPanelPhases.GreatShops) return null;
+    return card.state?.greatShopPage ? "greatShopForm" : "greatShops";
+}
+
 /**
  * Syncs desktop state changes to mobile nav context.
  */
@@ -39,6 +46,13 @@ const MobileNavSync: React.FC<Props> = (props) => {
     // Sync store-initiated navigation to mobile nav (only when opening)
     useEffect(() => {
         if (!isMobile) return;
+        // GreatShops lives in RightPanelStore, not desktopPage. When resizing into mobile while it's
+        // open, the store emits no event, so sync it here and let it take priority over the room view.
+        const shopsPage = greatShopsPage();
+        if (shopsPage) {
+            if (currentPage !== shopsPage) navigate(shopsPage);
+            return;
+        }
         const dp = props.desktopPage;
         if (dp === "services" && currentPage !== "services") navigate("services");
         else if (dp === "agriculture" && currentPage !== "agriculture") navigate("agriculture");
@@ -51,6 +65,8 @@ const MobileNavSync: React.FC<Props> = (props) => {
     useEffect(() => {
         if (!isMobile) return;
         if (props.desktopPage !== "default") return;
+        // Don't hijack the nav to the room view while GreatShops is the active section.
+        if (greatShopsPage()) return;
         if (props.pageType === PageTypes.RoomView && props.currentRoomId && currentPage !== "chatRoom") {
             navigate("chatRoom");
         }
@@ -66,9 +82,8 @@ const MobileNavSync: React.FC<Props> = (props) => {
     // Mirror GreatShops phase transitions into mobile nav.
     useEventEmitter(RightPanelStore.instance, UPDATE_EVENT, () => {
         if (!isMobile) return;
-        const card = RightPanelStore.instance.currentCard;
-        if (!RightPanelStore.instance.isOpen || card.phase !== RightPanelPhases.GreatShops) return;
-        navigate(card.state?.greatShopPage ? "greatShopForm" : "greatShops");
+        const shopsPage = greatShopsPage();
+        if (shopsPage) navigate(shopsPage);
     });
 
     if (!isMobile) {
