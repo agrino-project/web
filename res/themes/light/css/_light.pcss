@@ -6,9 +6,17 @@
     --agrino-bg: #f3fcf2;
     --agrino-accent: #326430;
     --agrino-accent-light: #c8e6c5;
+    --agrino-hover-bg: #e8f5e6;
+    --agrino-selected-bg: #d4edda;
+}
 
-    /* Override Compound colors for Agrino branding */
-    --cpd-color-bg-canvas-default: #f3fcf2;
+/* Override Compound colors for Agrino branding.
+   Must match Compound's own selector (`:root, [class*="cpd-theme-"]`): the
+   `cpd-theme-light` class is applied to <body>, so Compound sets the near-black
+   primary-action colour there too. A `:root`-only override on <html> is shadowed
+   by that closer <body> declaration, so the green must be set on both. */
+:root,
+[class*="cpd-theme-"] {
     --cpd-color-text-action-accent: #326430;
     --cpd-color-bg-action-primary-rest: #326430;
     --cpd-color-bg-action-primary-hovered: #2a5428;

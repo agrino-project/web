@@ -113,9 +113,20 @@ Please see LICENSE files in the repository root for full details.
         grid-area: sender;
         display: flex;
         align-items: center;
-        gap: 4px;
-        justify-content: flex-end;
-        padding-inline-start: 10px;
+        gap: 5px;
+        justify-content: flex-start;
+
+        &::before {
+            content: "";
+            flex: none;
+            width: 13px;
+            height: 13px;
+            background-color: #936e00;
+            mask-image: url("@vector-im/compound-design-tokens/icons/reply.svg");
+            mask-repeat: no-repeat;
+            mask-position: center;
+            mask-size: contain;
+        }
 
         .mx_DisambiguatedProfile {
             font: var(--cpd-font-body-md-regular);
