@@ -23,7 +23,7 @@ Please see LICENSE files in the repository root for full details.
         width: 100%;
         max-width: 800px;
         margin: 0 auto;
-        background: white;
+        background: var(--agrino-surface);
         border-radius: 16px;
         overflow: hidden;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -69,7 +69,7 @@ Please see LICENSE files in the repository root for full details.
             margin-bottom: 9px;
             font-weight: 600;
             font-size: 15px;
-            color: #1e293b;
+            color: var(--cpd-color-text-primary);
         }
     }
 
@@ -81,12 +81,12 @@ Please see LICENSE files in the repository root for full details.
         input {
             width: 100%;
             padding: 14px 12px;
-            border: 2px solid #e2e8f0;
+            border: 2px solid var(--agrino-surface-border);
             border-radius: 12px;
             font-size: 18px;
             text-align: center;
             font-weight: 600;
-            background: white;
+            background: var(--agrino-surface);
             transition: all 0.25s;
 
             &:focus {
@@ -106,7 +106,7 @@ Please see LICENSE files in the repository root for full details.
             top: 50%;
             transform: translateY(-50%);
             font-weight: 600;
-            color: #475569;
+            color: var(--cpd-color-text-secondary);
             pointer-events: none;
         }
 
@@ -122,10 +122,10 @@ Please see LICENSE files in the repository root for full details.
     input[type="text"] {
         width: 100%;
         padding: 14px 18px;
-        border: 2px solid #e2e8f0;
+        border: 2px solid var(--agrino-surface-border);
         border-radius: 12px;
         font-size: 15px;
-        background: white;
+        background: var(--agrino-surface);
         transition: all 0.25s;
 
         &:focus {
@@ -171,8 +171,8 @@ Please see LICENSE files in the repository root for full details.
             cursor: pointer;
 
             &:disabled {
-                background: #cbd5e1;
-                color: #64748b;
+                background: var(--agrino-surface-muted);
+                color: var(--cpd-color-text-secondary);
                 cursor: not-allowed;
             }
         }
@@ -181,7 +181,7 @@ Please see LICENSE files in the repository root for full details.
     .mx_CardToCardCard_timer {
         margin-top: 8px;
         font-size: 13px;
-        color: #64748b;
+        color: var(--cpd-color-text-secondary);
     }
 
     .mx_CardToCardCard_btnPrimary {
@@ -299,7 +299,7 @@ Please see LICENSE files in the repository root for full details.
 
         .mx_CardToCardReport_statusSub {
             font-size: 13px;
-            color: #475569;
+            color: var(--cpd-color-text-secondary);
         }
     }
 
@@ -309,7 +309,7 @@ Please see LICENSE files in the repository root for full details.
             align-items: center;
             justify-content: space-between;
             padding: 13px 4px;
-            border-bottom: 1px solid #eef1f4;
+            border-bottom: 1px solid var(--agrino-surface-border);
 
             &:last-child {
                 border-bottom: none;
@@ -317,12 +317,12 @@ Please see LICENSE files in the repository root for full details.
         }
 
         .mx_CardToCardReport_rowLabel {
-            color: #64748b;
+            color: var(--cpd-color-text-secondary);
             font-size: 14px;
         }
 
         .mx_CardToCardReport_rowValue {
-            color: #1e293b;
+            color: var(--cpd-color-text-primary);
             font-size: 14px;
             font-weight: 700;
             direction: ltr;
@@ -344,7 +344,7 @@ Please see LICENSE files in the repository root for full details.
         gap: 8px;
         margin-top: 16px;
         font-size: 13px;
-        color: #475569;
+        color: var(--cpd-color-text-secondary);
         cursor: pointer;
 
         input {
@@ -359,7 +359,7 @@ Please see LICENSE files in the repository root for full details.
         margin-top: 16px;
         font-size: 13px;
         line-height: 1.7;
-        color: #64748b;
+        color: var(--cpd-color-text-secondary);
         text-align: center;
     }
 
@@ -388,7 +388,7 @@ Please see LICENSE files in the repository root for full details.
     /* Status colour variants */
     .mx_CardToCardReport_success {
         .mx_CardToCardReport_status {
-            background: #e9f5ea;
+            background: rgba(46, 125, 50, 0.15);
         }
 
         .mx_CardToCardReport_statusText {
@@ -402,7 +402,7 @@ Please see LICENSE files in the repository root for full details.
 
     .mx_CardToCardReport_failed {
         .mx_CardToCardReport_status {
-            background: #fdecec;
+            background: rgba(211, 47, 47, 0.15);
         }
 
         .mx_CardToCardReport_statusText {
@@ -416,7 +416,7 @@ Please see LICENSE files in the repository root for full details.
 
     .mx_CardToCardReport_unknown {
         .mx_CardToCardReport_status {
-            background: #fdf6e3;
+            background: rgba(224, 155, 0, 0.15);
         }
 
         .mx_CardToCardReport_statusText {

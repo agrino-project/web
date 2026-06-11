@@ -25,7 +25,7 @@ Please see LICENSE files in the repository root for full details.
         width: 100%;
         max-width: 800px;
         margin: 0 auto;
-        background: white;
+        background: var(--agrino-surface);
         border-radius: 16px;
         overflow: hidden;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -94,17 +94,17 @@ Please see LICENSE files in the repository root for full details.
             margin-bottom: 9px;
             font-weight: 600;
             font-size: 15px;
-            color: #1e293b;
+            color: var(--cpd-color-text-primary);
         }
     }
 
     input[type="text"] {
         width: 100%;
         padding: 14px 18px;
-        border: 2px solid #e2e8f0;
+        border: 2px solid var(--agrino-surface-border);
         border-radius: 12px;
         font-size: 15px;
-        background: white;
+        background: var(--agrino-surface);
         transition: all 0.25s;
 
         &:focus {
@@ -123,12 +123,12 @@ Please see LICENSE files in the repository root for full details.
 
     .mx_ChargePurchaseCard_amountBtn {
         padding: 16px;
-        border: 2px solid #e2e8f0;
+        border: 2px solid var(--agrino-surface-border);
         border-radius: 12px;
-        background: white;
+        background: var(--agrino-surface);
         font-size: 16px;
         font-weight: 600;
-        color: #475569;
+        color: var(--cpd-color-text-secondary);
         cursor: pointer;
         transition: all 0.25s;
         text-align: center;
@@ -150,12 +150,12 @@ Please see LICENSE files in the repository root for full details.
         input {
             width: 100%;
             padding: 14px 12px;
-            border: 2px solid #e2e8f0;
+            border: 2px solid var(--agrino-surface-border);
             border-radius: 12px;
             font-size: 18px;
             text-align: center;
             font-weight: 600;
-            background: white;
+            background: var(--agrino-surface);
             transition: all 0.25s;
 
             &:focus {
@@ -203,8 +203,8 @@ Please see LICENSE files in the repository root for full details.
             cursor: pointer;
 
             &:disabled {
-                background: #cbd5e1;
-                color: #64748b;
+                background: var(--agrino-surface-muted);
+                color: var(--cpd-color-text-secondary);
                 cursor: not-allowed;
             }
         }
@@ -213,7 +213,7 @@ Please see LICENSE files in the repository root for full details.
     .mx_ChargePurchaseCard_timer {
         margin-top: 8px;
         font-size: 13px;
-        color: #64748b;
+        color: var(--cpd-color-text-secondary);
     }
 
     .mx_ChargePurchaseCard_btnPrimary {
@@ -250,16 +250,16 @@ Please see LICENSE files in the repository root for full details.
         cursor: pointer;
         margin-top: 16px;
         transition: all 0.2s;
-        background: #e2e8f0;
-        color: #475569;
+        background: var(--agrino-surface-muted);
+        color: var(--cpd-color-text-secondary);
 
         &:hover {
-            background: #cbd5e1;
+            background: var(--agrino-surface-muted);
         }
     }
 
     .mx_ChargePurchaseCard_summary {
-        background: #f8f9ff;
+        background: var(--agrino-surface-muted);
         padding: 16px;
         border-radius: 12px;
         margin-bottom: 24px;
@@ -310,7 +310,7 @@ Please see LICENSE files in the repository root for full details.
 
 .mx_ChargePurchaseCard_successDialog {
     .mx_Dialog_content {
-        background-color: #ffffff !important;
+        background-color: var(--agrino-surface) !important;
         border-radius: 20px !important;
         padding: 30px !important;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -321,7 +321,7 @@ Please see LICENSE files in the repository root for full details.
     }
 
     .mx_Dialog_title {
-        color: #1e293b;
+        color: var(--cpd-color-text-primary);
         font-size: 20px;
         font-weight: 800;
         margin-bottom: 20px;

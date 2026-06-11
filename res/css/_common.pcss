@@ -112,6 +112,13 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Themed text-selection highlight so double-click/drag selection doesn't show
+   the browser's default (light) colour on dark backgrounds. */
+::selection {
+    background: var(--agrino-selected-bg);
+    color: var(--cpd-color-text-primary);
+}
+
 pre,
 code {
     font-family: $monospace-font-family;
