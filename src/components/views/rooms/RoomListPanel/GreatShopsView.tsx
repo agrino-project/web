@@ -59,7 +59,7 @@ export function GreatShopsView(): JSX.Element {
                                 onClick={() => {
                                     RightPanelStore.instance.setCard({
                                         phase: RightPanelPhases.GreatShops,
-                                        state: { greatShopPage: itemId },
+                                        state: { greatShopPage: itemId, greatShopTitle: item.name },
                                     });
                                 }}
                                 style={{

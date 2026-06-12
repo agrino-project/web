@@ -27,6 +27,7 @@ export interface IRightPanelCardState {
     focusRoomSearch?: boolean;
     // GreatShops sub-page id (e.g. "kalleh", "rozhin"); null/undefined means "shop list".
     greatShopPage?: string | null;
+    greatShopTitle?: string;
 }
 
 export interface IRightPanelCardStateStored {
