@@ -1,11 +1,15 @@
-import React, { JSX } from "react";
+import React, { JSX, useEffect, useState } from "react";
 
 import { useEventEmitterState } from "../../../../hooks/useEventEmitter";
 import RightPanelStore from "../../../../stores/right-panel/RightPanelStore";
 import { RightPanelPhases } from "../../../../stores/right-panel/RightPanelStorePhases";
 import { UPDATE_EVENT } from "../../../../stores/AsyncStore";
 import { useGreatShopSubcategories } from "./great-shops/useGreatShopSubcategories";
-import { GreatShopsHeader, greatShopWrapperStyle } from "./great-shops/shared";
+import { useGreatShopForm } from "./great-shops/useGreatShopForm";
+import { greatShopWrapperStyle } from "./great-shops/shared";
+import { DynamicForm } from "./great-shops/DynamicForm";
+import { type FormValues } from "./great-shops/formTypes";
+import { _t } from "../../../../languageHandler";
 
 // Webpack pre-bundles every SVG in res/img/great-shops at build time; the
 // subcategory slug (e.g. "contract-request") resolves to the matching file.
@@ -27,6 +31,35 @@ function iconFor(slug: string | null): string | undefined {
     }
 }
 
+/** Header that delegates back navigation to the supplied handler. */
+function Header({ title, onBack }: { title: string; onBack: () => void }): JSX.Element {
+    return (
+        <div
+            style={{
+                position: "relative",
+                fontWeight: "bold",
+                color: "#6b7280",
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                borderBottom: "1px solid #e6e6e6",
+                height: 76,
+            }}
+        >
+            <button
+                className="mx_RoomHeader_mobileBackButton"
+                onClick={onBack}
+                aria-label={_t("action|back")}
+                style={{ position: "absolute", insetInlineStart: 16 }}
+            >
+                <div className="mx_RoomHeader_mobileBackIcon" />
+            </button>
+            {title}
+        </div>
+    );
+}
+
 export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
     const title = useEventEmitterState(RightPanelStore.instance, UPDATE_EVENT, () => {
         const card = RightPanelStore.instance.currentCard;
@@ -35,6 +68,13 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
     });
 
     const { subcategories, isLoading, error } = useGreatShopSubcategories(page);
+    const [selectedSub, setSelectedSub] = useState<{ id: string; name: string } | null>(null);
+    const { form, isLoading: isFormLoading, error: formError } = useGreatShopForm(selectedSub?.id ?? null);
+
+    // Reset the inner selection when the parent category changes.
+    useEffect(() => {
+        setSelectedSub(null);
+    }, [page]);
 
     if (page === null) {
         return (
@@ -54,6 +94,40 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
         );
     }
 
+    // ---- Form view (a subcategory is selected) ----
+    if (selectedSub) {
+        let formBody: JSX.Element;
+        if (isFormLoading) {
+            formBody = <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>در حال بارگذاری فرم...</div>;
+        } else if (formError) {
+            formBody = <div style={{ padding: 24, textAlign: "center", color: "#d60000" }}>خطا در دریافت فرم</div>;
+        } else if (!form || !form.steps || form.steps.length === 0) {
+            formBody = (
+                <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>
+                    ساختار فرم برای این بخش هنوز ثبت نشده.
+                </div>
+            );
+        } else {
+            formBody = (
+                <DynamicForm
+                    form={form}
+                    onSubmit={async (values: FormValues) => {
+                        // TODO: wire this to the submit endpoint (API #4).
+                        // eslint-disable-next-line no-console
+                        console.log("[GreatShops] submit", selectedSub.id, values);
+                    }}
+                />
+            );
+        }
+        return (
+            <div style={greatShopWrapperStyle}>
+                <Header title={selectedSub.name} onBack={() => setSelectedSub(null)} />
+                {formBody}
+            </div>
+        );
+    }
+
+    // ---- Subcategory list view ----
     let body: JSX.Element;
     if (isLoading) {
         body = <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>در حال بارگذاری...</div>;
@@ -84,9 +158,7 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                         return (
                             <div
                                 key={sub.id}
-                                onClick={() => {
-                                    // TODO: open the form stepper (API #3) for this subcategory.
-                                }}
+                                onClick={() => setSelectedSub({ id: String(sub.id), name: sub.name })}
                                 style={{
                                     display: "flex",
                                     alignItems: "flex-start",
@@ -125,7 +197,6 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                                         />
                                     )}
                                 </div>
-
                                 <div style={{ flex: 1 }}>
                                     <h3 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 4px 0" }}>{sub.name}</h3>
                                     {sub.description && (
@@ -141,9 +212,16 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
         );
     }
 
+    const backToShopList = (): void => {
+        RightPanelStore.instance.setCard({
+            phase: RightPanelPhases.GreatShops,
+            state: { greatShopPage: null },
+        });
+    };
+
     return (
         <div style={greatShopWrapperStyle}>
-            <GreatShopsHeader title={title ?? ""} />
+            <Header title={title ?? ""} onBack={backToShopList} />
             {body}
         </div>
     );
