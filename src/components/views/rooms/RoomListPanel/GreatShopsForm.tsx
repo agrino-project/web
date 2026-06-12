@@ -9,6 +9,7 @@ import { useGreatShopForm } from "./great-shops/useGreatShopForm";
 import { greatShopWrapperStyle } from "./great-shops/shared";
 import { DynamicForm } from "./great-shops/DynamicForm";
 import { type FormValues } from "./great-shops/formTypes";
+import { submitGreatShopForm } from "./great-shops/submitGreatShopForm";
 import { _t } from "../../../../languageHandler";
 
 // Webpack pre-bundles every SVG in res/img/great-shops at build time; the
@@ -70,11 +71,18 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
     const { subcategories, isLoading, error } = useGreatShopSubcategories(page);
     const [selectedSub, setSelectedSub] = useState<{ id: string; name: string } | null>(null);
     const { form, isLoading: isFormLoading, error: formError } = useGreatShopForm(selectedSub?.id ?? null);
+    const [submitMessage, setSubmitMessage] = useState<{ kind: "success" | "error"; text: string } | null>(null);
 
-    // Reset the inner selection when the parent category changes.
+    // Reset the inner selection and submission feedback when the parent category changes.
     useEffect(() => {
         setSelectedSub(null);
+        setSubmitMessage(null);
     }, [page]);
+
+    // Also reset the submission banner whenever a new sub-form is opened.
+    useEffect(() => {
+        setSubmitMessage(null);
+    }, [selectedSub?.id]);
 
     if (page === null) {
         return (
@@ -112,9 +120,20 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                 <DynamicForm
                     form={form}
                     onSubmit={async (values: FormValues) => {
-                        // TODO: wire this to the submit endpoint (API #4).
-                        // eslint-disable-next-line no-console
-                        console.log("[GreatShops] submit", selectedSub.id, values);
+                        setSubmitMessage(null);
+                        try {
+                            await submitGreatShopForm(selectedSub.id, form, values);
+                            setSubmitMessage({ kind: "success", text: "فرم با موفقیت ثبت شد." });
+                            // After a short delay, return to the subcategory list so the user
+                            // sees the success banner before navigation.
+                            window.setTimeout(() => setSelectedSub(null), 1500);
+                        } catch (e) {
+                            setSubmitMessage({
+                                kind: "error",
+                                text: `خطا در ثبت فرم: ${(e as Error).message}`,
+                            });
+                            throw e; // bubble so DynamicForm clears its `isSubmitting` flag.
+                        }
                     }}
                 />
             );
@@ -122,6 +141,26 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
         return (
             <div style={greatShopWrapperStyle}>
                 <Header title={selectedSub.name} onBack={() => setSelectedSub(null)} />
+                {submitMessage && (
+                    <div
+                        style={{
+                            margin: "16px 24px 0",
+                            padding: "10px 14px",
+                            borderRadius: 12,
+                            fontSize: 13,
+                            textAlign: "center",
+                            color: submitMessage.kind === "success" ? "#15803d" : "#d60000",
+                            background:
+                                submitMessage.kind === "success" ? "rgba(34, 197, 94, 0.08)" : "rgba(214, 0, 0, 0.08)",
+                            border:
+                                submitMessage.kind === "success"
+                                    ? "1px solid rgba(34, 197, 94, 0.35)"
+                                    : "1px solid rgba(214, 0, 0, 0.35)",
+                        }}
+                    >
+                        {submitMessage.text}
+                    </div>
+                )}
                 {formBody}
             </div>
         );
