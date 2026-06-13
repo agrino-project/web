@@ -42,7 +42,6 @@ import PosthogTrackers from "../../PosthogTrackers";
 import { type ViewHomePagePayload } from "../../dispatcher/payloads/ViewHomePagePayload";
 import { SDKContext } from "../../contexts/SDKContext";
 import { shouldShowFeedback } from "../../utils/Feedback";
-import DarkLightModeSvg from "../../../res/img/element-icons/roomlist/dark-light-mode.svg";
 
 interface IProps {
     isPanelCollapsed: boolean;

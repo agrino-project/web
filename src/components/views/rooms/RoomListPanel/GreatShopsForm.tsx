@@ -144,50 +144,63 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
             );
         } else {
             formBody = (
-                <DynamicForm
-                    form={form}
-                    onSubmit={async (values: FormValues) => {
-                        setSubmitMessage(null);
-                        try {
-                            await submitGreatShopForm(selectedSub.id, form, values);
-                            setSubmitMessage({ kind: "success", text: "فرم با موفقیت ثبت شد." });
-                            // After a short delay, return to the subcategory list so the user
-                            // sees the success banner before navigation.
-                            window.setTimeout(() => setSelectedSub(null), 1500);
-                        } catch (e) {
-                            setSubmitMessage({
-                                kind: "error",
-                                text: `خطا در ثبت فرم: ${(e as Error).message}`,
-                            });
-                            throw e; // bubble so DynamicForm clears its `isSubmitting` flag.
-                        }
+                <div
+                    style={{
+                        margin: "0 auto",
+                        width: "100%",
+                        overflowY: "auto",
+                        flex: 1,
+                        boxSizing: "border-box",
+                        minHeight: 0,
                     }}
-                />
+                >
+                    {submitMessage && (
+                        <div
+                            style={{
+                                margin: "16px 24px 0",
+                                padding: "10px 14px",
+                                borderRadius: 12,
+                                fontSize: 13,
+                                textAlign: "center",
+                                color: submitMessage.kind === "success" ? "#15803d" : "#d60000",
+                                background:
+                                    submitMessage.kind === "success"
+                                        ? "rgba(34, 197, 94, 0.08)"
+                                        : "rgba(214, 0, 0, 0.08)",
+                                border:
+                                    submitMessage.kind === "success"
+                                        ? "1px solid rgba(34, 197, 94, 0.35)"
+                                        : "1px solid rgba(214, 0, 0, 0.35)",
+                            }}
+                        >
+                            {submitMessage.text}
+                        </div>
+                    )}
+                    <DynamicForm
+                        form={form}
+                        onSubmit={async (values: FormValues) => {
+                            setSubmitMessage(null);
+                            try {
+                                await submitGreatShopForm(selectedSub.id, form, values);
+                                setSubmitMessage({ kind: "success", text: "فرم با موفقیت ثبت شد." });
+                                // After a short delay, return to the subcategory list so the user
+                                // sees the success banner before navigation.
+                                window.setTimeout(() => setSelectedSub(null), 1500);
+                            } catch (e) {
+                                setSubmitMessage({
+                                    kind: "error",
+                                    text: `خطا در ثبت فرم: ${(e as Error).message}`,
+                                });
+                                throw e; // bubble so DynamicForm clears its `isSubmitting` flag.
+                            }
+                        }}
+                    />
+                </div>
             );
         }
         return (
             <div style={greatShopWrapperStyle}>
                 <Header title={selectedSub.name} onBack={() => setSelectedSub(null)} />
-                {submitMessage && (
-                    <div
-                        style={{
-                            margin: "16px 24px 0",
-                            padding: "10px 14px",
-                            borderRadius: 12,
-                            fontSize: 13,
-                            textAlign: "center",
-                            color: submitMessage.kind === "success" ? "#15803d" : "#d60000",
-                            background:
-                                submitMessage.kind === "success" ? "rgba(34, 197, 94, 0.08)" : "rgba(214, 0, 0, 0.08)",
-                            border:
-                                submitMessage.kind === "success"
-                                    ? "1px solid rgba(34, 197, 94, 0.35)"
-                                    : "1px solid rgba(214, 0, 0, 0.35)",
-                        }}
-                    >
-                        {submitMessage.text}
-                    </div>
-                )}
                 {formBody}
             </div>
         );

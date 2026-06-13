@@ -10,7 +10,7 @@ export const greatShopWrapperStyle: React.CSSProperties = { display: "flex", fle
 // ---------- Brand tokens ----------
 
 export const green = "#326430";
-export const neutralBg = "#e5e7eb";
+export const neutralBg = "var(--cpd-color-form-bg)";
 export const neutralText = "#9ca3af";
 export const errorColor = "#d60000";
 
@@ -20,8 +20,8 @@ export const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "10px 14px",
     borderRadius: 12,
-    border: "1px solid #d1d5db",
-    backgroundColor: "#fff",
+    border: "1px solid var(--cpd-color-form-border)",
+    backgroundColor: "var(--cpd-color-form-bg)",
     fontSize: 14,
     outline: "none",
     boxSizing: "border-box",
@@ -35,7 +35,6 @@ export const inputErrorStyle: React.CSSProperties = {
 
 export const selectStyle: React.CSSProperties = {
     ...inputStyle,
-    color: "#111",
 };
 
 export const labelStyle: React.CSSProperties = {
@@ -74,9 +73,9 @@ export const bodyStyle: React.CSSProperties = {
 
 export const sectionStyle: React.CSSProperties = {
     padding: 16,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "var(--cpd-color-form-bg)",
     borderRadius: 12,
-    border: "1px solid #E5E7EB",
+    border: "1px solid var(--cpd-color-form-border)",
     display: "flex",
     flexDirection: "column",
     gap: 16,
@@ -164,7 +163,7 @@ export function StepIndicator({ current, steps }: { current: number; steps: stri
                             style={{
                                 flex: 1,
                                 height: 2,
-                                backgroundColor: i < current ? green : neutralBg,
+                                backgroundColor: i < current ? green : neutralText,
                                 marginTop: 14,
                                 marginLeft: -8,
                                 marginRight: -8,

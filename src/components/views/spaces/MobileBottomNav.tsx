@@ -24,6 +24,7 @@ import { useEventEmitter } from "../../../hooks/useEventEmitter";
 import BaseAvatar from "../avatars/BaseAvatar";
 import UserIdentifierCustomisations from "../../../customisations/UserIdentifier";
 import { MatrixClientPeg } from "../../../MatrixClientPeg";
+import { RovingAccessibleButton } from "../../../accessibility/RovingTabIndex";
 
 const MobileBottomNav: React.FC = () => {
     const { activeTab, navigate } = useMobileNav();
@@ -132,12 +133,25 @@ const MobileBottomNav: React.FC = () => {
                 </button>
                 {moreOpen && (
                     <div className="mx_MobileBottomNav_moreMenu">
-                        <div className="mx_MobileBottomNav_menuProfile">
-                            <BaseAvatar idName={userId} name={displayName} url={avatarUrl} size="38px" />
-                            <div className="mx_MobileBottomNav_menuProfileInfo">
-                                <span className="mx_MobileBottomNav_menuProfileName">{displayName}</span>
-                                <span className="mx_MobileBottomNav_menuProfileId">{userId}</span>
+                        <div className="mx_UserMenu_contextMenu_header">
+                            <div className="mx_MobileBottomNav_menuProfile">
+                                <BaseAvatar idName={userId} name={displayName} url={avatarUrl} size="38px" />
+                                <div className="mx_MobileBottomNav_menuProfileInfo">
+                                    <span className="mx_MobileBottomNav_menuProfileName">{displayName}</span>
+                                    <span className="mx_MobileBottomNav_menuProfileId">{userId}</span>
+                                </div>
                             </div>
+                            {/* <RovingAccessibleButton
+                                className="mx_UserMenu_contextMenu_themeButton"
+                                onClick={this.onSwitchThemeClick}
+                                title={
+                                    this.state.isDarkTheme
+                                        ? _t("user_menu|switch_theme_light")
+                                        : _t("user_menu|switch_theme_dark")
+                                }
+                            >
+                                <span className="mx_UserMenu_themeIcon" />
+                            </RovingAccessibleButton> */}
                         </div>
                         <div className="mx_MobileBottomNav_menuDivider" />
                         <button
