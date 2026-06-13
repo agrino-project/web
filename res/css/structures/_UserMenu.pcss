@@ -95,19 +95,38 @@ Please see LICENSE files in the repository root for full details.
         }
 
         .mx_UserMenu_contextMenu_themeButton {
-            min-width: 32px;
-            max-width: 32px;
-            width: 32px;
-            height: 32px;
-            margin-left: 8px;
-            border-radius: 32px;
-            background-color: $theme-button-bg-color;
-            cursor: pointer;
+            min-width: 36px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-left: 8px;            background: var(--cpd-color-bg-subtle-secondary);
+            border: 1px solid var(--cpd-color-border-interactive-secondary);
 
-            /* to make alignment easier, create flexbox for the image */
             display: flex;
             align-items: center;
             justify-content: center;
+
+            transition:
+                background-color 150ms ease,
+                border-color 150ms ease,
+                transform 150ms ease,
+                box-shadow 150ms ease;
+
+            &:hover {
+                background: var(--cpd-color-bg-action-secondary-hovered);
+                box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+            }
+
+            &:active {
+                transform: scale(0.95);
+            }
+
+            &:focus-visible {
+                outline: none;
+                box-shadow:
+                    0 0 0 2px var(--cpd-color-bg-canvas-default),
+                    0 0 0 4px var(--cpd-color-border-interactive-primary);
+            }
         }
 
         &.mx_UserMenu_contextMenu_guestPrompts {
@@ -169,4 +188,16 @@ Please see LICENSE files in the repository root for full details.
     .mx_UserMenu_iconQr::before {
         mask-image: url("@vector-im/compound-design-tokens/icons/qr-code.svg");
     }
+}
+
+.mx_UserMenu_themeIcon {
+    width: 18px;
+    height: 18px;
+
+    background: var(--cpd-color-icon-primary);
+
+    mask-image: url("$(res)/img/element-icons/roomlist/dark-light-mode.svg");
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
 }

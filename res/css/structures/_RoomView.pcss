@@ -7,7 +7,7 @@ Please see LICENSE files in the repository root for full details.
 */
 
 :root {
-    --RoomView_MessageList-padding: 22px;
+    --RoomView_MessageList-padding: 16px;
 }
 
 .mx_RoomView_wrapper {
@@ -49,6 +49,14 @@ Please see LICENSE files in the repository root for full details.
     overflow-y: auto;
     flex: 1 1 0;
     overflow-anchor: none;
+    &::-webkit-scrollbar,
+    &::-webkit-scrollbar-track,
+    &::-webkit-scrollbar-track-piece,
+    &::-webkit-scrollbar-corner {
+        background-color: var(--agrino-bg) !important;
+    }
+    /* Firefox: thumb color + track color set via scrollbar-color. */
+    scrollbar-color: $scrollbar-thumb-color var(--agrino-bg) !important;
 }
 
 .mx_RoomView_messagePanelSearchSpinner {

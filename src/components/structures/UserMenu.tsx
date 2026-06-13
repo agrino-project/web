@@ -405,7 +405,7 @@ export default class UserMenu extends React.Component<IProps, IState> {
                                 : _t("user_menu|switch_theme_dark")
                         }
                     >
-                        <img src={DarkLightModeSvg} role="presentation" alt="" width={16} />
+                        <span className="mx_UserMenu_themeIcon" />
                     </RovingAccessibleButton>
                 </div>
                 {topSection}
