@@ -216,9 +216,45 @@ Please see LICENSE files in the repository root for full details.
     }
 }
 
+.mx_UserMenu_contextMenu_themeButton {
+    min-width: 32px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-left: 8px;
+    background: var(--cpd-color-bg-subtle-secondary);
+    border: 1px solid var(--cpd-color-border-interactive-secondary);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease,
+        transform 150ms ease,
+        box-shadow 150ms ease;
+
+    &:hover {
+        background: var(--cpd-color-bg-action-secondary-hovered);
+        box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow:
+            0 0 0 2px var(--cpd-color-bg-canvas-default),
+            0 0 0 4px var(--cpd-color-border-interactive-primary);
+    }
+}
+
 .mx_UserMenu_themeIcon {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
 
     background: var(--cpd-color-icon-primary);
 

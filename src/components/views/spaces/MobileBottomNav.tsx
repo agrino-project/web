@@ -24,6 +24,11 @@ import { useEventEmitter } from "../../../hooks/useEventEmitter";
 import BaseAvatar from "../avatars/BaseAvatar";
 import UserIdentifierCustomisations from "../../../customisations/UserIdentifier";
 import { MatrixClientPeg } from "../../../MatrixClientPeg";
+import SettingsStore from "../../../settings/SettingsStore";
+import { SettingLevel } from "../../../settings/SettingLevel";
+import { findHighContrastTheme, getCustomTheme, isHighContrastTheme } from "../../../theme";
+import { useTheme } from "../../../hooks/useTheme";
+import PosthogTrackers from "../../../PosthogTrackers";
 import { RovingAccessibleButton } from "../../../accessibility/RovingTabIndex";
 
 const MobileBottomNav: React.FC = () => {
@@ -59,6 +64,39 @@ const MobileBottomNav: React.FC = () => {
         setMoreOpen(false);
         const payload: OpenToTabPayload = { action: Action.ViewUserSettings, initialTabId: tabId };
         defaultDispatcher.dispatch(payload);
+    };
+
+    const { theme, systemThemeActivated } = useTheme();
+    const isDarkTheme = ((): boolean => {
+        if (systemThemeActivated) return window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (theme.startsWith("custom-")) {
+            try {
+                return !!getCustomTheme(theme.substring("custom-".length)).is_dark;
+            } catch {
+                return false;
+            }
+        }
+        return theme === "dark";
+    })();
+
+    const isHighContrast = ((): boolean => {
+        if (systemThemeActivated) return window.matchMedia("(prefers-contrast: more)").matches;
+        if (theme.startsWith("custom-")) return false;
+        return isHighContrastTheme(theme);
+    })();
+
+    const onSwitchThemeClick = (ev: React.SyntheticEvent): void => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        PosthogTrackers.trackInteraction("WebUserMenuThemeToggleButton", ev as any);
+        // Disable system theme matching if the user hits this button.
+        SettingsStore.setValue("use_system_theme", null, SettingLevel.DEVICE, false);
+        let newTheme = isDarkTheme ? "light" : "dark";
+        if (isHighContrast) {
+            const hcTheme = findHighContrastTheme(newTheme);
+            if (hcTheme) newTheme = hcTheme;
+        }
+        SettingsStore.setValue("theme", null, SettingLevel.DEVICE, newTheme);
     };
 
     const onSignOut = (): void => {
@@ -141,17 +179,15 @@ const MobileBottomNav: React.FC = () => {
                                     <span className="mx_MobileBottomNav_menuProfileId">{userId}</span>
                                 </div>
                             </div>
-                            {/* <RovingAccessibleButton
+                            <RovingAccessibleButton
                                 className="mx_UserMenu_contextMenu_themeButton"
-                                onClick={this.onSwitchThemeClick}
+                                onClick={onSwitchThemeClick}
                                 title={
-                                    this.state.isDarkTheme
-                                        ? _t("user_menu|switch_theme_light")
-                                        : _t("user_menu|switch_theme_dark")
+                                    isDarkTheme ? _t("user_menu|switch_theme_light") : _t("user_menu|switch_theme_dark")
                                 }
                             >
                                 <span className="mx_UserMenu_themeIcon" />
-                            </RovingAccessibleButton> */}
+                            </RovingAccessibleButton>
                         </div>
                         <div className="mx_MobileBottomNav_menuDivider" />
                         <button

@@ -198,6 +198,7 @@ export function useRoomSummaryCardViewModel(
     };
 
     const onRoomSettingsClick = (ev: Event): void => {
+        RightPanelStore.instance.hide(null);
         defaultDispatcher.dispatch({ action: "open_room_settings" });
         PosthogTrackers.trackInteraction("WebRightPanelRoomInfoSettingsButton", ev);
     };

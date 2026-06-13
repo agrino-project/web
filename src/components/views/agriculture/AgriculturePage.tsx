@@ -288,7 +288,7 @@ const AgriculturePage: React.FC = () => {
                     <AgricultureCard
                         title={_t("custom_panels|agriculture_education")}
                         icon={EducationIcon}
-                        disabled={true}
+                        onClick={() => handleMarketClick("#amoozesh:agridemo.ir")}
                         variant="small"
                     />
                     <AgricultureCard
