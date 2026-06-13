@@ -49,12 +49,39 @@ function Header({ title, onBack }: { title: string; onBack: () => void }): JSX.E
             }}
         >
             <button
-                className="mx_RoomHeader_mobileBackButton"
                 onClick={onBack}
                 aria-label={_t("action|back")}
-                style={{ position: "absolute", insetInlineStart: 16 }}
+                style={{
+                    position: "absolute",
+                    insetInlineStart: 16,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 32,
+                    height: 32,
+                    border: "none",
+                    background: "transparent",
+                    cursor: "pointer",
+                    padding: 0,
+                    borderRadius: "50%",
+                    color: "#6b7280",
+                    transition: "background 0.2s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#f3f4f6")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             >
-                <div className="mx_RoomHeader_mobileBackIcon" />
+                <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
+                    <path d="M15 18l-6-6 6-6" />
+                </svg>
             </button>
             {title}
         </div>

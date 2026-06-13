@@ -129,7 +129,7 @@ function clearCustomTheme(): void {
     // remove all css variables, we assume these are there because of the custom theme
     const inlineStyleProps = Object.values(document.body.style);
     for (const prop of inlineStyleProps) {
-        if (typeof prop === "string" && prop.startsWith("--")) {
+        if (typeof prop === "string" && prop.startsWith("--") && !prop.startsWith("--cpd-")) {
             document.body.style.removeProperty(prop);
         }
     }

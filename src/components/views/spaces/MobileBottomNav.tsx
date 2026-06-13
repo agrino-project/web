@@ -29,9 +29,10 @@ const MobileBottomNav: React.FC = () => {
     const { activeTab, navigate } = useMobileNav();
     const [moreOpen, setMoreOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
-    const userId = UserIdentifierCustomisations.getDisplayUserIdentifier(MatrixClientPeg.safeGet().getSafeUserId(), {
-        withDisplayName: true,
-    }) ?? "";
+    const userId =
+        UserIdentifierCustomisations.getDisplayUserIdentifier(MatrixClientPeg.safeGet().getSafeUserId(), {
+            withDisplayName: true,
+        }) ?? "";
 
     // User profile
     const [displayName, setDisplayName] = useState(OwnProfileStore.instance.displayName || userId);
@@ -97,16 +98,6 @@ const MobileBottomNav: React.FC = () => {
                 <span className="mx_MobileBottomNav_label">{_t("common|social" as TranslationKey)}</span>
             </button>
             <button
-                className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "greatShops" })}
-                onClick={() => {
-                    RightPanelStore.instance.setCard({ phase: RightPanelPhases.GreatShops }, true, undefined);
-                    navigate("greatShops");
-                }}
-            >
-                <div className="mx_MobileBottomNav_icon mx_MobileBottomNav_icon_greatShops" />
-                <span className="mx_MobileBottomNav_label">{_t("custom_panels|greatShops")}</span>
-            </button>
-            <button
                 className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "services" })}
                 onClick={() => {
                     if (
@@ -120,6 +111,16 @@ const MobileBottomNav: React.FC = () => {
             >
                 <div className="mx_MobileBottomNav_icon mx_MobileBottomNav_icon_services" />
                 <span className="mx_MobileBottomNav_label">{_t("custom_panels|services")}</span>
+            </button>
+            <button
+                className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "greatShops" })}
+                onClick={() => {
+                    RightPanelStore.instance.setCard({ phase: RightPanelPhases.GreatShops }, true, undefined);
+                    navigate("greatShops");
+                }}
+            >
+                <div className="mx_MobileBottomNav_icon mx_MobileBottomNav_icon_greatShops" />
+                <span className="mx_MobileBottomNav_label">{_t("custom_panels|greatShops")}</span>
             </button>
             <div className="mx_MobileBottomNav_moreWrapper" ref={menuRef}>
                 <button
