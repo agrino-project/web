@@ -116,3 +116,27 @@ Changes in [1.14.0](https://github.com/agrino-project/web/releases/tag/v1.14.0) 
 * Fix issue preventing chats from reopening after leaving them in mobile view.
 * Fix issue preventing the Major Business form page from opening in mobile view.
 * Fix responsive layout issues related to mobile and desktop viewport transitions.
+
+# Changes in [1.17.0](https://github.com/agrino-project/web/releases/tag/v1.17.0) (2026-06-15)
+
+## ✨ Features
+
+* Add a dedicated Major Business tab to replace the previous Chat Filter section.
+* Integrate required APIs for Major Business services and implement dynamic form generation based on backend configuration.
+* Restore Dark Mode support and add theme switching functionality.
+* Add a theme toggle option to the mobile profile menu.
+* Add a navigation link to the Training button on the Home page.
+
+## 🚀 Improvements
+
+* Synchronize and align profile menu behavior across mobile and desktop views.
+* Improve the display of user information, including avatar, identifier, and phone number, across different screen sizes.
+* Improve profile section positioning and alignment with right panel navigation items across browsers.
+* Enhance Major Business navigation flow and state management when switching between application tabs.
+
+## 🐛 Bug Fixes
+
+* Fix profile alignment inconsistencies with right panel tab icons in certain browsers.
+* Fix issue causing users to remain on the Major Business form page after navigating to other sections.
+* Fix z-index issue causing the Settings dialog to appear behind the Profile dialog.
+* Fix multiple Dark Mode related styling and visual inconsistencies.
