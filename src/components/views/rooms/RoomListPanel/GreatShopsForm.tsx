@@ -243,7 +243,7 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                                         backgroundColor: "#326430",
                                     }}
                                 >
-                                    {icon && (
+                                    {icon ? (
                                         <div
                                             style={{
                                                 width: 24,
@@ -254,6 +254,10 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                                                 backgroundPosition: "center",
                                             }}
                                         />
+                                    ) : (
+                                        <span style={{ color: "#fff", fontSize: 18, fontWeight: 700 }}>
+                                            {sub.name.charAt(0)}
+                                        </span>
                                     )}
                                 </div>
                                 <div style={{ flex: 1 }}>

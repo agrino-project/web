@@ -305,7 +305,7 @@ const AgriculturePage: React.FC = () => {
                     <AgricultureCard
                         title={_t("custom_panels|agriculture_insurance")}
                         icon={InsuranceIcon}
-                        disabled={true}
+                        onClick={() => handleMarketClick("#insurance:agridemo.ir")}
                         variant="small"
                     />
                     <AgricultureCard
