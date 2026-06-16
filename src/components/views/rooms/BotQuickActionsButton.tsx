@@ -253,7 +253,7 @@ export function BotCommandsStrip({ room }: { room: Room }): React.JSX.Element | 
                             transition: "all 0.15s ease",
                         }}
                     >
-                        /{cmd.label}
+                        {cmd.label}
                     </button>
                 );
             })}
