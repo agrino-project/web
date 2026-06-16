@@ -18,6 +18,7 @@ import React, { type JSX, createContext, type ReactElement, type ReactNode, useC
 
 import { _t } from "../../../languageHandler";
 import { CollapsibleButton } from "./CollapsibleButton";
+import { BotQuickActionsButton } from "./BotQuickActionsButton";
 import { type MenuProps } from "../../structures/ContextMenu";
 import dis from "../../../dispatcher/dispatcher";
 import ErrorDialog from "../dialogs/ErrorDialog";
@@ -66,6 +67,8 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
         return null;
     }
 
+    const botQuickActions = <BotQuickActionsButton key="bot_quick_actions" room={room} />;
+
     let mainButtons: ReactNode[];
     let moreButtons: ReactNode[];
     if (narrow) {
@@ -79,6 +82,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             ) : (
                 emojiButton(props)
             ),
+            botQuickActions,
         ];
         moreButtons = [
             uploadButton(), // props passed via UploadButtonContext
@@ -99,6 +103,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
                 emojiButton(props)
             ),
             uploadButton(), // props passed via UploadButtonContext
+            botQuickActions,
         ];
         moreButtons = [
             showStickersButton(props),
