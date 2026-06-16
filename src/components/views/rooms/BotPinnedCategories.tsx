@@ -52,11 +52,19 @@ export function BotPinnedCategories({ room }: Props): React.JSX.Element | null {
 
     const onPick = async (cat: PinnedCategory): Promise<void> => {
         setActiveId(cat.id);
-        try {
-            await MatrixClientPeg.safeGet().sendEvent(room.roomId, EventType.RoomMessage, {
+        const client = MatrixClientPeg.safeGet();
+        const send = (body: string): Promise<unknown> =>
+            client.sendEvent(room.roomId, EventType.RoomMessage, {
                 msgtype: MsgType.Text,
-                body: cat.name,
+                body,
             });
+        try {
+            // 1. Stop the bot (quit current conversation)
+            await send("q");
+            // 2. Start the bot (fresh session)
+            await send("s");
+            // 3. Send the selected category name
+            await send(cat.name);
         } catch (e) {
             logger.warn("BotPinnedCategories: failed to send", e);
         }

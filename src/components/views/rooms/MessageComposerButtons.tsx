@@ -103,7 +103,6 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
                 emojiButton(props)
             ),
             uploadButton(), // props passed via UploadButtonContext
-            botQuickActions,
         ];
         moreButtons = [
             showStickersButton(props),

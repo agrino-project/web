@@ -32,6 +32,7 @@ import { EventType, MsgType } from "matrix-js-sdk/src/matrix";
 import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
+import SearchResultPaymentDialog from "../dialogs/SearchResultPaymentDialog";
 
 interface IState {
     // the URLs (if any) to be previewed with a LinkPreviewWidget inside this TextualBody.
@@ -383,6 +384,90 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         );
     }
 
+    private renderSearchResults(content: any): JSX.Element {
+        const data = content.custom_meta_data?.data;
+        const results: any[] = data?.results || [];
+        const query = data?.query || "";
+        const total = data?.total || 0;
+
+        return (
+            <div className="mx_SearchResults">
+                {/* Header summary */}
+                <div className="mx_SearchResults_header">
+                    <span>🔍 نتایج جستجو برای: «{query}»</span>
+                    <span className="mx_SearchResults_count">📊 {total} نتیجه</span>
+                </div>
+
+                {results.length > 0 ? (
+                    <div className="mx_SearchResults_list">
+                        {results.map((item: any, idx: number) => {
+                            const allData: Record<string, string> = item.all_data || {};
+                            const productType = allData["نوع محصول"]
+                                || item.fields?.find((f: any) => f.key === "product_type")?.value || "";
+                            const price = allData["قیمت (تومان)"] || "";
+
+                            return (
+                                <div key={item.id ?? idx} className="mx_SearchResults_item">
+                                    <div className="mx_SearchResults_itemHeader">
+                                        <span className="mx_SearchResults_category">{item.category}</span>
+                                        <span className="mx_SearchResults_timestamp">{item.timestamp}</span>
+                                    </div>
+
+                                    {productType && (
+                                        <strong className="mx_SearchResults_product">{productType}</strong>
+                                    )}
+
+                                    {/* Show all fields from all_data */}
+                                    <div className="mx_SearchResults_allData">
+                                        {Object.entries(allData).map(([key, value]) => (
+                                            <div key={key} className="mx_SearchResults_dataRow">
+                                                <span className="mx_SearchResults_dataKey">{key}:</span>
+                                                <span className="mx_SearchResults_dataValue">{value}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {price && (
+                                        <div className="mx_SearchResults_priceRow">
+                                            <span className="mx_SearchResults_price">
+                                                {Number(price).toLocaleString("fa-IR")} تومان
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    <button
+                                        className="mx_SearchResults_payBtn"
+                                        onClick={() => this.openPaymentForm(item)}
+                                    >
+                                        💳 پرداخت
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className="mx_SearchResults_empty">
+                        ❌ موردی پیدا نشد.
+                    </div>
+                )}
+
+                {total > 0 && results.length > 0 && (
+                    <div className="mx_SearchResults_footer">
+                        💡 فیلتر دقیق‌تر: جستن استان:تهران نوع:گندم
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    private openPaymentForm(item: any): void {
+        Modal.createDialog(
+            SearchResultPaymentDialog,
+            { item },
+            "mx_SearchResultPaymentDialog",
+        );
+    }
+
     private renderCategoryMenu(content: any): JSX.Element {
         const categories = content.custom_meta_data?.data?.categories || [];
         const errorMessage = this.extractError(content);
@@ -680,6 +765,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (type === "category_menu") {
             return this.renderCategoryMenu(content);
+        }
+        if (type === "search_results") {
+            return this.renderSearchResults(content);
         }
         if (type === "validation_error") {
             return this.renderError(content);

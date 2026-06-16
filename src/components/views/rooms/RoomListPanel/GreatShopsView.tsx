@@ -1,10 +1,53 @@
-import React, { JSX } from "react";
+import React, { JSX, useState } from "react";
 
 import { useEventEmitterState } from "../../../../hooks/useEventEmitter";
 import RightPanelStore from "../../../../stores/right-panel/RightPanelStore";
 import { RightPanelPhases } from "../../../../stores/right-panel/RightPanelStorePhases";
 import { UPDATE_EVENT } from "../../../../stores/AsyncStore";
 import { useGreatShopsCategories } from "./great-shops/useGreatShopsCategories";
+
+/**
+ * Shows the shop image, or a styled fallback with the first letter of the name
+ * if the image URL is missing or fails to load.
+ */
+function ShopLogo({ src, name }: { src?: string; name: string }): JSX.Element {
+    const [failed, setFailed] = useState(false);
+
+    if (!src || failed) {
+        return (
+            <div
+                style={{
+                    width: "56px",
+                    height: "56px",
+                    borderRadius: "50%",
+                    background: "linear-gradient(135deg, #326430 0%, #4a9e47 100%)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#fff",
+                    fontSize: "22px",
+                    fontWeight: 700,
+                }}
+                aria-label={name}
+            >
+                {name.charAt(0)}
+            </div>
+        );
+    }
+
+    return (
+        <img
+            src={src}
+            alt={name}
+            onError={() => setFailed(true)}
+            style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "contain",
+            }}
+        />
+    );
+}
 
 export function GreatShopsView(): JSX.Element {
     const selectedId = useEventEmitterState(RightPanelStore.instance, UPDATE_EVENT, () => {
@@ -78,17 +121,7 @@ export function GreatShopsView(): JSX.Element {
                                         marginBottom: "12px",
                                     }}
                                 >
-                                    {logo && (
-                                        <img
-                                            src={logo}
-                                            alt={item.name}
-                                            style={{
-                                                maxWidth: "100%",
-                                                maxHeight: "100%",
-                                                objectFit: "contain",
-                                            }}
-                                        />
-                                    )}
+                                    <ShopLogo src={logo} name={item.name} />
                                 </div>
                                 <span
                                     style={{

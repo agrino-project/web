@@ -47,6 +47,9 @@ function commandNeedsInput(cmd: BotCommand): boolean {
     return cmd.label === "جستجو" || cmd.command === "جستن";
 }
 
+/**
+ * Mobile fallback: icon button + context menu (original approach).
+ */
 export function BotQuickActionsButton({ room, onMenuFinished }: Props): React.JSX.Element | null {
     const [menuDisplayed, button, openMenu, closeMenu] = useContextMenu<HTMLButtonElement>();
     const [argCommand, setArgCommand] = useState<BotCommand | null>(null);
@@ -68,7 +71,6 @@ export function BotQuickActionsButton({ room, onMenuFinished }: Props): React.JS
 
     const onPick = async (cmd: BotCommand): Promise<void> => {
         if (commandNeedsInput(cmd)) {
-            // Switch from the menu to the inline input popover so the user can supply the argument.
             closeMenu();
             setArgCommand(cmd);
             setTimeout(() => argInputRef.current?.focus(), 0);
@@ -177,5 +179,147 @@ export function BotQuickActionsButton({ room, onMenuFinished }: Props): React.JS
             {menu}
             {argPopover}
         </>
+    );
+}
+
+/**
+ * Desktop/Telegram-style: inline pill strip rendered above the composer input.
+ * Shows commands as always-visible clickable chips.
+ */
+export function BotCommandsStrip({ room }: { room: Room }): React.JSX.Element | null {
+    const commands = useEventEmitterState(room, RoomEvent.Timeline, () => findLatestCommands(room));
+    const [argCommand, setArgCommand] = useState<BotCommand | null>(null);
+    const [argValue, setArgValue] = useState("");
+
+    if (!commands) return null;
+
+    const send = async (text: string): Promise<void> => {
+        try {
+            await MatrixClientPeg.safeGet().sendEvent(room.roomId, EventType.RoomMessage, {
+                msgtype: MsgType.Text,
+                body: text,
+            });
+        } catch (e) {
+            logger.warn("BotCommandsStrip: failed to send", e);
+        }
+    };
+
+    const onPick = async (cmd: BotCommand): Promise<void> => {
+        if (commandNeedsInput(cmd)) {
+            setArgCommand(cmd);
+            setArgValue("");
+            return;
+        }
+        await send(cmd.command);
+    };
+
+    const onArgSubmit = async (e: React.FormEvent): Promise<void> => {
+        e.preventDefault();
+        const cmd = argCommand;
+        const value = argValue.trim();
+        setArgCommand(null);
+        setArgValue("");
+        if (!cmd || !value) return;
+        await send(`${cmd.command} ${value}`);
+    };
+
+    return (
+        <div
+            style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 8,
+                padding: "6px 12px",
+                alignItems: "center",
+            }}
+        >
+            {commands.map((cmd) => {
+                const isActive = argCommand?.command === cmd.command;
+                return (
+                    <button
+                        key={cmd.command}
+                        onClick={() => onPick(cmd)}
+                        title={cmd.description}
+                        style={{
+                            padding: "5px 14px",
+                            borderRadius: "999px",
+                            border: isActive ? "1px solid #326430" : "1px solid var(--cpd-color-border-interactive-secondary)",
+                            background: isActive ? "#326430" : "var(--cpd-color-bg-subtle-secondary)",
+                            color: isActive ? "#fff" : "var(--cpd-color-text-primary)",
+                            fontSize: "13px",
+                            fontWeight: 500,
+                            cursor: "pointer",
+                            whiteSpace: "nowrap",
+                            transition: "all 0.15s ease",
+                        }}
+                    >
+                        /{cmd.label}
+                    </button>
+                );
+            })}
+
+            {/* Inline search input that appears when a command needs an argument */}
+            {argCommand && (
+                <form
+                    onSubmit={onArgSubmit}
+                    style={{
+                        display: "flex",
+                        gap: 6,
+                        alignItems: "center",
+                        flex: 1,
+                        minWidth: 180,
+                    }}
+                >
+                    <input
+                        // eslint-disable-next-line jsx-a11y/no-autofocus
+                        autoFocus
+                        type="text"
+                        value={argValue}
+                        onChange={(e) => setArgValue(e.target.value)}
+                        placeholder={argCommand.description ?? argCommand.label}
+                        style={{
+                            flex: 1,
+                            padding: "5px 10px",
+                            borderRadius: 8,
+                            border: "1px solid var(--cpd-color-border-interactive-secondary)",
+                            background: "var(--cpd-color-bg-canvas-default)",
+                            color: "var(--cpd-color-text-primary)",
+                            outline: "none",
+                            fontSize: 13,
+                        }}
+                    />
+                    <button
+                        type="submit"
+                        style={{
+                            padding: "5px 12px",
+                            borderRadius: 8,
+                            border: "none",
+                            background: "var(--cpd-color-bg-action-primary-rest)",
+                            color: "var(--cpd-color-text-on-solid-primary)",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            fontSize: 12,
+                        }}
+                    >
+                        ارسال
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setArgCommand(null)}
+                        style={{
+                            padding: "5px 10px",
+                            borderRadius: 8,
+                            border: "1px solid var(--cpd-color-border-interactive-secondary)",
+                            background: "transparent",
+                            color: "var(--cpd-color-text-secondary)",
+                            cursor: "pointer",
+                            fontSize: 12,
+                        }}
+                    >
+                        ✕
+                    </button>
+                </form>
+            )}
+        </div>
     );
 }

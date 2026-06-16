@@ -46,6 +46,7 @@ import UIStore, { UI_EVENTS } from "../../../stores/UIStore";
 import RoomContext from "../../../contexts/RoomContext";
 import { type SettingUpdatedPayload } from "../../../dispatcher/payloads/SettingUpdatedPayload";
 import MessageComposerButtons from "./MessageComposerButtons";
+import { BotCommandsStrip } from "./BotQuickActionsButton";
 import AccessibleButton, { type ButtonEvent } from "../elements/AccessibleButton";
 import { type ViewRoomPayload } from "../../../dispatcher/payloads/ViewRoomPayload";
 import { isLocalRoom } from "../../../utils/localRoom/isLocalRoom";
@@ -672,8 +673,11 @@ export class MessageComposer extends React.Component<IProps, IState> {
                             replyToEvent={this.props.replyToEvent}
                             permalinkCreator={this.props.permalinkCreator}
                         />
+                        {/* Desktop: show commands as inline pills above input */}
+                        {!this.context.narrow && (
+                            <BotCommandsStrip room={this.props.room} />
+                        )}
                         <div className="mx_MessageComposer_row">
-                            {/* {leftIcon} */}
                             {composer}
                             <div className="mx_MessageComposer_actions">
                                 {controls}
