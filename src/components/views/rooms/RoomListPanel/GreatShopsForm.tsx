@@ -12,26 +12,6 @@ import { type FormValues } from "./great-shops/formTypes";
 import { submitGreatShopForm } from "./great-shops/submitGreatShopForm";
 import { _t } from "../../../../languageHandler";
 
-// Webpack pre-bundles every SVG in res/img/great-shops at build time; the
-// subcategory slug (e.g. "contract-request") resolves to the matching file.
-// The "!!file-loader…!" inline loader prefix bypasses the project's configured
-// SVG rules (which have an `issuer` filter that require.context can't satisfy)
-// and forces a plain URL output for every match.
-const iconContext = (require as any).context(
-    "!!file-loader?esModule=false&name=img/[name].[hash:7].[ext]!../../../../../res/img/great-shops",
-    false,
-    /\.svg$/,
-);
-
-function iconFor(slug: string | null): string | undefined {
-    if (!slug) return undefined;
-    try {
-        return iconContext(`./${slug}.svg`) as string;
-    } catch {
-        return undefined;
-    }
-}
-
 /** Header that delegates back navigation to the supplied handler. */
 function Header({ title, onBack }: { title: string; onBack: () => void }): JSX.Element {
     return (
@@ -233,7 +213,7 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                 {[...subcategories]
                     .sort((a, b) => a.order - b.order)
                     .map((sub) => {
-                        const icon = iconFor(sub.slug);
+                        const icon = sub.image ?? undefined;
                         return (
                             <div
                                 key={sub.id}
@@ -268,7 +248,7 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                                             style={{
                                                 width: 24,
                                                 height: 24,
-                                                backgroundImage: `url(${icon})`,
+                                                backgroundImage: `url("${icon}")`,
                                                 backgroundSize: "contain",
                                                 backgroundRepeat: "no-repeat",
                                                 backgroundPosition: "center",

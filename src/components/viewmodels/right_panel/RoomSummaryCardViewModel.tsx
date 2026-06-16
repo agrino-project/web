@@ -204,18 +204,21 @@ export function useRoomSummaryCardViewModel(
     };
 
     const onShareRoomClick = (): void => {
+        RightPanelStore.instance.hide(null);
         Modal.createDialog(ShareDialog, {
             target: room,
         });
     };
 
     const onRoomExportClick = async (): Promise<void> => {
+        RightPanelStore.instance.hide(null);
         Modal.createDialog(ExportDialog, {
             room,
         });
     };
 
     const onRoomPollHistoryClick = (): void => {
+        RightPanelStore.instance.hide(null);
         Modal.createDialog(PollHistoryDialog, {
             room,
             matrixClient: cli,
@@ -224,6 +227,7 @@ export function useRoomSummaryCardViewModel(
     };
 
     const onLeaveRoomClick = (): void => {
+        RightPanelStore.instance.hide(null);
         defaultDispatcher.dispatch({
             action: "leave_room",
             room_id: room.roomId,
@@ -231,6 +235,7 @@ export function useRoomSummaryCardViewModel(
     };
 
     const onReportRoomClick = async (): Promise<void> => {
+        RightPanelStore.instance.hide(null);
         const [leave] = await Modal.createDialog(ReportRoomDialog, {
             roomId: room.roomId,
         }).finished;
@@ -247,6 +252,7 @@ export function useRoomSummaryCardViewModel(
     };
 
     const onInviteToRoomClick = (): void => {
+        RightPanelStore.instance.hide(null);
         inviteToRoom(room);
     };
 

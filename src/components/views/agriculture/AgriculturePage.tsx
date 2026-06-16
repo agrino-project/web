@@ -38,6 +38,9 @@ import { _t } from "../../../languageHandler";
 import { useMobileNav } from "../../structures/mobile/MobileNavContext";
 import RightPanelStore from "../../../stores/right-panel/RightPanelStore";
 import { RightPanelPhases } from "../../../stores/right-panel/RightPanelStorePhases";
+import defaultDispatcher from "../../../dispatcher/dispatcher";
+import { Action } from "../../../dispatcher/actions";
+import { type ViewRoomPayload } from "../../../dispatcher/payloads/ViewRoomPayload";
 
 interface AgricultureCardProps {
     title: string;
@@ -188,13 +191,21 @@ const AgriculturePage: React.FC = () => {
     }, []);
 
     const handleMarketClick = useCallback(
-        async (userId: string): Promise<void> => {
-            const target = new DirectoryMember({
-                user_id: userId,
-            });
+        async (target: string): Promise<void> => {
             // Close agriculture overlay so RoomView can replace AgriculturePage (desktop + mobile sync).
             exitAgricultureView();
-            await startDmOnFirstMessage(cli, [target]);
+            if (target.startsWith("#")) {
+                // Room alias — resolve to a room and view it directly (no DM creation).
+                defaultDispatcher.dispatch<ViewRoomPayload>({
+                    action: Action.ViewRoom,
+                    room_alias: target,
+                    metricsTrigger: "RoomDirectory",
+                });
+            } else {
+                // User ID — start a DM with that user.
+                const member = new DirectoryMember({ user_id: target });
+                await startDmOnFirstMessage(cli, [member]);
+            }
             navigate("chatRoom");
         },
         [cli, navigate, exitAgricultureView],

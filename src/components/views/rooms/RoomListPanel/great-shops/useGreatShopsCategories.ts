@@ -20,6 +20,7 @@ export interface GreatShopCategory {
     slug: string | null;
     description: string;
     order: number;
+    image: string | null;
 }
 
 interface State {

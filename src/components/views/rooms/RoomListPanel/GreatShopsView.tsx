@@ -6,21 +6,6 @@ import { RightPanelPhases } from "../../../../stores/right-panel/RightPanelStore
 import { UPDATE_EVENT } from "../../../../stores/AsyncStore";
 import { useGreatShopsCategories } from "./great-shops/useGreatShopsCategories";
 
-// Webpack pre-bundles every PNG in res/img/great-shops at build time; the
-// slug from the API (e.g. "rozhin-room") resolves to the same-named file.
-// Project webpack config uses file-loader with esModule:false, so the
-// context call returns the asset URL directly.
-const logoContext = (require as any).context("../../../../../res/img/great-shops", false, /\.png$/);
-
-function logoFor(slug: string | null): string | undefined {
-    if (!slug) return undefined;
-    try {
-        return logoContext(`./${slug}.png`) as string;
-    } catch {
-        return undefined;
-    }
-}
-
 export function GreatShopsView(): JSX.Element {
     const selectedId = useEventEmitterState(RightPanelStore.instance, UPDATE_EVENT, () => {
         const card = RightPanelStore.instance.currentCard;
@@ -51,7 +36,7 @@ export function GreatShopsView(): JSX.Element {
                     .map((item) => {
                         const itemId = String(item.id);
                         const isSelected = itemId === selectedId;
-                        const logo = logoFor(item.slug);
+                        const logo = item.image ?? undefined;
                         return (
                             <div
                                 key={item.id}

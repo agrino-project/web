@@ -20,6 +20,7 @@ export interface GreatShopSubcategory {
     slug: string | null;
     description: string;
     order: number;
+    image: string | null;
 }
 
 interface State {
