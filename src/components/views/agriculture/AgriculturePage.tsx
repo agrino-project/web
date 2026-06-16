@@ -311,7 +311,7 @@ const AgriculturePage: React.FC = () => {
                     <AgricultureCard
                         title={_t("custom_panels|Weather")}
                         icon={WeatherIcon}
-                        disabled={true}
+                        onClick={() => handleMarketClick("#weather:agridemo.ir")}
                         variant="small"
                     />
                     <AgricultureCard
