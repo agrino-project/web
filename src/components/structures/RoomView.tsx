@@ -137,6 +137,7 @@ import { type FocusMessageSearchPayload } from "../../dispatcher/payloads/FocusM
 import { isRoomEncrypted } from "../../hooks/useIsEncrypted";
 import { type RoomViewStore } from "../../stores/RoomViewStore.tsx";
 import { createPortal } from "react-dom";
+import { BotPinnedCategories } from "../views/rooms/BotPinnedCategories.tsx";
 
 const DEBUG = false;
 const PREVENT_MULTIPLE_JITSI_WITHIN = 30_000;
@@ -2464,6 +2465,8 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
             <PinnedMessageBanner room={this.state.room} permalinkCreator={this.permalinkCreator} />
         );
 
+        const pinnedCategories = this.state.room ? <BotPinnedCategories room={this.state.room} /> : null;
+
         let messageComposer;
         const showComposer =
             !this.props.hideComposer &&
@@ -2624,6 +2627,7 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
                         <Measured sensor={this.roomViewBody} onMeasurement={this.onMeasurement} />
                         {auxPanel}
                         {pinnedMessageBanner}
+                        {pinnedCategories}
                         <main className={timelineClasses}>
                             <FileDropTarget
                                 parent={this.roomView.current}
