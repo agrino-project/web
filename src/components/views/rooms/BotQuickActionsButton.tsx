@@ -6,7 +6,8 @@ Please see LICENSE files in the repository root for full details.
 */
 
 import React, { useRef, useState } from "react";
-import { EventType, MsgType, type Room } from "matrix-js-sdk/src/matrix";
+import { EventType, MsgType, type Room, RoomEvent } from "matrix-js-sdk/src/matrix";
+import { logger } from "matrix-js-sdk/src/logger";
 
 import { MatrixClientPeg } from "../../../MatrixClientPeg";
 import { CollapsibleButton } from "./CollapsibleButton";
@@ -15,7 +16,7 @@ import IconizedContextMenu, {
     IconizedContextMenuOption,
     IconizedContextMenuOptionList,
 } from "../context_menus/IconizedContextMenu";
-import { logger } from "matrix-js-sdk/src/logger";
+import { useEventEmitterState } from "../../../hooks/useEventEmitter";
 
 interface Props {
     room: Room;
@@ -23,15 +24,36 @@ interface Props {
     onMenuFinished?: () => void;
 }
 
-/**
- * Quick-actions button for bot rooms: a single button that opens a context menu
- * with "restart" / "stop" / "search" entries. Each entry sends a predefined
- * plain-text message to the room (mirrors how Telegram bot keyboards work).
- */
-export function BotQuickActionsButton({ room, onMenuFinished }: Props): React.JSX.Element {
+interface BotCommand {
+    command: string;
+    label: string;
+    description?: string;
+}
+
+function findLatestCommands(room: Room): BotCommand[] | null {
+    const selfUserId = MatrixClientPeg.safeGet().getSafeUserId();
+    const events = room.getLiveTimeline().getEvents();
+    for (let i = events.length - 1; i >= 0; i--) {
+        const ev = events[i];
+        if (ev.getType() !== EventType.RoomMessage) continue;
+        if (ev.getSender() === selfUserId) continue;
+        const commands = ev.getContent()?.custom_meta_data?.commands as BotCommand[] | undefined;
+        if (Array.isArray(commands) && commands.length > 0) return commands;
+    }
+    return null;
+}
+
+function commandNeedsInput(cmd: BotCommand): boolean {
+    return cmd.label === "جستجو" || cmd.command === "جستن";
+}
+
+export function BotQuickActionsButton({ room, onMenuFinished }: Props): React.JSX.Element | null {
     const [menuDisplayed, button, openMenu, closeMenu] = useContextMenu<HTMLButtonElement>();
-    const [searchOpen, setSearchOpen] = useState(false);
-    const searchInputRef = useRef<HTMLInputElement>(null);
+    const [argCommand, setArgCommand] = useState<BotCommand | null>(null);
+    const argInputRef = useRef<HTMLInputElement>(null);
+
+    const commands = useEventEmitterState(room, RoomEvent.Timeline, () => findLatestCommands(room));
+    if (!commands) return null;
 
     const send = async (text: string): Promise<void> => {
         try {
@@ -44,34 +66,26 @@ export function BotQuickActionsButton({ room, onMenuFinished }: Props): React.JS
         }
     };
 
-    const finish = (): void => {
+    const onPick = async (cmd: BotCommand): Promise<void> => {
+        if (commandNeedsInput(cmd)) {
+            // Switch from the menu to the inline input popover so the user can supply the argument.
+            closeMenu();
+            setArgCommand(cmd);
+            setTimeout(() => argInputRef.current?.focus(), 0);
+            return;
+        }
         closeMenu();
         onMenuFinished?.();
+        await send(cmd.command);
     };
 
-    const onRestart = async (): Promise<void> => {
-        finish();
-        await send("s");
-    };
-
-    const onStop = async (): Promise<void> => {
-        finish();
-        await send("q");
-    };
-
-    const onSearchClick = (): void => {
-        closeMenu();
-        setSearchOpen(true);
-        // Focus the input on the next tick once it has mounted.
-        setTimeout(() => searchInputRef.current?.focus(), 0);
-    };
-
-    const onSearchSubmit = async (e: React.FormEvent): Promise<void> => {
+    const onArgSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
-        const value = searchInputRef.current?.value?.trim();
-        setSearchOpen(false);
-        if (!value) return;
-        await send(`جستن ${value}`);
+        const cmd = argCommand;
+        const value = argInputRef.current?.value?.trim() ?? "";
+        setArgCommand(null);
+        if (!cmd || !value) return;
+        await send(`${cmd.command} ${value}`);
         onMenuFinished?.();
     };
 
@@ -81,21 +95,26 @@ export function BotQuickActionsButton({ room, onMenuFinished }: Props): React.JS
         menu = (
             <IconizedContextMenu {...aboveLeftOf(rect)} onFinished={closeMenu} compact>
                 <IconizedContextMenuOptionList>
-                    <IconizedContextMenuOption label="شروع مجدد" onClick={onRestart} />
-                    <IconizedContextMenuOption label="توقف" onClick={onStop} />
-                    <IconizedContextMenuOption label="جستجو" onClick={onSearchClick} />
+                    {commands.map((cmd) => (
+                        <IconizedContextMenuOption
+                            key={cmd.command}
+                            label={cmd.label}
+                            title={cmd.description}
+                            onClick={() => onPick(cmd)}
+                        />
+                    ))}
                 </IconizedContextMenuOptionList>
             </IconizedContextMenu>
         );
     }
 
-    let searchPopover: React.JSX.Element | undefined;
-    if (searchOpen && button.current) {
+    let argPopover: React.JSX.Element | undefined;
+    if (argCommand && button.current) {
         const rect = button.current.getBoundingClientRect();
-        searchPopover = (
-            <ContextMenu {...aboveLeftOf(rect)} onFinished={() => setSearchOpen(false)}>
+        argPopover = (
+            <ContextMenu {...aboveLeftOf(rect)} onFinished={() => setArgCommand(null)}>
                 <form
-                    onSubmit={onSearchSubmit}
+                    onSubmit={onArgSubmit}
                     style={{
                         padding: 12,
                         display: "flex",
@@ -105,12 +124,17 @@ export function BotQuickActionsButton({ room, onMenuFinished }: Props): React.JS
                     }}
                 >
                     <label style={{ fontSize: 12, fontWeight: 600, color: "var(--cpd-color-text-secondary)" }}>
-                        جستجو
+                        {argCommand.label}
                     </label>
+                    {argCommand.description && (
+                        <span style={{ fontSize: 11, color: "var(--cpd-color-text-secondary)" }}>
+                            {argCommand.description}
+                        </span>
+                    )}
                     <input
-                        ref={searchInputRef}
+                        ref={argInputRef}
                         type="text"
-                        placeholder="عبارت جستجو"
+                        placeholder={argCommand.label}
                         style={{
                             padding: "8px 10px",
                             borderRadius: 8,
@@ -151,7 +175,7 @@ export function BotQuickActionsButton({ room, onMenuFinished }: Props): React.JS
                 onClick={openMenu}
             />
             {menu}
-            {searchPopover}
+            {argPopover}
         </>
     );
 }
