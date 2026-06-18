@@ -140,3 +140,23 @@ Changes in [1.14.0](https://github.com/agrino-project/web/releases/tag/v1.14.0) 
 * Fix issue causing users to remain on the Major Business form page after navigating to other sections.
 * Fix z-index issue causing the Settings dialog to appear behind the Profile dialog.
 * Fix multiple Dark Mode related styling and visual inconsistencies.
+
+# Changes in [1.18.0](https://github.com/agrino-project/web/releases/tag/v1.18.0) (2026-06-18)
+
+## ✨ Features
+
+* Add command support for bots.
+* Add message pinning and categorized sections in the Farmer Marketplace.
+* Add payment capability during product search in the Farmer Marketplace.
+* Make the Major Business page dynamic to support backend-configurable icons.
+* Add quick access shortcuts for Training and Bot entry.
+* Add HTML message rendering support for News content.
+
+## 🚀 Improvements
+
+* Improve logout flow by fully clearing application state after logout and page reload.
+* Improve chat search experience by opening the Profile dialog and automatically focusing the search input from the chat header.
+
+## 🐛 Bug Fixes
+
+* No bug fixes in this release.
