@@ -261,6 +261,35 @@ function RoomHeaderButtons({
         isVideoRoom ||
         roomContext.mainSplitContentType === MainSplitContentType.MaximisedWidget ||
         roomContext.mainSplitContentType === MainSplitContentType.Call;
+
+    // Open the RoomSummary side card with its search input pre-focused. The card
+    // wires the input straight into RoomView's `/search` flow, which talks to the
+    // homeserver directly — no custom backend needed.
+    //
+    // Why the poll loop: Compound Menu's `onCloseAutoFocus` returns focus to the
+    // menu trigger AFTER our handler runs, which steals the input focus. Plus
+    // the right-panel might still be mounting when we try to focus. So instead
+    // of fighting the timing, we retry every 50ms for ~1s until the input
+    // exists AND we own focus.
+    const openRoomSearch = (): void => {
+        RightPanelStore.instance.setCard({
+            phase: RightPanelPhases.RoomSummary,
+            state: { focusRoomSearch: true },
+        });
+        RightPanelStore.instance.show(null);
+
+        const start = Date.now();
+        const tryFocus = (): void => {
+            const input = document.querySelector<HTMLInputElement>('input[name="room_message_search"]');
+            if (input && document.activeElement !== input) {
+                input.focus();
+                input.select?.();
+            }
+            // Keep retrying for 1 second to outlast Menu's focus-restore on close.
+            if (Date.now() - start < 1000) window.setTimeout(tryFocus, 50);
+        };
+        window.setTimeout(tryFocus, 50);
+    };
     return (
         <>
             {additionalButtons?.map((props) => {
@@ -293,7 +322,13 @@ function RoomHeaderButtons({
             )}
 
             {showChatButton && <VideoRoomChatButton room={room} />}
-            <IconButton aria-label="Search">
+            <IconButton
+                aria-label={_t("action|search")}
+                onClick={(evt) => {
+                    evt.stopPropagation();
+                    openRoomSearch();
+                }}
+            >
                 <SearchIcon />
             </IconButton>
             <Menu
@@ -324,6 +359,7 @@ function RoomHeaderButtons({
                     label={"جستجو"}
                     onSelect={() => {
                         setIsMenuOpen(false);
+                        openRoomSearch();
                     }}
                     Icon={() => (
                         <MenuIcon>
@@ -336,15 +372,15 @@ function RoomHeaderButtons({
                     label="گزارش"
                     onSelect={() => {
                         setIsMenuOpen(false);
-                           const timeline = room.getLiveTimeline().getEvents();
-                           const lastEvent = timeline[timeline.length - 1];
+                        const timeline = room.getLiveTimeline().getEvents();
+                        const lastEvent = timeline[timeline.length - 1];
 
-                           if (lastEvent) {
-                               dis.dispatch({
-                                   action: Action.OpenReportEventDialog,
-                                   event: lastEvent,
-                               });
-                           }
+                        if (lastEvent) {
+                            dis.dispatch({
+                                action: Action.OpenReportEventDialog,
+                                event: lastEvent,
+                            });
+                        }
                     }}
                     Icon={() => (
                         <MenuIcon>
