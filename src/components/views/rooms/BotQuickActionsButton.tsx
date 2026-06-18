@@ -10,6 +10,7 @@ import { EventType, MsgType, type Room, RoomEvent } from "matrix-js-sdk/src/matr
 import { logger } from "matrix-js-sdk/src/logger";
 
 import { MatrixClientPeg } from "../../../MatrixClientPeg";
+import { _t, type TranslationKey } from "../../../languageHandler";
 import { CollapsibleButton } from "./CollapsibleButton";
 import ContextMenu, { aboveLeftOf, useContextMenu } from "../../structures/ContextMenu";
 import IconizedContextMenu, {
@@ -160,7 +161,7 @@ export function BotQuickActionsButton({ room, onMenuFinished }: Props): React.JS
                             fontSize: 13,
                         }}
                     >
-                        ارسال
+                        {_t("custom_panels|send" as TranslationKey)}
                     </button>
                 </form>
             </ContextMenu>
@@ -171,7 +172,7 @@ export function BotQuickActionsButton({ room, onMenuFinished }: Props): React.JS
         <>
             <CollapsibleButton
                 inputRef={button as React.RefObject<HTMLElement | null>}
-                title="دستورهای سریع ربات"
+                title={_t("custom_panels|bot_quick_actions" as TranslationKey)}
                 className="mx_MessageComposer_button"
                 iconClassName="mx_MessageComposer_bot_quick_actions"
                 onClick={openMenu}
@@ -301,7 +302,7 @@ export function BotCommandsStrip({ room }: { room: Room }): React.JSX.Element | 
                             fontSize: 12,
                         }}
                     >
-                        ارسال
+                        {_t("custom_panels|send" as TranslationKey)}
                     </button>
                     <button
                         type="button"

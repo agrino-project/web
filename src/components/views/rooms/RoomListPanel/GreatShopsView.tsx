@@ -4,6 +4,7 @@ import { useEventEmitterState } from "../../../../hooks/useEventEmitter";
 import RightPanelStore from "../../../../stores/right-panel/RightPanelStore";
 import { RightPanelPhases } from "../../../../stores/right-panel/RightPanelStorePhases";
 import { UPDATE_EVENT } from "../../../../stores/AsyncStore";
+import { _t, type TranslationKey } from "../../../../languageHandler";
 import { useGreatShopsCategories } from "./great-shops/useGreatShopsCategories";
 
 /**
@@ -60,11 +61,23 @@ export function GreatShopsView(): JSX.Element {
 
     let body: JSX.Element;
     if (isLoading) {
-        body = <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>در حال بارگذاری...</div>;
+        body = (
+            <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>
+                {_t("custom_panels|loading" as TranslationKey)}
+            </div>
+        );
     } else if (error) {
-        body = <div style={{ padding: 24, textAlign: "center", color: "#d60000" }}>خطا در دریافت لیست کسب‌وکارها</div>;
+        body = (
+            <div style={{ padding: 24, textAlign: "center", color: "#d60000" }}>
+                {_t("custom_panels|great_shops_load_error" as TranslationKey)}
+            </div>
+        );
     } else if (categories.length === 0) {
-        body = <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>کسب‌وکاری یافت نشد</div>;
+        body = (
+            <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>
+                {_t("custom_panels|no_shops" as TranslationKey)}
+            </div>
+        );
     } else {
         body = (
             <div

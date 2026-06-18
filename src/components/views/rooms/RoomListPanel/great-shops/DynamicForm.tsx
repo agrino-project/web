@@ -7,6 +7,7 @@ Please see LICENSE files in the repository root for full details.
 
 import React, { type JSX, useMemo, useState } from "react";
 
+import { _t, type TranslationKey } from "../../../../../languageHandler";
 import {
     bodyStyle,
     buttonStyle,
@@ -67,33 +68,39 @@ function isEmpty(v: FieldValue): boolean {
 }
 
 function validateField(field: Field, value: FieldValue): string | undefined {
-    if (field.required && isEmpty(value)) return "این فیلد الزامی است";
+    if (field.required && isEmpty(value)) return _t("custom_panels|validation_required" as TranslationKey);
     if (isEmpty(value)) return undefined;
 
     const v = field.validation;
     switch (field.type) {
         case "text": {
             const s = String(value);
-            if (v.minLength != null && s.length < v.minLength) return `حداقل ${v.minLength} کاراکتر`;
-            if (v.maxLength != null && s.length > v.maxLength) return `حداکثر ${v.maxLength} کاراکتر`;
+            if (v.minLength != null && s.length < v.minLength)
+                return _t("custom_panels|validation_min_length" as TranslationKey, { count: v.minLength });
+            if (v.maxLength != null && s.length > v.maxLength)
+                return _t("custom_panels|validation_max_length" as TranslationKey, { count: v.maxLength });
             return undefined;
         }
         case "number": {
             const n = Number(value);
-            if (Number.isNaN(n)) return "عدد نامعتبر";
-            if (v.min != null && n < v.min) return `حداقل ${v.min}`;
-            if (v.max != null && n > v.max) return `حداکثر ${v.max}`;
+            if (Number.isNaN(n)) return _t("custom_panels|validation_invalid_number" as TranslationKey);
+            if (v.min != null && n < v.min)
+                return _t("custom_panels|validation_min_value" as TranslationKey, { value: v.min });
+            if (v.max != null && n > v.max)
+                return _t("custom_panels|validation_max_value" as TranslationKey, { value: v.max });
             return undefined;
         }
         case "file": {
             if (!(value instanceof File)) return undefined;
             if (v.maxFileSizeMb != null && value.size > v.maxFileSizeMb * 1024 * 1024) {
-                return `حداکثر حجم ${v.maxFileSizeMb} مگابایت`;
+                return _t("custom_panels|validation_max_file_size" as TranslationKey, { size: v.maxFileSizeMb });
             }
             if (v.allowedExtensions && v.allowedExtensions.length) {
                 const ext = value.name.split(".").pop()?.toLowerCase() ?? "";
                 if (!v.allowedExtensions.map((e) => e.toLowerCase()).includes(ext)) {
-                    return `فرمت مجاز: ${v.allowedExtensions.join(", ")}`;
+                    return _t("custom_panels|validation_allowed_extensions" as TranslationKey, {
+                        list: v.allowedExtensions.join(", "),
+                    });
                 }
             }
             return undefined;
@@ -146,7 +153,7 @@ function SingleChoiceView({ field, value, error, onChange }: FieldProps): JSX.El
             onChange={(e) => onChange(e.target.value)}
         >
             <option value="" disabled>
-                انتخاب کنید
+                {_t("custom_panels|select_option" as TranslationKey)}
             </option>
             {field.options.map((opt) => (
                 <option key={opt.id} value={opt.value}>
@@ -221,13 +228,13 @@ function GeoFieldView({ field, value, error, onChange }: FieldProps): JSX.Elemen
         <div style={{ display: "flex", gap: 8 }}>
             <input
                 style={baseStyle}
-                placeholder="عرض جغرافیایی (lat)"
+                placeholder={_t("custom_panels|geo_lat" as TranslationKey)}
                 value={v.lat}
                 onChange={(e) => onChange({ lat: e.target.value, lng: v.lng })}
             />
             <input
                 style={baseStyle}
-                placeholder="طول جغرافیایی (lng)"
+                placeholder={_t("custom_panels|geo_lng" as TranslationKey)}
                 value={v.lng}
                 onChange={(e) => onChange({ lat: v.lat, lng: e.target.value })}
             />
@@ -256,7 +263,11 @@ function FieldView(props: FieldProps): JSX.Element {
         case "geo":
             return <GeoFieldView {...props} />;
         default:
-            return <div style={{ color: "#9ca3af", fontSize: 12 }}>نوع فیلد ناشناخته: {(field as Field).type}</div>;
+            return (
+                <div style={{ color: "#9ca3af", fontSize: 12 }}>
+                    {_t("custom_panels|unknown_field_type" as TranslationKey, { type: (field as Field).type })}
+                </div>
+            );
     }
 }
 
@@ -315,7 +326,7 @@ export function DynamicForm({ form, onSubmit }: Props): JSX.Element {
     };
 
     if (!currentStep) {
-        return <div style={{ padding: 24, color: "#6b7280" }}>این فرم هنوز step ندارد.</div>;
+        return <div style={{ padding: 24, color: "#6b7280" }}>{_t("custom_panels|form_no_step" as TranslationKey)}</div>;
     }
 
     const sortedFields = [...currentStep.fields]
@@ -355,12 +366,12 @@ export function DynamicForm({ form, onSubmit }: Props): JSX.Element {
             <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
                 {stepIdx > 0 && (
                     <button type="button" onClick={goPrev} style={secondaryButtonStyle} disabled={isSubmitting}>
-                        مرحله قبل
+                        {_t("custom_panels|prev_step" as TranslationKey)}
                     </button>
                 )}
                 {!isLast && (
                     <button type="button" onClick={goNext} style={buttonStyle} disabled={isSubmitting}>
-                        مرحله بعد
+                        {_t("custom_panels|next_step" as TranslationKey)}
                     </button>
                 )}
                 {isLast && (
@@ -370,14 +381,19 @@ export function DynamicForm({ form, onSubmit }: Props): JSX.Element {
                         style={{ ...buttonStyle, opacity: isSubmitting ? 0.7 : 1 }}
                         disabled={isSubmitting}
                     >
-                        {isSubmitting ? "در حال ارسال..." : "ثبت نهایی"}
+                        {isSubmitting
+                            ? _t("custom_panels|submitting" as TranslationKey)
+                            : _t("custom_panels|submit_final" as TranslationKey)}
                     </button>
                 )}
             </div>
 
             <div style={{ height: 24 }} />
             <div style={{ fontSize: 11, color: green, textAlign: "center" }}>
-                مرحله {stepIdx + 1} از {form.steps.length}
+                {_t("custom_panels|step_indicator" as TranslationKey, {
+                    current: stepIdx + 1,
+                    total: form.steps.length,
+                })}
             </div>
         </div>
     );

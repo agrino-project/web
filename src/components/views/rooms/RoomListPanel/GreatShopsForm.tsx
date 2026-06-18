@@ -10,7 +10,7 @@ import { greatShopWrapperStyle } from "./great-shops/shared";
 import { DynamicForm } from "./great-shops/DynamicForm";
 import { type FormValues } from "./great-shops/formTypes";
 import { submitGreatShopForm } from "./great-shops/submitGreatShopForm";
-import { _t } from "../../../../languageHandler";
+import { _t, type TranslationKey } from "../../../../languageHandler";
 
 /** Header that delegates back navigation to the supplied handler. */
 function Header({ title, onBack }: { title: string; onBack: () => void }): JSX.Element {
@@ -104,7 +104,7 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                     textAlign: "center",
                 }}
             >
-                برای مشاهده، یک کلان کسب‌وکار را از فهرست انتخاب کنید
+                {_t("custom_panels|select_category_hint" as TranslationKey)}
             </div>
         );
     }
@@ -113,13 +113,21 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
     if (selectedSub) {
         let formBody: JSX.Element;
         if (isFormLoading) {
-            formBody = <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>در حال بارگذاری فرم...</div>;
+            formBody = (
+                <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>
+                    {_t("custom_panels|form_loading" as TranslationKey)}
+                </div>
+            );
         } else if (formError) {
-            formBody = <div style={{ padding: 24, textAlign: "center", color: "#d60000" }}>خطا در دریافت فرم</div>;
+            formBody = (
+                <div style={{ padding: 24, textAlign: "center", color: "#d60000" }}>
+                    {_t("custom_panels|form_load_error" as TranslationKey)}
+                </div>
+            );
         } else if (!form || !form.steps || form.steps.length === 0) {
             formBody = (
                 <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>
-                    ساختار فرم برای این بخش هنوز ثبت نشده.
+                    {_t("custom_panels|form_not_configured" as TranslationKey)}
                 </div>
             );
         } else {
@@ -162,14 +170,19 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                             setSubmitMessage(null);
                             try {
                                 await submitGreatShopForm(selectedSub.id, form, values);
-                                setSubmitMessage({ kind: "success", text: "فرم با موفقیت ثبت شد." });
+                                setSubmitMessage({
+                                    kind: "success",
+                                    text: _t("custom_panels|form_submitted" as TranslationKey),
+                                });
                                 // After a short delay, return to the subcategory list so the user
                                 // sees the success banner before navigation.
                                 window.setTimeout(() => setSelectedSub(null), 1500);
                             } catch (e) {
                                 setSubmitMessage({
                                     kind: "error",
-                                    text: `خطا در ثبت فرم: ${(e as Error).message}`,
+                                    text: _t("custom_panels|form_submit_error" as TranslationKey, {
+                                        error: (e as Error).message,
+                                    }),
                                 });
                                 throw e; // bubble so DynamicForm clears its `isSubmitting` flag.
                             }
@@ -189,13 +202,21 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
     // ---- Subcategory list view ----
     let body: JSX.Element;
     if (isLoading) {
-        body = <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>در حال بارگذاری...</div>;
+        body = (
+            <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>
+                {_t("custom_panels|loading" as TranslationKey)}
+            </div>
+        );
     } else if (error) {
-        body = <div style={{ padding: 24, textAlign: "center", color: "#d60000" }}>خطا در دریافت زیرمجموعه‌ها</div>;
+        body = (
+            <div style={{ padding: 24, textAlign: "center", color: "#d60000" }}>
+                {_t("custom_panels|subcategories_error" as TranslationKey)}
+            </div>
+        );
     } else if (subcategories.length === 0) {
         body = (
             <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>
-                زیرمجموعه‌ای برای این کسب‌وکار ثبت نشده
+                {_t("custom_panels|no_subcategory" as TranslationKey)}
             </div>
         );
     } else {

@@ -343,7 +343,7 @@ function RoomHeaderButtons({
                 }
             >
                 <MenuItem
-                    label={roomNotifState === RoomNotifState.Mute ? "صدادار کردن" : "بی صدا"}
+                    label={roomNotifState === RoomNotifState.Mute ? _t("common|unmute") : _t("common|mute")}
                     onSelect={() => {
                         setIsMenuOpen(false);
                         setShowNotifMenu(true);
@@ -356,7 +356,7 @@ function RoomHeaderButtons({
                 />
 
                 <MenuItem
-                    label={"جستجو"}
+                    label={_t("action|search")}
                     onSelect={() => {
                         setIsMenuOpen(false);
                         openRoomSearch();
@@ -369,7 +369,7 @@ function RoomHeaderButtons({
                 />
 
                 <MenuItem
-                    label="گزارش"
+                    label={_t("action|report_room")}
                     onSelect={() => {
                         setIsMenuOpen(false);
                         const timeline = room.getLiveTimeline().getEvents();
@@ -389,7 +389,7 @@ function RoomHeaderButtons({
                     )}
                 />
                 <MenuItem
-                    label="ترک گروه"
+                    label={_t("action|leave_room")}
                     onSelect={() => {
                         setIsMenuOpen(false);
                         dis.dispatch({
