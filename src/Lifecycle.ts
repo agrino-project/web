@@ -1110,6 +1110,10 @@ export async function onLoggedOut(): Promise<void> {
         window.setTimeout(() => {
             window.location.href = SdkConfig.get().logout_redirect_url!;
         }, 100);
+    } else {
+        window.setTimeout(() => {
+            window.location.reload();
+        }, 0);
     }
     // Do this last to prevent racing `stopMatrixClient` and `on_logged_out` with MatrixChat handling Session.logged_out
     _isLoggingOut = false;

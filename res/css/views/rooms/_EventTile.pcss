@@ -1463,15 +1463,14 @@ $left-gutter: 64px;
 
 /* Tables in sent messages should have readable dark text on white bg */
 .mx_EventTile[data-self="true"] .mx_EventTile_line table {
-    color: #1a1a1a;
-    background: #ffffff;
+    color: var(--cpd-color-text-primary);
     border-radius: 8px;
     overflow: hidden;
 }
 
 /* Ensure incoming bot messages have dark text */
 .mx_EventTile[data-self="false"] .mx_EventTile_line table {
-    color: #1a1a1a;
+    color: var(--cpd-color-text-primary);
 }
 
 .mx_EventTile_line {
