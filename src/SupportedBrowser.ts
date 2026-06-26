@@ -19,7 +19,7 @@ import SdkConfig from "./SdkConfig";
 export const LOCAL_STORAGE_KEY = "mx_accepts_unsupported_browser";
 const TOAST_KEY = "unsupportedbrowser";
 
-const SUPPORTED_DEVICE_TYPES = [DeviceType.Web, DeviceType.Desktop];
+const SUPPORTED_DEVICE_TYPES = [DeviceType.Web, DeviceType.Desktop, DeviceType.Mobile];
 const SUPPORTED_BROWSER_QUERY =
     "last 2 Chrome versions, last 2 Firefox versions, last 2 Safari versions, last 2 Edge versions";
 const LEARN_MORE_URL = "https://github.com/element-hq/element-web#supported-environments";
