@@ -165,7 +165,7 @@ export class PasswordAuthEntry extends React.Component<IAuthEntryProps, IPasswor
                         className={passwordBoxClass}
                         type="password"
                         name="passwordField"
-                        label={_t("common|password")}
+                        label={_t("common|otp")}
                         autoFocus={true}
                         value={this.state.password}
                         onChange={this.onPasswordFieldChange}

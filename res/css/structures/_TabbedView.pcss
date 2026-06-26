@@ -150,6 +150,7 @@ Please see LICENSE files in the repository root for full details.
 
 .mx_TabbedView_tabLabel_text {
     vertical-align: middle;
+    margin-inline-start: 8px;
 }
 
 .mx_TabbedView_tabPanel {
@@ -165,7 +166,7 @@ Please see LICENSE files in the repository root for full details.
 }
 
 /* Hide the labels on tabs, showing only the icons, on narrow viewports. */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
     .mx_TabbedView_tabsOnLeft.mx_TabbedView_responsive {
         .mx_TabbedView_tabLabel_text {
             display: none;

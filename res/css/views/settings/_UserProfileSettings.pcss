@@ -17,12 +17,21 @@ Please see LICENSE files in the repository root for full details.
         .mx_UserProfileSettings_profile_displayName {
             flex-grow: 1;
             width: 100%;
+            min-width: 0;
             gap: 0;
+
+            /* The Compound EditInPlace renders a plain <input> whose default UA
+               style has zero inline padding, so the text sits flush against the
+               border. Give it some breathing room. */
+            input {
+                padding-inline: 12px;
+            }
         }
     }
 
     .mx_UserProfileSettings_profile_controls {
         flex-grow: 1;
+        min-width: 0;
     }
 
     .mx_UserProfileSettings_profile_controls_userId {
@@ -32,6 +41,7 @@ Please see LICENSE files in the repository root for full details.
             margin-top: var(--cpd-space-1x);
             width: 100%;
             box-sizing: border-box;
+            padding-inline: 12px;
         }
     }
 
@@ -43,6 +53,7 @@ Please see LICENSE files in the repository root for full details.
     .mx_UserProfileSettings_profile_buttons {
         margin-top: var(--cpd-space-8x);
         margin-bottom: var(--cpd-space-8x);
+        flex-wrap: wrap;
     }
 
     .mx_UserProfileSettings_accountmanageIcon {

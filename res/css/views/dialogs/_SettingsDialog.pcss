@@ -43,6 +43,42 @@ Please see LICENSE files in the repository root for full details.
     }
 }
 
+/* Mobile: keep the glass-card look (border, radius, padding) but stop the
+   inner SettingsTab from being wider than the dialog (its `min-width: 580px`
+   + `padding-right: 100px` cause horizontal scroll on phones), and let
+   inputs / copyable text actually breathe instead of being shoved off-screen. */
+@media (max-width: 768px) {
+    .mx_UserSettingsDialog,
+    .mx_RoomSettingsDialog,
+    .mx_SpaceSettingsDialog,
+    .mx_SpacePreferencesDialog {
+        .mx_TabbedView .mx_SettingsTab {
+            min-width: 0;
+            padding-left: 8px;
+            padding-right: 8px;
+            padding-bottom: 48px;
+            overflow-x: hidden;
+        }
+
+        .mx_SettingsSection,
+        .mx_SettingsSubsection,
+        .mx_UserProfileSettings,
+        .mx_UserProfileSettings_profile {
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .mx_UserProfileSettings_profile_displayName input,
+        .mx_UserProfileSettings .mx_CopyableText input,
+        .mx_UserProfileSettings .mx_CopyableText {
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+    }
+}
+
 /* On narrow viewports, the tab labels are hidden, so we need to shift the indicator so it isn't over the tab icon. */
 @media (max-width: 1024px) {
     .mx_UserSettingsDialog,

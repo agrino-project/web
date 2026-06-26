@@ -70,6 +70,20 @@ Please see LICENSE files in the repository root for full details.
     --cpd-font-family-sans: $font-family;
 }
 
+/**
+ * Form controls in every browser ignore `font-family` set on <body> by default
+ * and use the UA's own font instead, which makes Persian text render in a
+ * non-Vazirmatn fallback on the auth screens / inputs / buttons. Force them to
+ * inherit so the whole app uses Vazirmatn consistently.
+ */
+button,
+input,
+select,
+textarea,
+optgroup {
+    font-family: inherit;
+}
+
 @media (prefers-reduced-motion) {
     :root {
         --transition-short: 0;
