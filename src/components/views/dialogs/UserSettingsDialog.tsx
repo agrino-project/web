@@ -137,17 +137,17 @@ export default function UserSettingsDialog(props: IProps): JSX.Element {
         );
 
         // Session tab
-        // tabs.push(
-        //     new Tab(
-        //         UserTab.SessionManager,
-        //         _td("settings|sessions|title"),
-        //         <DevicesIcon />,
-        //         <SessionManagerTab showMsc4108QrCode={showMsc4108QrCode} />,
-        //         undefined,
-        //     ),
-        // );
+        tabs.push(
+            new Tab(
+                UserTab.SessionManager,
+                _td("settings|sessions|title"),
+                <DevicesIcon />,
+                <SessionManagerTab showMsc4108QrCode={showMsc4108QrCode} />,
+                undefined,
+            ),
+        );
 
-        // // Notifications tab
+        // Notifications tab
         // tabs.push(
         //     new Tab(
         //         UserTab.Notifications,
