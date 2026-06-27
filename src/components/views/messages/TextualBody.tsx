@@ -743,10 +743,19 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const mxEvent = this.props.mxEvent;
         const content = mxEvent.getContent();
         const skippedMessageToken = "<<<USER_SKIPED_MESSAGE::EMPTY_INPUT::7XQ9-K2LM-P0R4>>>";
+        const startedMessageToken = "<<<USER_STARTED_INPUT::USER_STARTED_BOT::SX9K-M4LP-T2H8>>>";
+        const restartedMessageToken = "<<<USER_RESTARTED_INPUT::USER_RESTARTED_BOT::QR7T-N8VP-Z1W6>>>";
 
-        if (content.body === skippedMessageToken) {
-            content.body = "سوال بعدی";
+        // Copy for display only — never mutate getContent(); the SDK reuses that object when sending.
+        let displayBody = content.body;
+        if (displayBody === skippedMessageToken) {
+            displayBody = "سوال بعدی";
+        } else if (displayBody === startedMessageToken) {
+            displayBody = "شروع";
+        } else if (displayBody === restartedMessageToken) {
+            displayBody = "توقف";
         }
+        const displayContent = displayBody === content.body ? content : { ...content, body: displayBody };
 
         const metadata = content.custom_meta_data;
         const type = metadata?.type;
@@ -777,7 +786,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 as={willHaveWrapper ? "span" : "div"}
                 includeDir={false}
                 mxEvent={mxEvent}
-                content={content}
+                content={displayContent}
                 stripReply={stripReply}
                 linkify
                 highlights={this.props.highlights}

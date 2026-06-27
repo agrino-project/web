@@ -60,9 +60,9 @@ export function BotPinnedCategories({ room }: Props): React.JSX.Element | null {
             });
         try {
             // 1. Stop the bot (quit current conversation)
-            await send("q");
+            await send("<<<USER_RESTARTED_INPUT::USER_RESTARTED_BOT::QR7T-N8VP-Z1W6>>>");
             // 2. Start the bot (fresh session)
-            await send("s");
+            await send("<<<USER_STARTED_INPUT::USER_STARTED_BOT::SX9K-M4LP-T2H8>>>");
             // 3. Send the selected category name
             await send(cat.name);
         } catch (e) {

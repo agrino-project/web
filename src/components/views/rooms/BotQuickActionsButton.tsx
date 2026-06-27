@@ -48,6 +48,12 @@ function commandNeedsInput(cmd: BotCommand): boolean {
     return cmd.label === "جستجو" || cmd.command === "جستن";
 }
 
+function getCommandBody(command: string): string {
+    if (command === "s") return "<<<USER_STARTED_INPUT::USER_STARTED_BOT::SX9K-M4LP-T2H8>>>";
+    if (command === "q") return "<<<USER_RESTARTED_INPUT::USER_RESTARTED_BOT::QR7T-N8VP-Z1W6>>>";
+    return command;
+}
+
 /**
  * Mobile fallback: icon button + context menu (original approach).
  */
@@ -79,7 +85,7 @@ export function BotQuickActionsButton({ room, onMenuFinished }: Props): React.JS
         }
         closeMenu();
         onMenuFinished?.();
-        await send(cmd.command);
+        await send(getCommandBody(cmd.command));
     };
 
     const onArgSubmit = async (e: React.FormEvent): Promise<void> => {
@@ -88,7 +94,7 @@ export function BotQuickActionsButton({ room, onMenuFinished }: Props): React.JS
         const value = argInputRef.current?.value?.trim() ?? "";
         setArgCommand(null);
         if (!cmd || !value) return;
-        await send(`${cmd.command} ${value}`);
+        await send(`${getCommandBody(cmd.command)} ${value}`);
         onMenuFinished?.();
     };
 
@@ -211,7 +217,7 @@ export function BotCommandsStrip({ room }: { room: Room }): React.JSX.Element | 
             setArgValue("");
             return;
         }
-        await send(cmd.command);
+        await send(getCommandBody(cmd.command));
     };
 
     const onArgSubmit = async (e: React.FormEvent): Promise<void> => {
@@ -221,7 +227,7 @@ export function BotCommandsStrip({ room }: { room: Room }): React.JSX.Element | 
         setArgCommand(null);
         setArgValue("");
         if (!cmd || !value) return;
-        await send(`${cmd.command} ${value}`);
+        await send(`${getCommandBody(cmd.command)} ${value}`);
     };
 
     return (
