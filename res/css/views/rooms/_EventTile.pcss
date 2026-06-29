@@ -1474,7 +1474,7 @@ $left-gutter: 64px;
 }
 
 .mx_EventTile_line {
-    padding: 8px 6px 25px 6px !important;
+    padding: 12px 12px 26px 12px !important;
     margin-bottom: 4px;
     display: inline-block !important;
     max-width: 75%;
@@ -1996,4 +1996,10 @@ input[type="number"] {
     background: transparent !important;
     border-color: transparent !important;
     box-shadow: none !important;
+}
+
+@media (min-width: 769px) {
+    .mx_EventTile_content {
+        font-size: 16px;
+    }
 }
