@@ -134,7 +134,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
             <div className="mx_HomePage_default_wrapper">
                 {introSection}
                 <div className="mx_HomePage_default_buttons">
-                    <AccessibleButton onClick={onClickSendDm} className="mx_HomePage_button_sendDm">
+                    <AccessibleButton onClick={onClickSendDm}>
                         <div className="mx_IconBox">
                             <DmIcon />
                         </div>
@@ -144,7 +144,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                         </div>
                     </AccessibleButton>
 
-                    <AccessibleButton onClick={onClickNewRoom} className="mx_HomePage_button_createGroup">
+                    <AccessibleButton onClick={onClickNewRoom}>
                         <div className="mx_IconBox">
                             <RoomIcon />
                         </div>
@@ -154,7 +154,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                         </div>
                     </AccessibleButton>
 
-                    <AccessibleButton onClick={onClickExplore} className="mx_HomePage_button_explore">
+                    <AccessibleButton onClick={onClickExplore}>
                         <div className="mx_IconBox">
                             <ExploreIcon />
                         </div>

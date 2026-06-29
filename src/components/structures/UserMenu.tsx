@@ -42,6 +42,8 @@ import PosthogTrackers from "../../PosthogTrackers";
 import { type ViewHomePagePayload } from "../../dispatcher/payloads/ViewHomePagePayload";
 import { SDKContext } from "../../contexts/SDKContext";
 import { shouldShowFeedback } from "../../utils/Feedback";
+import RightPanelStore from "../../stores/right-panel/RightPanelStore";
+import { RightPanelPhases } from "../../stores/right-panel/RightPanelStorePhases";
 
 interface IProps {
     isPanelCollapsed: boolean;
@@ -252,8 +254,7 @@ export default class UserMenu extends React.Component<IProps, IState> {
     private onHomeClick = (ev: ButtonEvent): void => {
         ev.preventDefault();
         ev.stopPropagation();
-
-        defaultDispatcher.dispatch<ViewHomePagePayload>({ action: Action.ViewHomePage });
+        RightPanelStore.instance.setCard({ phase: RightPanelPhases.Agriculture }, true, undefined);
         this.setState({ contextMenuPosition: null }); // also close the menu
     };
 
@@ -293,15 +294,13 @@ export default class UserMenu extends React.Component<IProps, IState> {
         }
 
         let homeButton: JSX.Element | undefined;
-        if (this.hasHomePage) {
-            homeButton = (
-                <IconizedContextMenuOption
-                    iconClassName="mx_UserMenu_iconHome"
-                    label={_t("common|home")}
-                    onClick={this.onHomeClick}
-                />
-            );
-        }
+        homeButton = (
+            <IconizedContextMenuOption
+                iconClassName="mx_UserMenu_iconHome"
+                label={_t("common|home")}
+                onClick={this.onHomeClick}
+            />
+        );
 
         let feedbackButton: JSX.Element | undefined;
         if (shouldShowFeedback()) {
@@ -325,8 +324,8 @@ export default class UserMenu extends React.Component<IProps, IState> {
         let primaryOptionList = (
             <IconizedContextMenuOptionList>
                 {homeButton}
-                {linkNewDeviceButton}
-                <IconizedContextMenuOption
+                {/* {linkNewDeviceButton} */}
+                {/* <IconizedContextMenuOption
                     iconClassName="mx_UserMenu_iconBell"
                     label={_t("notifications|enable_prompt_toast_title")}
                     onClick={(e) => this.onSettingsOpen(e, UserTab.Notifications)}
@@ -335,7 +334,7 @@ export default class UserMenu extends React.Component<IProps, IState> {
                     iconClassName="mx_UserMenu_iconLock"
                     label={_t("room_settings|security|title")}
                     onClick={(e) => this.onSettingsOpen(e, UserTab.Security)}
-                />
+                /> */}
                 <IconizedContextMenuOption
                     iconClassName="mx_UserMenu_iconSettings"
                     label={_t("user_menu|settings")}

@@ -13,11 +13,8 @@ Please see LICENSE files in the repository root for full details.
     height: 100%;
     margin-left: auto;
     margin-right: auto;
-    --home-card-bg: #ffffff;
-    --home-primary: #0DBD8B;
+    --home-primary: #0dbd8b;
     --home-primary-hover: #0aa378;
-    --home-text-primary: #2e2f32;
-    --home-text-secondary: #737d8c;
     --home-border-radius: 12px;
     --home-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     --home-transition: all 0.3s ease;
@@ -41,7 +38,7 @@ Please see LICENSE files in the repository root for full details.
         font-size: $font-32px;
         line-height: 1.375;
         margin-bottom: 8px;
-        color: var(--home-text-primary);
+        color: var(--cpd-color-text-primary);
     }
 
     h2 {
@@ -49,7 +46,7 @@ Please see LICENSE files in the repository root for full details.
         font-weight: 400;
         font-size: $font-18px;
         line-height: $font-25px;
-        color: var(--home-text-secondary);
+        color: var(--cpd-color-text-secondary);
     }
 
     .mx_MiniAvatarUploader {
@@ -67,8 +64,8 @@ Please see LICENSE files in the repository root for full details.
     }
 
     .mx_AccessibleButton {
-        background-color: var(--home-card-bg);
         border-radius: var(--home-border-radius);
+        border: 1px solid var(--cpd-color-text-secondary) !important;
         box-shadow: var(--home-shadow);
         width: 200px;
         min-height: 180px;
@@ -83,7 +80,6 @@ Please see LICENSE files in the repository root for full details.
         border: 1px solid transparent;
         position: relative;
         overflow: hidden;
-        color: var(--home-text-primary);
         text-decoration: none;
 
         &:hover {
@@ -94,10 +90,6 @@ Please see LICENSE files in the repository root for full details.
 
         &:active {
             transform: translateY(-2px);
-        }
-
-        &.mx_HomePage_button_sendDm {
-            background: linear-gradient(135deg, #ffffff 0%, #f0fbf8 100%);
         }
 
         .mx_IconBox {
@@ -136,12 +128,12 @@ Please see LICENSE files in the repository root for full details.
             font-weight: 600;
             font-size: $font-15px;
             line-height: $font-20px;
-            color: var(--home-text-primary);
+            color: var(--cpd-color-text-primary);
         }
 
         .mx_CardSubtext {
             font-size: 0.8rem;
-            color: var(--home-text-secondary);
+            color: var(--cpd-color-text-secondary);
             margin-top: 4px;
         }
     }

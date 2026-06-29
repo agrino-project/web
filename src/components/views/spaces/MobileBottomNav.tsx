@@ -194,7 +194,7 @@ const MobileBottomNav: React.FC = () => {
                             className="mx_MobileBottomNav_menuItem"
                             onClick={() => {
                                 setMoreOpen(false);
-                                defaultDispatcher.dispatch({ action: Action.ViewHomePage });
+                                navigate("agriculture");
                             }}
                         >
                             <div className="mx_MobileBottomNav_menuIcon mx_MobileBottomNav_menuIcon_home" />
@@ -204,17 +204,17 @@ const MobileBottomNav: React.FC = () => {
                             <div className="mx_MobileBottomNav_menuIcon mx_MobileBottomNav_menuIcon_settings" />
                             <span>{_t("common|settings")}</span>
                         </button>
-                        <button
+                        {/* <button
                             className="mx_MobileBottomNav_menuItem"
                             onClick={() => openSettings(UserTab.Notifications)}
                         >
                             <div className="mx_MobileBottomNav_menuIcon mx_MobileBottomNav_menuIcon_notifications" />
                             <span>{_t("notifications|enable_prompt_toast_title")}</span>
-                        </button>
-                        <button className="mx_MobileBottomNav_menuItem" onClick={() => openSettings(UserTab.Security)}>
+                        </button> */}
+                        {/* <button className="mx_MobileBottomNav_menuItem" onClick={() => openSettings(UserTab.Security)}>
                             <div className="mx_MobileBottomNav_menuIcon mx_MobileBottomNav_menuIcon_security" />
                             <span>{_t("room_settings|security|title")}</span>
-                        </button>
+                        </button> */}
                         <div className="mx_MobileBottomNav_menuDivider" />
                         <button
                             className="mx_MobileBottomNav_menuItem mx_MobileBottomNav_menuItem--danger"
