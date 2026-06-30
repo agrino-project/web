@@ -509,6 +509,36 @@ const GreatShopsButton: React.FC<Pick<IInnerSpacePanelProps, "isPanelCollapsed">
     );
 };
 
+const BazaarButton: React.FC<Pick<IInnerSpacePanelProps, "isPanelCollapsed"> & { selected: boolean }> = ({
+    isPanelCollapsed,
+    selected,
+}) => {
+    const onBazaarClick = (): void => {
+        RightPanelStore.instance.setCard({ phase: RightPanelPhases.Bazaar }, true, undefined);
+        defaultDispatcher.dispatch({ action: "show_left_panel" });
+    };
+
+    return (
+        <li
+            className={classNames("mx_SpaceItem", {
+                collapsed: isPanelCollapsed,
+            })}
+            role="treeitem"
+            aria-selected={selected}
+        >
+            <SpaceButton
+                data-testid="bazaar-button"
+                className="mx_SpaceButton_bazaar"
+                label={_t("custom_panels|bazaar")}
+                onClick={onBazaarClick}
+                isNarrow={isPanelCollapsed}
+                selected={selected}
+                size="32px"
+            />
+        </li>
+    );
+};
+
 const SettingsButton: React.FC<Pick<IInnerSpacePanelProps, "isPanelCollapsed">> = ({ isPanelCollapsed }) => {
     const onSettingsClick = (): void => {
         defaultDispatcher.dispatch({
@@ -631,6 +661,8 @@ const InnerSpacePanel = React.memo<IInnerSpacePanelProps>(
         // GreatShops is its own phase too — highlight the button and deselect meta-spaces while it's active.
         const greatShopsActive =
             RightPanelStore.instance.isOpen && currentCard.phase === RightPanelPhases.GreatShops;
+        const bazaarActive =
+            RightPanelStore.instance.isOpen && currentCard.phase === RightPanelPhases.Bazaar;
 
         const moduleSpaceItems = useModuleSpacePanelItems(ModuleApi.instance.extras);
 
@@ -719,6 +751,7 @@ const InnerSpacePanel = React.memo<IInnerSpacePanelProps>(
                 )} */}
                     <ServicesButton isPanelCollapsed={isPanelCollapsed} />
                     <GreatShopsButton isPanelCollapsed={isPanelCollapsed} selected={greatShopsActive} />
+                    <BazaarButton isPanelCollapsed={isPanelCollapsed} selected={bazaarActive} />
                     {/* <CardToCardButton isPanelCollapsed={isPanelCollapsed} />
                 <ChargePurchaseButton isPanelCollapsed={isPanelCollapsed} />
                 <BillPaymentButton isPanelCollapsed={isPanelCollapsed} /> */}

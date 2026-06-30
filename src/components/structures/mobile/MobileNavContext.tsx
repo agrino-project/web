@@ -16,9 +16,10 @@ export type MobilePage =
     | "greatShopForm"
     | "cardToCard"
     | "chargePurchase"
-    | "billPayment";
+    | "billPayment"
+    | "bazaar";
 
-export type MobileTab = "chat" | "agriculture" | "services" | "greatShops";
+export type MobileTab = "chat" | "agriculture" | "services" | "greatShops" | "bazaar";
 
 /** Pages that are "sub-pages" opened from a parent tab */
 const SUB_PAGES: Set<MobilePage> = new Set(["cardToCard", "chargePurchase", "billPayment", "greatShopForm"]);
@@ -51,6 +52,8 @@ function getTabForPage(page: MobilePage, parentTab: MobileTab): MobileTab {
             return "agriculture";
         case "greatShops":
             return "greatShops";
+        case "bazaar":
+            return "bazaar";
         default:
             return "chat";
     }
@@ -63,6 +66,7 @@ function rootPageForTab(tab: MobileTab): MobilePage {
         case "services": return "services";
         case "agriculture": return "agriculture";
         case "greatShops": return "greatShops";
+        case "bazaar": return "bazaar";
     }
 }
 
@@ -81,6 +85,7 @@ export const MobileNavProvider: React.FC<{ children: ReactNode }> = ({ children 
                 case "services": parentTabRef.current = "services"; break;
                 case "agriculture": parentTabRef.current = "agriculture"; break;
                 case "greatShops": parentTabRef.current = "greatShops"; break;
+                case "bazaar": parentTabRef.current = "bazaar"; break;
             }
         }
         setCurrentPage(page);

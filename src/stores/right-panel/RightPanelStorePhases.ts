@@ -30,6 +30,7 @@ export enum RightPanelPhases {
     Services = "Services",
     Agriculture = "Agriculture",
     GreatShops = "GreatShops",
+    Bazaar = "Bazaar",
 
     // Thread stuff
     ThreadView = "ThreadView",

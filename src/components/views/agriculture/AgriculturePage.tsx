@@ -222,6 +222,12 @@ const AgriculturePage: React.FC = () => {
         navigate("greatShops");
     }, [navigate, exitAgricultureView]);
 
+    const handleBazaarClick = useCallback((): void => {
+        exitAgricultureView();
+        RightPanelStore.instance.setCard({ phase: RightPanelPhases.Bazaar }, true, undefined);
+        navigate("bazaar");
+    }, [navigate, exitAgricultureView]);
+
     const bannerSlides = [
         {
             title: "بهترین قیمت نهاده‌ها در آگرینو",
@@ -263,7 +269,7 @@ const AgriculturePage: React.FC = () => {
                         title={_t("custom_panels|agriculture_bazaar")}
                         icon={BazaarGrediantIcon}
                         background={`url(${GroceryBackground}) center/cover no-repeat`}
-                        onClick={() => handleMarketClick("@advertisebot:agridemo.ir")}
+                        onClick={handleBazaarClick}
                         variant="default"
                     />
                     <AgricultureCard

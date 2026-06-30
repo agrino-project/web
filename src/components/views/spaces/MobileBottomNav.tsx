@@ -161,6 +161,16 @@ const MobileBottomNav: React.FC = () => {
                 <div className="mx_MobileBottomNav_icon mx_MobileBottomNav_icon_greatShops" />
                 <span className="mx_MobileBottomNav_label">{_t("custom_panels|greatShops")}</span>
             </button>
+            <button
+                className={classNames("mx_MobileBottomNav_tab", { active: activeTab === "bazaar" })}
+                onClick={() => {
+                    RightPanelStore.instance.setCard({ phase: RightPanelPhases.Bazaar }, true, undefined);
+                    navigate("bazaar");
+                }}
+            >
+                <div className="mx_MobileBottomNav_icon mx_MobileBottomNav_icon_bazaar" />
+                <span className="mx_MobileBottomNav_label">{_t("custom_panels|bazaar")}</span>
+            </button>
             <div className="mx_MobileBottomNav_moreWrapper" ref={menuRef}>
                 <button
                     className={classNames("mx_MobileBottomNav_tab", { active: moreOpen })}

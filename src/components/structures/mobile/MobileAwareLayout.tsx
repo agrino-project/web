@@ -59,6 +59,7 @@ const MobileNavSync: React.FC<Props> = (props) => {
         else if (dp === "cardToCard" && currentPage !== "cardToCard") navigate("cardToCard");
         else if (dp === "chargePurchase" && currentPage !== "chargePurchase") navigate("chargePurchase");
         else if (dp === "billPayment" && currentPage !== "billPayment") navigate("billPayment");
+        else if (dp === "bazaar" && currentPage !== "bazaar") navigate("bazaar");
     }, [isMobile, props.desktopPage]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Sync room navigation

@@ -63,6 +63,7 @@ import { TimelineRenderingType } from "../../contexts/RoomContext";
 import CardToCardCard from "../views/right_panel/CardToCardCard";
 import ChargePurchaseCard from "../views/right_panel/ChargePurchaseCard";
 import BillPaymentCard from "../views/right_panel/BillPaymentCard";
+import BazaarPage from "../views/bazaar/BazaarPage";
 import ServicesPage from "../views/services/ServicesPage";
 import AgriculturePage from "../views/agriculture/AgriculturePage";
 import MobileAwareLayout from "./mobile/MobileAwareLayout";
@@ -118,7 +119,8 @@ type DesktopPage =
     | "agriculture" // Agriculture grid
     | "cardToCard" // Card to card form
     | "chargePurchase" // Charge purchase form
-    | "billPayment"; // Bill payment form
+    | "billPayment" // Bill payment form
+    | "bazaar"; // Bazaar (marketplace) page
 
 interface IState {
     syncErrorData?: SyncStateData;
@@ -761,6 +763,9 @@ class LoggedInView extends React.Component<IProps, IState> {
                 case RightPanelPhases.BillPayment:
                     desktopPage = "billPayment";
                     break;
+                case RightPanelPhases.Bazaar:
+                    desktopPage = "bazaar";
+                    break;
             }
         }
         // forceUpdate so the GreatShops phase transitions repaint even when desktopPage doesn't change.
@@ -909,6 +914,8 @@ class LoggedInView extends React.Component<IProps, IState> {
                                     return <ChargePurchaseCard onClose={onClose} />;
                                 case "billPayment":
                                     return <BillPaymentCard onClose={onClose} />;
+                                case "bazaar":
+                                    return <BazaarPage />;
                                 default:
                                     return greatShopsActive ? (
                                         <GreatShopsForm page={greatShopPage} />

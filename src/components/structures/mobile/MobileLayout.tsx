@@ -14,6 +14,7 @@ import AgriculturePage from "../../views/agriculture/AgriculturePage";
 import CardToCardCard from "../../views/right_panel/CardToCardCard";
 import ChargePurchaseCard from "../../views/right_panel/ChargePurchaseCard";
 import BillPaymentCard from "../../views/right_panel/BillPaymentCard";
+import BazaarPage from "../../views/bazaar/BazaarPage";
 
 import "../../../../res/css/structures/mobile/_MobileLayout.pcss";
 import RightPanelStore from "../../../stores/right-panel/RightPanelStore";
@@ -27,7 +28,7 @@ interface MobileLayoutProps {
 }
 
 const MobileLayout: React.FC<MobileLayoutProps> = ({ chatListElement, chatRoomElement }) => {
-    const { currentPage, goBack } = useMobileNav();
+    const { currentPage } = useMobileNav();
 
     let content: ReactNode;
     switch (currentPage) {
@@ -95,6 +96,13 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ chatListElement, chatRoomEl
                             });
                         }}
                     />
+                </div>
+            );
+            break;
+        case "bazaar":
+            content = (
+                <div className="mx_MobileLayout_page mx_MobileLayout_page--scrollable">
+                    <BazaarPage />
                 </div>
             );
             break;
