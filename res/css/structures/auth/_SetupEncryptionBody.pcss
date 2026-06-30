@@ -8,4 +8,12 @@ Please see LICENSE files in the repository root for full details.
 
 .mx_SetupEncryptionBody {
     width: 600px;
+    max-width: 100%;
+    box-sizing: border-box;
+
+    /* Buttons and long Persian text fit inside even on the narrowest phones. */
+    @media (max-width: 768px) {
+        width: 100%;
+        padding-inline: 4px;
+    }
 }

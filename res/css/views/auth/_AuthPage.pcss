@@ -21,23 +21,44 @@
 }
 
 .mx_AuthPage_imageSection {
-    flex: 1;
-    height: 100vh;
+    flex: 0 0 50%;
+    min-height: 100vh;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 
     @media only screen and (max-width: 768px) {
+        flex: 0 0 auto;
+        height: 250px;
         min-height: 250px;
         border-radius: 8px;
     }
 }
 
 .mx_AuthPage_formSection {
-    flex: 1;
+    flex: 0 0 50%;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    min-width: 0;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    padding-inline: 12px;
+
+    > .mx_Dialog_border,
+    .mx_AuthBody {
+        max-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    @media only screen and (max-width: 768px) {
+        padding: 8px;
+        margin-top: 16px;
+        margin-inline: 0;
+        flex: 1 1 auto;
+    }
 }
 
 [dir="rtl"] .mx_AuthPage_modal {

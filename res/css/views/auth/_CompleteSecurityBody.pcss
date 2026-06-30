@@ -13,6 +13,7 @@ Please see LICENSE files in the repository root for full details.
     border-radius: 4px;
     padding: 20px 20px 60px 20px;
     box-sizing: border-box;
+    max-width: 100%;
 
     h2 {
         font-size: $font-24px;
@@ -29,5 +30,23 @@ Please see LICENSE files in the repository root for full details.
     a:visited {
         color: $accent;
         text-decoration: none;
+    }
+
+    /* Tighten everything on phones so buttons and titles don't push past the card edge. */
+    @media (max-width: 768px) {
+        padding: 16px 12px 16px 12px;
+        width: 100%;
+
+        h2 {
+            font-size: 18px;
+            line-height: 1.4;
+        }
+
+        /* Buttons inside the body (verify on other device / can't verify) must
+           shrink down to the card width on narrow screens. */
+        .mx_AccessibleButton {
+            box-sizing: border-box;
+            white-space: normal;
+        }
     }
 }
