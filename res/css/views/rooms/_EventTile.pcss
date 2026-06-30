@@ -1459,6 +1459,7 @@ $left-gutter: 64px;
     background-color: #326430 !important;
     border-radius: 18px 18px 2px 18px !important;
     color: #ffffff !important;
+    max-width: 70%;
 }
 
 /* Tables in sent messages should have readable dark text on white bg */
@@ -1569,8 +1570,7 @@ $left-gutter: 64px;
 .mx_EventTile[data-self="false"] .mx_EventTile_line:has(.mx_BotQuestion),
 .mx_EventTile[data-self="false"] .mx_EventTile_line:has(.mx_CategoryMenu),
 .mx_EventTile[data-self="false"] .mx_EventTile_line:has(.mx_SearchResults) {
-    min-width: min(260px, 100%);
-    max-width: 360px;
+    max-width: 70%;
 }
 
 .mx_BotQuestion {
@@ -2001,5 +2001,57 @@ input[type="number"] {
 @media (min-width: 769px) {
     .mx_EventTile_content {
         font-size: 16px;
+    }
+    .mx_EventTile_content .markdown-body {
+        font: var(--cpd-font-body-lg-regular) !important;
+        letter-spacing: var(--cpd-font-letter-spacing-body-lg);
+    }
+    .mx_BotQuestion_text {
+        font-size: 15px;
+    }
+    .mx_BotQuestion_line strong {
+        font-size: 18px;
+    }
+    .mx_BotQuestion_option {
+        font-size: 14.5px;
+    }
+    .mx_BotQuestion_input {
+        font-size: 15px;
+    }
+    .mx_BotQuestion_instruction {
+        font-size: 13px;
+    }
+    .mx_BotQuestion_range {
+        font-size: 13px;
+    }
+    .mx_BotQuestion_submit {
+        font-size: 15px;
+    }
+    .mx_BotQuestion_error {
+        font-size: 14px;
+    }
+    .mx_CategoryMenu_item {
+        font-size: 15px;
+    }
+    .mx_SearchResults_header {
+        font-size: 16px;
+    }
+    .mx_SearchResults_count {
+        font-size: 13px;
+    }
+    .mx_SearchResults_product {
+        font-size: 16px;
+    }
+    .mx_SearchResults_dataRow {
+        font-size: 13px;
+    }
+    .mx_SearchResults_payBtn {
+        font-size: 14px;
+    }
+    .mx_SearchResults_empty {
+        font-size: 15px;
+    }
+    .mx_SearchResults_footer {
+        font-size: 13px;
     }
 }

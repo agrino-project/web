@@ -160,3 +160,28 @@ Changes in [1.14.0](https://github.com/agrino-project/web/releases/tag/v1.14.0) 
 ## 🐛 Bug Fixes
 
 * No bug fixes in this release.
+
+# Changes in [1.19.0](https://github.com/agrino-project/web/releases/tag/v1.19.0) (2026-06-30)
+
+## ✨ Features
+
+* Add full mobile device support and remove the unsupported device restriction.
+* Add Home navigation entry to the desktop user menu.
+* Add permanent Agrino page title that remains visible after page refresh.
+
+## 🚀 Improvements
+
+* Increase the font size of Homepage sections, including Marketplace, Banking Services, and related items on desktop.
+* Increase the font size of chat rooms and conversation lists on desktop for improved readability.
+* Update the Chat Welcome page to fully support Light and Dark themes.
+* Simplify the user menu by removing unnecessary Settings entries and moving the Sessions section back into Settings.
+* Improve the Home button behavior in the mobile user menu.
+* Redesign the Settings dialog with updated styling, improve its mobile responsiveness, and remove horizontal scrolling.
+* Update bot command controls to send **"شروع"** and **"توقف"** commands instead of **"s"** and **"q"**.
+* Rename the user verification password field label from **"Password"** to **"Verification Code"** (رمز ارسالی).
+
+## 🐛 Bug Fixes
+
+* Fix mobile compatibility issues that incorrectly displayed the application as unsupported.
+* Fix Dark Mode styling inconsistencies on the Chat Welcome page.
+* Fix page title behavior to ensure **Agrino** is displayed consistently after page refresh.
