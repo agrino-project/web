@@ -673,7 +673,7 @@ const InnerSpacePanel = React.memo<IInnerSpacePanelProps>(
                 return (
                     <Component
                         key={key}
-                        selected={!isCustomPanelOpen && !greatShopsActive && activeSpace === key}
+                        selected={!isCustomPanelOpen && !greatShopsActive && !bazaarActive && activeSpace === key}
                         isPanelCollapsed={isPanelCollapsed}
                     />
                 );
