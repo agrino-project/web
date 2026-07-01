@@ -10,6 +10,7 @@ import { logger } from "matrix-js-sdk/src/logger";
 
 import { MatrixClientPeg } from "../../../../../MatrixClientPeg";
 import { type FormStructure } from "./formTypes";
+import { cachedFetch, peekCache } from "./cache";
 
 interface State {
     form: FormStructure | null;
@@ -26,42 +27,53 @@ interface State {
  * a real payload from the backend.
  */
 export function useGreatShopForm(subcategoryId: string | null): State {
-    const [state, setState] = useState<State>({ form: null, isLoading: false, error: null });
+    const cli = MatrixClientPeg.safeGet();
+    const baseUrl = cli.getHomeserverUrl();
+    const url = subcategoryId
+        ? `${baseUrl}/_synapse/client/forms/subcategories/${encodeURIComponent(subcategoryId)}/form`
+        : null;
+
+    const [state, setState] = useState<State>(() => {
+        if (!url) return { form: null, isLoading: false, error: null };
+        const cached = peekCache<FormStructure>(url);
+        return cached
+            ? { form: cached, isLoading: false, error: null }
+            : { form: null, isLoading: true, error: null };
+    });
 
     useEffect(() => {
-        if (!subcategoryId) {
+        if (!url) {
             setState({ form: null, isLoading: false, error: null });
+            return;
+        }
+
+        const cached = peekCache<FormStructure>(url);
+        if (cached) {
+            setState({ form: cached, isLoading: false, error: null });
             return;
         }
 
         let cancelled = false;
         setState({ form: null, isLoading: true, error: null });
-
-        const cli = MatrixClientPeg.safeGet();
-        const baseUrl = cli.getHomeserverUrl();
         const token = cli.getAccessToken();
 
-        (async () => {
-            try {
-                const res = await fetch(
-                    `${baseUrl}/_synapse/client/forms/subcategories/${encodeURIComponent(subcategoryId)}/form`,
-                    { headers: { Authorization: `Bearer ${token}` } },
-                );
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const json = await res.json();
-                // eslint-disable-next-line no-console
-                console.log("[GreatShops] form structure for", subcategoryId, json);
+        cachedFetch<FormStructure>(url, async () => {
+            const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+            .then((json) => {
                 if (!cancelled) setState({ form: json, isLoading: false, error: null });
-            } catch (e) {
+            })
+            .catch((e) => {
                 logger.warn("Failed to load great shop form structure", e);
                 if (!cancelled) setState({ form: null, isLoading: false, error: e as Error });
-            }
-        })();
+            });
 
         return () => {
             cancelled = true;
         };
-    }, [subcategoryId]);
+    }, [url, cli]);
 
     return state;
 }

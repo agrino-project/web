@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { logger } from "matrix-js-sdk/src/logger";
 
 import { MatrixClientPeg } from "../../../../../MatrixClientPeg";
+import { cachedFetch, peekCache } from "./cache";
 
 /**
  * Shape of a single shop category returned by the Synapse forms endpoint.
@@ -34,34 +35,40 @@ interface State {
  * Auth is taken from the current Matrix client (Bearer access token).
  */
 export function useGreatShopsCategories(): State {
-    const [state, setState] = useState<State>({ categories: [], isLoading: true, error: null });
+    const cli = MatrixClientPeg.safeGet();
+    const baseUrl = cli.getHomeserverUrl();
+    const url = `${baseUrl}/_synapse/client/forms/categories`;
+
+    const [state, setState] = useState<State>(() => {
+        const cached = peekCache<GreatShopCategory[]>(url);
+        return cached
+            ? { categories: cached, isLoading: false, error: null }
+            : { categories: [], isLoading: true, error: null };
+    });
 
     useEffect(() => {
+        if (peekCache<GreatShopCategory[]>(url)) return;
         let cancelled = false;
-        const cli = MatrixClientPeg.safeGet();
-        const baseUrl = cli.getHomeserverUrl();
         const token = cli.getAccessToken();
 
-        (async () => {
-            try {
-                const res = await fetch(`${baseUrl}/_synapse/client/forms/categories`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const json = await res.json();
-                // Tolerate either { categories: [...] } or a bare array.
-                const list: GreatShopCategory[] = Array.isArray(json) ? json : (json?.categories ?? []);
+        cachedFetch<GreatShopCategory[]>(url, async () => {
+            const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json = await res.json();
+            return Array.isArray(json) ? json : (json?.categories ?? []);
+        })
+            .then((list) => {
                 if (!cancelled) setState({ categories: list, isLoading: false, error: null });
-            } catch (e) {
+            })
+            .catch((e) => {
                 logger.warn("Failed to load great shops categories", e);
                 if (!cancelled) setState({ categories: [], isLoading: false, error: e as Error });
-            }
-        })();
+            });
 
         return () => {
             cancelled = true;
         };
-    }, []);
+    }, [url, cli]);
 
     return state;
 }
