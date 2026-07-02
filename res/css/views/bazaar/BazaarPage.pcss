@@ -29,6 +29,7 @@ Please see LICENSE files in the repository root for full details.
     color: var(--bz-text);
     overflow-y: auto;
     font-family: inherit;
+    overflow-x: hidden;
 }
 
 .mx_BazaarPage_sidebar {
@@ -41,7 +42,7 @@ Please see LICENSE files in the repository root for full details.
     overflow: hidden;
     align-self: flex-start;
     position: sticky;
-    top: 16px;
+    top: 0px;
     max-height: calc(100vh - 32px);
     display: flex;
     flex-direction: column;
@@ -412,13 +413,7 @@ Please see LICENSE files in the repository root for full details.
     margin: 12px 0;
     background:
         linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(67, 160, 71, 0.1)),
-        repeating-linear-gradient(
-            45deg,
-            #f1f5f9,
-            #f1f5f9 10px,
-            #e2e8f0 10px,
-            #e2e8f0 20px
-        );
+        repeating-linear-gradient(45deg, #f1f5f9, #f1f5f9 10px, #e2e8f0 10px, #e2e8f0 20px);
 }
 
 .mx_BazaarPage_myAds,
@@ -464,6 +459,18 @@ Please see LICENSE files in the repository root for full details.
 .mx_BazaarPage_empty {
     color: var(--bz-muted);
     padding: 14px;
+}
+
+.mx_BazaarPage_adActions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mx_BazaarPage_adRowActions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 @media (max-width: 1100px) {

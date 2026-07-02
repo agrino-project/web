@@ -65,7 +65,7 @@ export async function submitBazaarAd(
             body[q.field_name] = value;
         }
 
-        const res = await fetch(`${bazaarBaseUrl()}/categories/${categoryId}/ads`, {
+        const res = await fetch(`${bazaarBaseUrl()}/categories/${categoryId}/ads/`, {
             method: "POST",
             headers: { ...bazaarAuthHeader(), "Content-Type": "application/json" },
             body: JSON.stringify(body),

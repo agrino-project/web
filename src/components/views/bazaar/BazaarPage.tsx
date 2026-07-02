@@ -1,13 +1,5 @@
-/*
-Copyright 2024 New Vector Ltd.
-
-SPDX-License-Identifier: AGPL-3.0-only OR GPL-3.0-only OR LicenseRef-Element-Commercial
-Please see LICENSE files in the repository root for full details.
-*/
-
 import React, { useMemo, useState } from "react";
 import classNames from "classnames";
-
 import { _t } from "../../../languageHandler";
 import { useBazaarCategories, type BazaarCategory } from "./api/useBazaarCategories";
 import { useBazaarSubcategories, type BazaarQuestion } from "./api/useBazaarSubcategories";
@@ -16,7 +8,8 @@ import { useBazaarAds, type BazaarAd } from "./api/useBazaarAds";
 import { submitBazaarAd } from "./api/submitBazaarAd";
 import { buyBazaarAd } from "./api/buyBazaarAd";
 import { useMyBazaarAds } from "./api/useMyBazaarAds";
-
+import ErrorDialog from "../dialogs/ErrorDialog";
+import Modal from "../../../Modal";
 import "../../../../res/css/views/bazaar/BazaarPage.pcss";
 
 interface DraftAd {
@@ -53,13 +46,14 @@ interface MyAdsListProps {
     ads: BazaarAd[];
     loading: boolean;
     error: boolean;
+    openDetail: (item: BazaarAd) => void;
 }
 
-const MyAdsList: React.FC<MyAdsListProps> = ({ ads, loading, error }) => {
+const MyAdsList: React.FC<MyAdsListProps> = ({ ads, loading, error, openDetail }) => {
     if (loading) return <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>;
     if (error) return <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_load_error")}</div>;
-    if (ads.length === 0)
-        return <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_no_ads")}</div>;
+    if (ads.length === 0) return <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_no_ads")}</div>;
+
     return (
         <div className="mx_BazaarPage_myAds">
             {ads.map((ad) => {
@@ -67,9 +61,7 @@ const MyAdsList: React.FC<MyAdsListProps> = ({ ads, loading, error }) => {
                 const parts = [
                     ad.amount && ad.unit ? `${ad.amount} ${ad.unit}` : null,
                     [ad.province, ad.city].filter(Boolean).join(" / ") || null,
-                    ad.buyer_id
-                        ? _t("custom_panels|bazaar_status_sold")
-                        : _t("custom_panels|bazaar_status_registered"),
+                    ad.buyer_id ? _t("custom_panels|bazaar_status_sold") : _t("custom_panels|bazaar_status_registered"),
                 ].filter(Boolean);
                 return (
                     <div className="mx_BazaarPage_myAd" key={ad.id}>
@@ -77,6 +69,26 @@ const MyAdsList: React.FC<MyAdsListProps> = ({ ads, loading, error }) => {
                             <strong>{title}</strong>
                             <br />
                             <small>{parts.join(" | ")}</small>
+                        </div>
+                        <div className="mx_BazaarPage_adRowActions">
+                            <button
+                                className="mx_BazaarPage_btn mx_BazaarPage_btn--secondary"
+                                onClick={() => openDetail(ad)}
+                            >
+                                {_t("custom_panels|bazaar_view")}
+                            </button>
+                            <button
+                                className="mx_BazaarPage_btn mx_BazaarPage_btn--warning"
+                                // onClick={() => handleEditAd(ad.id)}
+                            >
+                                {_t("custom_panels|bazaar_edit")}
+                            </button>
+                            <button
+                                className="mx_BazaarPage_btn mx_BazaarPage_btn--danger"
+                                // onClick={() => handleDeleteAd(ad.id)}
+                            >
+                                {_t("custom_panels|bazaar_delete")}
+                            </button>
                         </div>
                     </div>
                 );
@@ -86,8 +98,7 @@ const MyAdsList: React.FC<MyAdsListProps> = ({ ads, loading, error }) => {
 };
 
 const BazaarPage: React.FC = () => {
-    const { categories: apiCategories, isLoading: categoriesLoading, error: categoriesError } =
-        useBazaarCategories();
+    const { categories: apiCategories, isLoading: categoriesLoading, error: categoriesError } = useBazaarCategories();
 
     const [openCategoryId, setOpenCategoryId] = useState<number | null>(null);
     const [selectedMain, setSelectedMain] = useState<string>("");
@@ -115,11 +126,7 @@ const BazaarPage: React.FC = () => {
 
     // Available ads within the open category (endpoint #4). Client filters
     // by selected subcategory + location + price on top of this list.
-    const {
-        ads: apiAds,
-        isLoading: adsLoading,
-        error: adsError,
-    } = useBazaarAds(openCategoryId);
+    const { ads: apiAds, isLoading: adsLoading, error: adsError } = useBazaarAds(openCategoryId);
 
     const [activePanel, setActivePanel] = useState<ActivePanel>("none");
     const [historyTab, setHistoryTab] = useState<HistoryTab>("ads");
@@ -140,29 +147,55 @@ const BazaarPage: React.FC = () => {
         minPrice: null,
         maxPrice: null,
     });
+    const [filterProvince, setFilterProvince] = useState("");
+    const [filterCity, setFilterCity] = useState("");
+    const [filterActiveOnly, setFilterActiveOnly] = useState(false);
+    const [sortBy, setSortBy] = useState("");
 
     const [detail, setDetail] = useState<DetailState | null>(null);
 
     const filteredAds = useMemo<BazaarAd[]>(() => {
         const loc = activeFilters.location.trim();
-        return apiAds.filter((ad) => {
-            // Narrow to the picked subcategory when one is selected. Falls
-            // back to the whole category otherwise so the panel isn't empty
-            // if the user clicks Buy without picking a specific product.
-            if (selectedSub && ad.product_type !== selectedSub) return false;
-            if (loc && !`${ad.province} ${ad.city}`.includes(loc)) return false;
-            const priceNum = Number(ad.price);
-            if (activeFilters.minPrice !== null && Number.isFinite(priceNum) && priceNum < activeFilters.minPrice)
-                return false;
-            if (activeFilters.maxPrice !== null && Number.isFinite(priceNum) && priceNum > activeFilters.maxPrice)
-                return false;
-            return true;
-        });
-    }, [apiAds, activeFilters, selectedSub]);
+        return apiAds
+            .filter((ad) => {
+                // Narrow to the picked subcategory when one is selected. Falls
+                // back to the whole category otherwise so the panel isn't empty
+                // if the user clicks Buy without picking a specific product.
+                if (selectedSub && ad.product_type !== selectedSub) return false;
+                if (loc && !`${ad.province} ${ad.city}`.includes(loc)) return false;
+                const priceNum = Number(ad.price);
+                if (activeFilters.minPrice !== null && Number.isFinite(priceNum) && priceNum < activeFilters.minPrice)
+                    return false;
+                if (activeFilters.maxPrice !== null && Number.isFinite(priceNum) && priceNum > activeFilters.maxPrice)
+                    return false;
+                if (filterProvince && ad.province !== filterProvince) return false;
+                if (filterCity && ad.city !== filterCity) return false;
+                if (filterActiveOnly && ad.buyer_id) return false;
+                return true;
+            })
+            .sort((a, b) => {
+                if (sortBy === "priceAsc") return Number(a.price) - Number(b.price);
+                if (sortBy === "priceDesc") return Number(b.price) - Number(a.price);
+                return 0;
+            });
+    }, [
+        apiAds,
+        selectedSub,
+        filterLocation,
+        filterProvince,
+        filterCity,
+        filterMinPrice,
+        filterMaxPrice,
+        filterActiveOnly,
+        sortBy,
+    ]);
 
     const openSellPanel = (): void => {
         if (!selectedSub) {
-            alert(_t("custom_panels|bazaar_select_first"));
+            Modal.createDialog(ErrorDialog, {
+                title: _t("common|error"),
+                description: _t("custom_panels|bazaar_select_first"),
+            });
             return;
         }
         setActivePanel("sell");
@@ -170,7 +203,11 @@ const BazaarPage: React.FC = () => {
 
     const openBuyPanel = (): void => {
         if (!selectedSub) {
-            alert(_t("custom_panels|bazaar_select_first"));
+            //TODO: check if this is needed
+            Modal.createDialog(ErrorDialog, {
+                title: _t("common|error"),
+                description: _t("custom_panels|bazaar_select_first"),
+            });
             return;
         }
         setActivePanel("buy");
@@ -217,11 +254,18 @@ const BazaarPage: React.FC = () => {
         setIsSubmitting(false);
 
         if (!result.ok) {
-            alert(_t("custom_panels|bazaar_submit_error") + "\n" + result.error.message);
+            Modal.createDialog(ErrorDialog, {
+                title: _t("common|error"),
+                description: _t("custom_panels|bazaar_submit_error") + "\n" + result.error.message,
+            });
             return;
         }
 
-        alert(_t("custom_panels|bazaar_ad_submitted"));
+        Modal.createDialog(ErrorDialog, {
+            title: _t("common|success"),
+            description: _t("custom_panels|bazaar_ad_submitted"),
+        });
+
         setActivePanel("none");
         setFormData({});
         setDraftAd(null);
@@ -247,7 +291,10 @@ const BazaarPage: React.FC = () => {
         setIsBuying(false);
 
         if (!result.ok) {
-            alert(_t("custom_panels|bazaar_submit_error") + "\n" + result.error.message);
+            Modal.createDialog(ErrorDialog, {
+                title: _t("common|error"),
+                description: _t("custom_panels|bazaar_submit_error") + "\n" + result.error.message,
+            });
             return;
         }
 
@@ -285,6 +332,10 @@ const BazaarPage: React.FC = () => {
         setFilterMinPrice("");
         setFilterMaxPrice("");
         setActiveFilters({ location: "", minPrice: null, maxPrice: null });
+        setFilterProvince("");
+        setFilterCity("");
+        setFilterActiveOnly(false);
+        setSortBy("");
     };
 
     const renderQuestion = (q: BazaarQuestion): React.ReactNode => {
@@ -308,10 +359,7 @@ const BazaarPage: React.FC = () => {
             <div className="mx_BazaarPage_field" key={q.id}>
                 {label}
                 {isSingleChoice && (
-                    <select
-                        value={stringValue}
-                        onChange={(e) => setAnswer(q.id, e.target.value)}
-                    >
+                    <select value={stringValue} onChange={(e) => setAnswer(q.id, e.target.value)}>
                         <option value="">—</option>
                         {q.options.map((opt) => (
                             <option key={opt.id} value={String(opt.id)}>
@@ -376,9 +424,7 @@ const BazaarPage: React.FC = () => {
                     />
                 )}
                 {q.format_hint && q.field_type !== "text" && (
-                    <small style={{ color: "var(--bz-muted, #6b7280)", fontSize: 12 }}>
-                        {q.format_hint}
-                    </small>
+                    <small style={{ color: "var(--bz-muted, #6b7280)", fontSize: 12 }}>{q.format_hint}</small>
                 )}
             </div>
         );
@@ -392,26 +438,17 @@ const BazaarPage: React.FC = () => {
                     <p>{_t("custom_panels|bazaar_subtitle")}</p>
                 </div>
                 <div className="mx_BazaarPage_menu">
-                    {categoriesLoading && (
-                        <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>
-                    )}
+                    {categoriesLoading && <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>}
                     {categoriesError && !categoriesLoading && (
-                        <div className="mx_BazaarPage_empty">
-                            {_t("custom_panels|bazaar_load_error")}
-                        </div>
+                        <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_load_error")}</div>
                     )}
                     {!categoriesLoading && !categoriesError && apiCategories.length === 0 && (
-                        <div className="mx_BazaarPage_empty">
-                            {_t("custom_panels|bazaar_no_categories")}
-                        </div>
+                        <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_no_categories")}</div>
                     )}
                     {apiCategories.map((cat: BazaarCategory) => {
                         const isOpen = openCategoryId === cat.id;
                         return (
-                            <div
-                                key={cat.id}
-                                className={classNames("mx_BazaarPage_menuItem", { open: isOpen })}
-                            >
+                            <div key={cat.id} className={classNames("mx_BazaarPage_menuItem", { open: isOpen })}>
                                 <button
                                     className={classNames("mx_BazaarPage_menuMain", {
                                         active: selectedMain === cat.name,
@@ -424,9 +461,7 @@ const BazaarPage: React.FC = () => {
                                 {isOpen && (
                                     <div className="mx_BazaarPage_submenu">
                                         {subsLoading && (
-                                            <div className="mx_BazaarPage_empty">
-                                                {_t("common|loading")}
-                                            </div>
+                                            <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>
                                         )}
                                         {subsError && !subsLoading && (
                                             <div className="mx_BazaarPage_empty">
@@ -452,11 +487,11 @@ const BazaarPage: React.FC = () => {
                                                     // Seed the answer for the initial "choice" question so
                                                     // submitBazaarAd includes it in the payload alongside
                                                     // the sell form answers.
-                                                    const seedKey = subQuestions.find((q) => q.field_type === "choice")?.id;
+                                                    const seedKey = subQuestions.find(
+                                                        (q) => q.field_type === "choice",
+                                                    )?.id;
                                                     setFormData(
-                                                        seedKey != null
-                                                            ? { [String(seedKey)]: String(opt.id) }
-                                                            : {},
+                                                        seedKey != null ? { [String(seedKey)]: String(opt.id) } : {},
                                                     );
                                                 }}
                                             >
@@ -488,10 +523,7 @@ const BazaarPage: React.FC = () => {
                         <button className="mx_BazaarPage_btn mx_BazaarPage_btn--sell" onClick={openSellPanel}>
                             {_t("custom_panels|bazaar_sell")}
                         </button>
-                        <button
-                            className="mx_BazaarPage_btn mx_BazaarPage_btn--secondary"
-                            onClick={openHistoryPanel}
-                        >
+                        <button className="mx_BazaarPage_btn mx_BazaarPage_btn--secondary" onClick={openHistoryPanel}>
                             {_t("custom_panels|bazaar_history")}
                         </button>
                     </div>
@@ -501,24 +533,15 @@ const BazaarPage: React.FC = () => {
                     <section className="mx_BazaarPage_panel">
                         <h3>{_t("custom_panels|bazaar_form_title")}</h3>
                         <form onSubmit={onSellSubmit}>
-                            {sellQuestionsLoading && (
-                                <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>
-                            )}
+                            {sellQuestionsLoading && <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>}
                             {sellQuestionsError && !sellQuestionsLoading && (
-                                <div className="mx_BazaarPage_empty">
-                                    {_t("custom_panels|bazaar_load_error")}
-                                </div>
+                                <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_load_error")}</div>
                             )}
                             {!sellQuestionsLoading && !sellQuestionsError && (
-                                <div className="mx_BazaarPage_grid">
-                                    {sellQuestions.map(renderQuestion)}
-                                </div>
+                                <div className="mx_BazaarPage_grid">{sellQuestions.map(renderQuestion)}</div>
                             )}
                             <div className="mx_BazaarPage_sectionActions">
-                                <button
-                                    type="submit"
-                                    className="mx_BazaarPage_btn mx_BazaarPage_btn--sell"
-                                >
+                                <button type="submit" className="mx_BazaarPage_btn mx_BazaarPage_btn--sell">
                                     {_t("custom_panels|bazaar_submit_initial")}
                                 </button>
                                 <button
@@ -551,7 +574,9 @@ const BazaarPage: React.FC = () => {
                                 onClick={onFinalSubmit}
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? _t("custom_panels|submitting") : _t("custom_panels|bazaar_submit_final")}
+                                {isSubmitting
+                                    ? _t("custom_panels|submitting")
+                                    : _t("custom_panels|bazaar_submit_final")}
                             </button>
                             <button
                                 className="mx_BazaarPage_btn mx_BazaarPage_btn--secondary"
@@ -594,6 +619,40 @@ const BazaarPage: React.FC = () => {
                                     placeholder={_t("custom_panels|bazaar_filter_price_placeholder")}
                                 />
                             </div>
+                            <div className="mx_BazaarPage_field">
+                                <label>{_t("custom_panels|bazaar_filter_province")}</label>
+                                <input
+                                    type="text"
+                                    value={filterProvince}
+                                    onChange={(e) => setFilterProvince(e.target.value)}
+                                    placeholder={_t("custom_panels|bazaar_filter_province_placeholder")}
+                                />
+                            </div>
+                            <div className="mx_BazaarPage_field">
+                                <label>{_t("custom_panels|bazaar_filter_city")}</label>
+                                <input
+                                    type="text"
+                                    value={filterCity}
+                                    onChange={(e) => setFilterCity(e.target.value)}
+                                    placeholder={_t("custom_panels|bazaar_filter_city_placeholder")}
+                                />
+                            </div>
+                            <div className="mx_BazaarPage_field">
+                                <label>{_t("custom_panels|bazaar_filter_active_only")}</label>
+                                <input
+                                    type="checkbox"
+                                    checked={filterActiveOnly}
+                                    onChange={(e) => setFilterActiveOnly(e.target.checked)}
+                                />
+                            </div>
+                            <div className="mx_BazaarPage_field">
+                                <label>{_t("custom_panels|bazaar_sort_by")}</label>
+                                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                                    <option value="">{_t("common|none")}</option>
+                                    <option value="priceAsc">{_t("custom_panels|bazaar_sort_price_asc")}</option>
+                                    <option value="priceDesc">{_t("custom_panels|bazaar_sort_price_desc")}</option>
+                                </select>
+                            </div>
                             <div className="mx_BazaarPage_filterButtons">
                                 <button
                                     className="mx_BazaarPage_btn mx_BazaarPage_btn--secondary"
@@ -611,13 +670,9 @@ const BazaarPage: React.FC = () => {
                         </div>
 
                         <div className="mx_BazaarPage_cardList">
-                            {adsLoading && (
-                                <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>
-                            )}
+                            {adsLoading && <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>}
                             {adsError && !adsLoading && (
-                                <div className="mx_BazaarPage_empty">
-                                    {_t("custom_panels|bazaar_load_error")}
-                                </div>
+                                <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_load_error")}</div>
                             )}
                             {!adsLoading && !adsError && filteredAds.length === 0 && (
                                 <div className="mx_BazaarPage_empty">
@@ -626,32 +681,45 @@ const BazaarPage: React.FC = () => {
                             )}
                             {filteredAds.map((ad) => {
                                 const priceNum = Number(ad.price);
-                                const priceLabel = Number.isFinite(priceNum) && ad.price
-                                    ? _t("custom_panels|bazaar_price_toman", {
-                                          price: priceNum.toLocaleString(),
-                                      })
-                                    : "";
-                                const location = [ad.province, ad.city].filter(Boolean).join(" / ");
+                                const priceLabel =
+                                    Number.isFinite(priceNum) && ad.price
+                                        ? _t("custom_panels|bazaar_price_toman", { price: priceNum.toLocaleString() })
+                                        : "";
                                 const sellerName = ad.contact_name || ad.contact_phone;
                                 return (
                                     <div className="mx_BazaarPage_adCard" key={ad.id}>
+                                        {/* تصویر آگهی */}
+                                        {/* <img src={ad.image_url || "/default.jpg"} alt={ad.product_type} /> */}
                                         <div className="mx_BazaarPage_adMeta">
                                             <h4>{ad.product_type}</h4>
                                             <p>
                                                 {_t("custom_panels|bazaar_seller", { name: sellerName })}
                                                 <br />
                                                 {`${ad.amount} ${ad.unit}`}
-                                                {location && (
+                                                {ad.province || ad.city ? (
                                                     <>
+                                                        {" "}
                                                         <br />
-                                                        {location}
+                                                        {`${ad.province} / ${ad.city}`}
                                                     </>
-                                                )}
-                                                {priceLabel && (
+                                                ) : null}
+                                                {priceLabel ? (
                                                     <>
+                                                        {" "}
                                                         <br />
                                                         {priceLabel}
                                                     </>
+                                                ) : null}
+                                                {/* وضعیت آگهی */}
+                                                <br />
+                                                {ad.buyer_id ? (
+                                                    <span className="mx_BazaarPage_badge mx_BazaarPage_badge--sold">
+                                                        {_t("custom_panels|bazaar_status_sold")}
+                                                    </span>
+                                                ) : (
+                                                    <span className="mx_BazaarPage_badge mx_BazaarPage_badge--active">
+                                                        {_t("custom_panels|bazaar_status_active")}
+                                                    </span>
                                                 )}
                                             </p>
                                         </div>
@@ -661,6 +729,19 @@ const BazaarPage: React.FC = () => {
                                                 onClick={() => openDetail(ad)}
                                             >
                                                 {_t("custom_panels|bazaar_view")}
+                                            </button>
+                                            {/* دکمه تماس */}
+                                            <button
+                                                className="mx_BazaarPage_btn mx_BazaarPage_btn--buy"
+                                                onClick={() => window.open(`tel:${ad.contact_phone}`)}
+                                            >
+                                                {_t("custom_panels|bazaar_contact")}
+                                            </button>
+                                            <button
+                                                className="mx_BazaarPage_btn mx_BazaarPage_btn--buy"
+                                                onClick={() => navigator.clipboard.writeText(ad.contact_phone)}
+                                            >
+                                                {_t("custom_panels|bazaar_copy_phone")}
                                             </button>
                                         </div>
                                     </div>
@@ -687,9 +768,7 @@ const BazaarPage: React.FC = () => {
                                     </p>
                                     <p>{`${detail.item.amount} ${detail.item.unit}`}</p>
                                     {[detail.item.province, detail.item.city].filter(Boolean).length > 0 && (
-                                        <p>
-                                            {[detail.item.province, detail.item.city].filter(Boolean).join(" / ")}
-                                        </p>
+                                        <p>{[detail.item.province, detail.item.city].filter(Boolean).join(" / ")}</p>
                                     )}
                                     {detail.item.price && Number.isFinite(Number(detail.item.price)) && (
                                         <p>
@@ -706,10 +785,7 @@ const BazaarPage: React.FC = () => {
                                     >
                                         {_t("custom_panels|bazaar_back_to_list")}
                                     </button>
-                                    <button
-                                        className="mx_BazaarPage_btn mx_BazaarPage_btn--buy"
-                                        onClick={startPayment}
-                                    >
+                                    <button className="mx_BazaarPage_btn mx_BazaarPage_btn--buy" onClick={startPayment}>
                                         {_t("custom_panels|bazaar_pay_now")}
                                     </button>
                                 </div>
@@ -795,6 +871,7 @@ const BazaarPage: React.FC = () => {
                                 ads={myAds}
                                 loading={myAdsLoading}
                                 error={!!myAdsError}
+                                openDetail={openDetail}
                             />
                         )}
 
@@ -802,9 +879,7 @@ const BazaarPage: React.FC = () => {
                             <div className="mx_BazaarPage_myAds">
                                 <h4>{_t("custom_panels|bazaar_my_purchases")}</h4>
                                 {myPurchases.length === 0 && (
-                                    <div className="mx_BazaarPage_empty">
-                                        {_t("custom_panels|bazaar_no_purchases")}
-                                    </div>
+                                    <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_no_purchases")}</div>
                                 )}
                                 {myPurchases.map((p) => (
                                     <div className="mx_BazaarPage_myAd" key={p.orderCode}>
@@ -822,11 +897,6 @@ const BazaarPage: React.FC = () => {
                         )}
                     </section>
                 )}
-
-                <section className="mx_BazaarPage_panel">
-                    <h3>{_t("custom_panels|bazaar_my_ads")}</h3>
-                    <MyAdsList ads={myAds} loading={myAdsLoading} error={!!myAdsError} />
-                </section>
             </main>
         </div>
     );
