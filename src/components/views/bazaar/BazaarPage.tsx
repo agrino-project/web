@@ -7,6 +7,8 @@ import { useBazaarQuestions } from "./api/useBazaarQuestions";
 import { useBazaarAds, type BazaarAd } from "./api/useBazaarAds";
 import { submitBazaarAd } from "./api/submitBazaarAd";
 import { buyBazaarAd } from "./api/buyBazaarAd";
+import { deleteBazaarAd } from "./api/deleteBazaarAd";
+import { editBazaarAd } from "./api/editBazaarAd";
 import { useMyBazaarAds } from "./api/useMyBazaarAds";
 import ErrorDialog from "../dialogs/ErrorDialog";
 import Modal from "../../../Modal";
@@ -47,9 +49,11 @@ interface MyAdsListProps {
     loading: boolean;
     error: boolean;
     openDetail: (item: BazaarAd) => void;
+    onEdit: (adId: number) => void;
+    onDelete: (adId: number) => void;
 }
 
-const MyAdsList: React.FC<MyAdsListProps> = ({ ads, loading, error, openDetail }) => {
+const MyAdsList: React.FC<MyAdsListProps> = ({ ads, loading, error, openDetail, onEdit, onDelete }) => {
     if (loading) return <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>;
     if (error) return <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_load_error")}</div>;
     if (ads.length === 0) return <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_no_ads")}</div>;
@@ -79,13 +83,13 @@ const MyAdsList: React.FC<MyAdsListProps> = ({ ads, loading, error, openDetail }
                             </button>
                             <button
                                 className="mx_BazaarPage_btn mx_BazaarPage_btn--warning"
-                                // onClick={() => handleEditAd(ad.id)}
+                                onClick={() => onEdit(ad.id)}
                             >
                                 {_t("custom_panels|bazaar_edit")}
                             </button>
                             <button
                                 className="mx_BazaarPage_btn mx_BazaarPage_btn--danger"
-                                // onClick={() => handleDeleteAd(ad.id)}
+                                onClick={() => onDelete(ad.id)}
                             >
                                 {_t("custom_panels|bazaar_delete")}
                             </button>
@@ -153,6 +157,8 @@ const BazaarPage: React.FC = () => {
     const [sortBy, setSortBy] = useState("");
 
     const [detail, setDetail] = useState<DetailState | null>(null);
+    const [editingAd, setEditingAd] = useState<BazaarAd | null>(null);
+    const [editFormData, setEditFormData] = useState<Record<string, string>>({});
 
     const filteredAds = useMemo<BazaarAd[]>(() => {
         const loc = activeFilters.location.trim();
@@ -317,6 +323,41 @@ const BazaarPage: React.FC = () => {
     const backToBuyList = (): void => {
         setDetail(null);
         setActivePanel("buy");
+    };
+
+    const handleDeleteAd = async (adId: number): Promise<void> => {
+        const result = await deleteBazaarAd(adId);
+        if (!result.ok) {
+            Modal.createDialog(ErrorDialog, {
+                title: _t("common|error"),
+                description: result.error.message,
+            });
+            return;
+        }
+        setMyAdsRefreshKey((k) => k + 1);
+    };
+
+    const handleEditAd = (adId: number): void => {
+        // Find the ad in myAds and switch to edit mode
+        const ad = myAds.find((a) => a.id === adId);
+        if (!ad) return;
+        setEditingAd(ad);
+        setEditFormData({ ...ad } as unknown as Record<string, string>);
+    };
+
+    const handleEditSubmit = async (): Promise<void> => {
+        if (!editingAd) return;
+        const result = await editBazaarAd(editingAd.id, editFormData);
+        if (!result.ok) {
+            Modal.createDialog(ErrorDialog, {
+                title: _t("common|error"),
+                description: result.error.message,
+            });
+            return;
+        }
+        setEditingAd(null);
+        setEditFormData({});
+        setMyAdsRefreshKey((k) => k + 1);
     };
 
     const applyFilters = (): void => {
@@ -872,6 +913,8 @@ const BazaarPage: React.FC = () => {
                                 loading={myAdsLoading}
                                 error={!!myAdsError}
                                 openDetail={openDetail}
+                                onEdit={handleEditAd}
+                                onDelete={handleDeleteAd}
                             />
                         )}
 
