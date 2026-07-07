@@ -13,7 +13,10 @@ import { MatrixClientPeg } from "../../../../MatrixClientPeg";
  * the server exposes the API under a different path.
  */
 export function bazaarBaseUrl(): string {
-    return "https://bots.agridemo.ir/api";
+    const cli = MatrixClientPeg.safeGet();
+    const baseUrl = cli.getHomeserverUrl();
+    const url = `${baseUrl}/_synapse/client/bots`;
+    return url;
 }
 
 export function bazaarAuthHeader(): { Authorization: string } {

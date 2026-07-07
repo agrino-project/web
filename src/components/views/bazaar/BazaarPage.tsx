@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import classNames from "classnames";
 import { _t } from "../../../languageHandler";
 import { useBazaarCategories, type BazaarCategory } from "./api/useBazaarCategories";
@@ -51,9 +51,26 @@ interface MyAdsListProps {
     openDetail: (item: BazaarAd) => void;
     onEdit: (adId: number) => void;
     onDelete: (adId: number) => void;
+    editingAd: BazaarAd | null;
+    editFormData: Record<string, string>;
+    setEditFormData: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+    onSave: () => void;
+    onCancel: () => void;
 }
 
-const MyAdsList: React.FC<MyAdsListProps> = ({ ads, loading, error, openDetail, onEdit, onDelete }) => {
+const MyAdsList: React.FC<MyAdsListProps> = ({
+    ads,
+    loading,
+    error,
+    openDetail,
+    onEdit,
+    onDelete,
+    editingAd,
+    editFormData,
+    setEditFormData,
+    onSave,
+    onCancel,
+}) => {
     if (loading) return <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>;
     if (error) return <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_load_error")}</div>;
     if (ads.length === 0) return <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_no_ads")}</div>;
@@ -94,6 +111,91 @@ const MyAdsList: React.FC<MyAdsListProps> = ({ ads, loading, error, openDetail, 
                                 {_t("custom_panels|bazaar_delete")}
                             </button>
                         </div>
+                        {editingAd?.id === ad.id && (
+                            <div className="mx_BazaarPage_editPanel">
+                                <h3>ویرایش آگهی</h3>
+
+                                <div className="mx_BazaarPage_editGrid">
+                                    <div className="mx_BazaarPage_editField">
+                                        <label>عنوان</label>
+                                        <input
+                                            value={editFormData.product_type || ""}
+                                            onChange={(e) =>
+                                                setEditFormData((p) => ({
+                                                    ...p,
+                                                    product_type: e.target.value,
+                                                }))
+                                            }
+                                        />
+                                    </div>
+
+                                    <div className="mx_BazaarPage_editField">
+                                        <label>قیمت</label>
+                                        <input
+                                            value={editFormData.price || ""}
+                                            onChange={(e) =>
+                                                setEditFormData((p) => ({
+                                                    ...p,
+                                                    price: e.target.value,
+                                                }))
+                                            }
+                                        />
+                                    </div>
+
+                                    <div className="mx_BazaarPage_editField">
+                                        <label>مقدار</label>
+                                        <input
+                                            value={editFormData.amount || ""}
+                                            onChange={(e) =>
+                                                setEditFormData((p) => ({
+                                                    ...p,
+                                                    amount: e.target.value,
+                                                }))
+                                            }
+                                        />
+                                    </div>
+
+                                    <div className="mx_BazaarPage_editField">
+                                        <label>استان</label>
+                                        <input
+                                            value={editFormData.province || ""}
+                                            onChange={(e) =>
+                                                setEditFormData((p) => ({
+                                                    ...p,
+                                                    province: e.target.value,
+                                                }))
+                                            }
+                                        />
+                                    </div>
+
+                                    <div className="mx_BazaarPage_editField">
+                                        <label>شهر</label>
+                                        <input
+                                            value={editFormData.city || ""}
+                                            onChange={(e) =>
+                                                setEditFormData((p) => ({
+                                                    ...p,
+                                                    city: e.target.value,
+                                                }))
+                                            }
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="mx_BazaarPage_editActions">
+                                    <button
+                                        className="mx_BazaarPage_btn mx_BazaarPage_btn--secondary"
+                                        onClick={onCancel}
+                                    >
+                                        انصراف
+                                    </button>
+
+                                    <button className="mx_BazaarPage_btn mx_BazaarPage_btn--buy" onClick={onSave}>
+                                        ذخیره تغییرات
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 );
             })}
@@ -136,8 +238,6 @@ const BazaarPage: React.FC = () => {
     const [historyTab, setHistoryTab] = useState<HistoryTab>("ads");
 
     const [formData, setFormData] = useState<Record<string, string | string[]>>({});
-    const [draftAd, setDraftAd] = useState<DraftAd | null>(null);
-
     const [myPurchases, setMyPurchases] = useState<MyPurchase[]>([]);
     // Bumped after a successful submit / buy so the my-ads hook refetches.
     const [myAdsRefreshKey, setMyAdsRefreshKey] = useState(0);
@@ -196,6 +296,11 @@ const BazaarPage: React.FC = () => {
         sortBy,
     ]);
 
+    useEffect(() => {
+        setEditingAd(null);
+        setEditFormData({});
+    }, [activePanel, historyTab, selectedMain, selectedSub, openCategoryId]);
+
     const openSellPanel = (): void => {
         if (!selectedSub) {
             Modal.createDialog(ErrorDialog, {
@@ -244,18 +349,40 @@ const BazaarPage: React.FC = () => {
         return parentAnswer != null && parentAnswer !== "";
     };
 
-    const onSellSubmit = (e: React.FormEvent): void => {
+    const onSellSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
-        setDraftAd({ main: selectedMain, sub: selectedSub, data: formData });
-        setActivePanel("preview");
+        await onFinalSubmit();
     };
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const onFinalSubmit = async (): Promise<void> => {
-        if (!draftAd || openCategoryId == null || isSubmitting) return;
-        setIsSubmitting(true);
+        if (openCategoryId == null || isSubmitting) return;
         const allQuestions = [...subQuestions, ...sellQuestions];
+        const missingFields = allQuestions
+            .filter((q) => {
+                if (!q.is_required) return false;
+                if (!isQuestionVisible(q)) return false;
+
+                const value = formData[String(q.id)];
+
+                if (Array.isArray(value)) {
+                    return value.length === 0;
+                }
+
+                return value == null || value === "";
+            })
+            .map((q) => `• ${q.field_name}`);
+
+        if (missingFields.length > 0) {
+            Modal.createDialog(ErrorDialog, {
+                title: _t("common|error"),
+                description: _t("custom_panels|bazaar_required_fields") + "\n\n" + missingFields.join("\n"),
+            });
+            return;
+        }
+
+        setIsSubmitting(true);
         const result = await submitBazaarAd(openCategoryId, allQuestions, formData);
         setIsSubmitting(false);
 
@@ -274,7 +401,6 @@ const BazaarPage: React.FC = () => {
 
         setActivePanel("none");
         setFormData({});
-        setDraftAd(null);
         // Trigger my-ads refetch (submitBazaarAd already cleared the cache).
         setMyAdsRefreshKey((k) => k + 1);
     };
@@ -524,7 +650,7 @@ const BazaarPage: React.FC = () => {
                                                     setSelectedMain(cat.name);
                                                     setSelectedSub(opt.value);
                                                     setSelectedOptionId(opt.id);
-                                                    setActivePanel("none");
+                                                    setActivePanel("buy");
                                                     // Seed the answer for the initial "choice" question so
                                                     // submitBazaarAd includes it in the payload alongside
                                                     // the sell form answers.
@@ -594,37 +720,26 @@ const BazaarPage: React.FC = () => {
                                 </button>
                             </div>
                         </form>
-                    </section>
-                )}
 
-                {activePanel === "preview" && draftAd && (
-                    <section className="mx_BazaarPage_panel">
-                        <h3>{_t("custom_panels|bazaar_preview_title")}</h3>
-                        <div className="mx_BazaarPage_preview">
-                            <div>
-                                <strong>{_t("custom_panels|bazaar")}:</strong> {draftAd.sub}
-                            </div>
-                            <div>
-                                <strong>{selectedMain}</strong>
-                            </div>
-                            <pre>{JSON.stringify(draftAd.data, null, 2)}</pre>
-                        </div>
-                        <div className="mx_BazaarPage_sectionActions">
-                            <button
-                                className="mx_BazaarPage_btn mx_BazaarPage_btn--sell"
-                                onClick={onFinalSubmit}
-                                disabled={isSubmitting}
-                            >
-                                {isSubmitting
-                                    ? _t("custom_panels|submitting")
-                                    : _t("custom_panels|bazaar_submit_final")}
-                            </button>
-                            <button
-                                className="mx_BazaarPage_btn mx_BazaarPage_btn--secondary"
-                                onClick={() => setActivePanel("sell")}
-                            >
-                                {_t("custom_panels|bazaar_back_to_edit")}
-                            </button>
+                        <div className="mx_BazaarPage_previousAds">
+                            <h3>{_t("custom_panels|bazaar_my_ads")}</h3>
+
+                            <MyAdsList
+                                ads={myAds}
+                                loading={myAdsLoading}
+                                error={!!myAdsError}
+                                openDetail={openDetail}
+                                onEdit={handleEditAd}
+                                onDelete={handleDeleteAd}
+                                editingAd={editingAd}
+                                editFormData={editFormData}
+                                setEditFormData={setEditFormData}
+                                onSave={handleEditSubmit}
+                                onCancel={() => {
+                                    setEditingAd(null);
+                                    setEditFormData({});
+                                }}
+                            />
                         </div>
                     </section>
                 )}
@@ -826,9 +941,14 @@ const BazaarPage: React.FC = () => {
                                     >
                                         {_t("custom_panels|bazaar_back_to_list")}
                                     </button>
-                                    <button className="mx_BazaarPage_btn mx_BazaarPage_btn--buy" onClick={startPayment}>
-                                        {_t("custom_panels|bazaar_pay_now")}
-                                    </button>
+                                    {!myAds.some((ad) => ad.id === detail.item.id) && (
+                                        <button
+                                            className="mx_BazaarPage_btn mx_BazaarPage_btn--buy"
+                                            onClick={startPayment}
+                                        >
+                                            {_t("custom_panels|bazaar_pay_now")}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -915,6 +1035,14 @@ const BazaarPage: React.FC = () => {
                                 openDetail={openDetail}
                                 onEdit={handleEditAd}
                                 onDelete={handleDeleteAd}
+                                editingAd={editingAd}
+                                editFormData={editFormData}
+                                setEditFormData={setEditFormData}
+                                onSave={handleEditSubmit}
+                                onCancel={() => {
+                                    setEditingAd(null);
+                                    setEditFormData({});
+                                }}
                             />
                         )}
 
