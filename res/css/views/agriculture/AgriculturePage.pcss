@@ -62,23 +62,10 @@
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     min-height: 120px;
-}
-
-.mx_AgriculturePage_card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: inherit;
-    background-size: cover;
-    background-position: center;
-    filter: blur(3px);
-    transform: scale(1.2);
-    z-index: 0;
+    box-shadow:
+        0 2px 3px 0 rgba(0, 0, 0, 0.3),
+        0 6px 10px 4px rgba(0, 0, 0, 0.15);
 }
 
 .mx_AgriculturePage_card_icon,

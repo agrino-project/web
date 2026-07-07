@@ -28,6 +28,8 @@ import { Icon as MailboxIcon } from "../../../../res/img/element-icons/Mailbox.s
 import { Icon as PhoneIcon } from "../../../../res/img/element-icons/Phone.svg";
 import ATMBackground from "../../../../res/img/element-icons/ATM.png";
 import GroceryBackground from "../../../../res/img/element-icons/groceryShop.png";
+import farmerConsultant from "../../../../res/img/element-icons/farmerConsultant.png";
+import greatShops from "../../../../res/img/element-icons/greatShop.png";
 import article1 from "../../../../res/img/element-icons/article1.png";
 import article2 from "../../../../res/img/element-icons/article2.png";
 
@@ -268,14 +270,14 @@ const AgriculturePage: React.FC = () => {
                     <AgricultureCard
                         title={_t("custom_panels|agriculture_bazaar")}
                         icon={BazaarGrediantIcon}
-                        background={`url(${GroceryBackground}) center/cover no-repeat`}
+                        background={`linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url(${GroceryBackground}) center/cover no-repeat`}
                         onClick={handleBazaarClick}
                         variant="default"
                     />
                     <AgricultureCard
                         title={_t("custom_panels|banking_services")}
                         icon={BankGredientIcon}
-                        background={`url(${ATMBackground}) center/cover no-repeat`}
+                        background={`linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url(${ATMBackground}) center/cover no-repeat`}
                         onClick={handleBankingServicesClick}
                         variant="default"
                     />
@@ -286,12 +288,14 @@ const AgriculturePage: React.FC = () => {
                     <AgricultureCard
                         title={_t("custom_panels|greatShops")}
                         icon={GreatShopsIcon}
+                        background={`linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url(${greatShops}) center/cover no-repeat`}
                         onClick={handleGreatShopsClick}
                         variant="default"
                     />
                     <AgricultureCard
                         title={_t("custom_panels|agriculture_consultant")}
                         icon={ConsultantIcon}
+                        background={`linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url(${farmerConsultant}) center/cover no-repeat`}
                         onClick={() => handleMarketClick("@useller:agridemo.ir")}
                         variant="default"
                     />
