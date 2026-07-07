@@ -256,10 +256,13 @@ const BazaarPage: React.FC = () => {
         const loc = activeFilters.location.trim();
         return apiAds
             .filter((ad) => {
-                // Narrow to the picked subcategory when one is selected. Falls
-                // back to the whole category otherwise so the panel isn't empty
-                // if the user clicks Buy without picking a specific product.
-                if (selectedSub && ad.product_type !== selectedSub) return false;
+                if (
+                    selectedSub &&
+                    ad.product_type &&
+                    !ad.product_type.includes(selectedSub) &&
+                    !selectedSub.includes(ad.product_type)
+                )
+                    return false;
                 if (loc && !`${ad.province} ${ad.city}`.includes(loc)) return false;
                 const priceNum = Number(ad.price);
                 if (activeFilters.minPrice !== null && Number.isFinite(priceNum) && priceNum < activeFilters.minPrice)
@@ -1031,18 +1034,12 @@ const BazaarPage: React.FC = () => {
                         {historyTab === "purchases" && (
                             <div className="mx_BazaarPage_myAds">
                                 <h4>{_t("custom_panels|bazaar_my_purchases")}</h4>
-                                {purchasesLoading && (
-                                    <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>
-                                )}
+                                {purchasesLoading && <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>}
                                 {purchasesError && !purchasesLoading && (
-                                    <div className="mx_BazaarPage_empty">
-                                        {_t("custom_panels|bazaar_load_error")}
-                                    </div>
+                                    <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_load_error")}</div>
                                 )}
                                 {!purchasesLoading && !purchasesError && myPurchases.length === 0 && (
-                                    <div className="mx_BazaarPage_empty">
-                                        {_t("custom_panels|bazaar_no_purchases")}
-                                    </div>
+                                    <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_no_purchases")}</div>
                                 )}
                                 {myPurchases.map((p) => {
                                     const title = p.product_type || `#${p.id}`;
