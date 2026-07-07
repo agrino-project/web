@@ -10,22 +10,10 @@ import { buyBazaarAd } from "./api/buyBazaarAd";
 import { deleteBazaarAd } from "./api/deleteBazaarAd";
 import { editBazaarAd } from "./api/editBazaarAd";
 import { useMyBazaarAds } from "./api/useMyBazaarAds";
+import { useMyBazaarPurchases } from "./api/useMyBazaarPurchases";
 import ErrorDialog from "../dialogs/ErrorDialog";
 import Modal from "../../../Modal";
 import "../../../../res/css/views/bazaar/BazaarPage.pcss";
-
-interface DraftAd {
-    main: string;
-    sub: string;
-    data: Record<string, string | string[]>;
-}
-
-interface MyPurchase {
-    title: string;
-    orderCode: number;
-    status: string;
-    date: string;
-}
 
 type DetailStage = "info" | "payment" | "success";
 
@@ -238,10 +226,14 @@ const BazaarPage: React.FC = () => {
     const [historyTab, setHistoryTab] = useState<HistoryTab>("ads");
 
     const [formData, setFormData] = useState<Record<string, string | string[]>>({});
-    const [myPurchases, setMyPurchases] = useState<MyPurchase[]>([]);
-    // Bumped after a successful submit / buy so the my-ads hook refetches.
+    // Bumped after a successful submit / buy so the my-ads/purchases hooks refetch.
     const [myAdsRefreshKey, setMyAdsRefreshKey] = useState(0);
     const { ads: myAds, isLoading: myAdsLoading, error: myAdsError } = useMyBazaarAds(true, myAdsRefreshKey);
+    const {
+        purchases: myPurchases,
+        isLoading: purchasesLoading,
+        error: purchasesError,
+    } = useMyBazaarPurchases(true, myAdsRefreshKey);
 
     const [filterLocation, setFilterLocation] = useState<string>("");
     const [filterMinPrice, setFilterMinPrice] = useState<string>("");
@@ -432,17 +424,7 @@ const BazaarPage: React.FC = () => {
 
         // The ad id becomes the order code; the backend doesn't return one,
         // so reusing the ad id keeps the UI receipt stable and traceable.
-        const orderCode = detail.item.id;
-        setMyPurchases((prev) => [
-            {
-                title: detail.item.product_type,
-                orderCode,
-                status: _t("custom_panels|bazaar_status_shipping"),
-                date: new Date().toLocaleDateString("fa-IR"),
-            },
-            ...prev,
-        ]);
-        setDetail({ ...detail, stage: "success", orderCode });
+        setDetail({ ...detail, stage: "success", orderCode: detail.item.id });
         setMyAdsRefreshKey((k) => k + 1);
     };
 
@@ -1049,21 +1031,36 @@ const BazaarPage: React.FC = () => {
                         {historyTab === "purchases" && (
                             <div className="mx_BazaarPage_myAds">
                                 <h4>{_t("custom_panels|bazaar_my_purchases")}</h4>
-                                {myPurchases.length === 0 && (
-                                    <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_no_purchases")}</div>
+                                {purchasesLoading && (
+                                    <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>
                                 )}
-                                {myPurchases.map((p) => (
-                                    <div className="mx_BazaarPage_myAd" key={p.orderCode}>
-                                        <div>
-                                            <strong>{p.title}</strong>
-                                            <br />
-                                            <small>
-                                                {_t("custom_panels|bazaar_order_code", { code: p.orderCode })} |{" "}
-                                                {p.status} | {p.date}
-                                            </small>
-                                        </div>
+                                {purchasesError && !purchasesLoading && (
+                                    <div className="mx_BazaarPage_empty">
+                                        {_t("custom_panels|bazaar_load_error")}
                                     </div>
-                                ))}
+                                )}
+                                {!purchasesLoading && !purchasesError && myPurchases.length === 0 && (
+                                    <div className="mx_BazaarPage_empty">
+                                        {_t("custom_panels|bazaar_no_purchases")}
+                                    </div>
+                                )}
+                                {myPurchases.map((p) => {
+                                    const title = p.product_type || `#${p.id}`;
+                                    const parts = [
+                                        _t("custom_panels|bazaar_order_code", { code: p.id }),
+                                        p.amount && p.unit ? `${p.amount} ${p.unit}` : null,
+                                        [p.province, p.city].filter(Boolean).join(" / ") || null,
+                                    ].filter(Boolean);
+                                    return (
+                                        <div className="mx_BazaarPage_myAd" key={p.id}>
+                                            <div>
+                                                <strong>{title}</strong>
+                                                <br />
+                                                <small>{parts.join(" | ")}</small>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         )}
                     </section>
