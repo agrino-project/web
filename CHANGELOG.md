@@ -185,3 +185,37 @@ Changes in [1.14.0](https://github.com/agrino-project/web/releases/tag/v1.14.0) 
 * Fix mobile compatibility issues that incorrectly displayed the application as unsupported.
 * Fix Dark Mode styling inconsistencies on the Chat Welcome page.
 * Fix page title behavior to ensure **Agrino** is displayed consistently after page refresh.
+
+# Changes in [1.20.0](https://github.com/agrino-project/web/releases/tag/v1.20.0) (2026-07-08)
+
+## ✨ Features
+
+* Introduce the **Bazaar** (بازارگاه) marketplace page with full navigation support on desktop and mobile.
+* Add Bazaar entry points in the Space Panel, Mobile Bottom Navigation, and Agriculture page quick access.
+* Integrate Bazaar backend APIs for categories, subcategories, dynamic form questions, ad listings, ad submission, and purchase flow.
+* Add ad management capabilities: create, edit, and delete ads with an inline edit panel for title, price, amount, province, and city.
+* Add ad purchase flow with order confirmation, payment step, and success state including order code display.
+* Add **My Ads** and **My Purchases** history tabs for tracking submitted and purchased listings.
+* Add ad listing actions: view details, call seller, and copy phone number.
+* Add advanced ad filtering by location, province, city, price range, and active-only status.
+* Add price sorting options (ascending and descending).
+* Add session caching for Bazaar API responses to reduce redundant network requests.
+* Add in-memory caching for Great Shops API calls to improve load performance.
+* Add new background images for Agriculture page cards (Great Shops and Agriculture Consultant).
+* Add a new chat room background image for a more engaging conversation view.
+* Add full English and Persian translations for Bazaar-related labels, errors, and status messages.
+
+## 🚀 Improvements
+
+* Improve authentication page responsiveness on mobile, including Setup Encryption, Auth Page, and Complete Security screens.
+* Improve message timestamp font size on mobile for better readability.
+* Dynamically resolve the Bazaar API base URL from the user's homeserver instead of using a hardcoded endpoint.
+* Refine BazaarPage layout, spacing, heading margins, and purchase list rendering.
+* Implement full Dark Mode support for BazaarPage using Agrino theme variables, consistent with other custom pages.
+* Improve selected submenu item text contrast in Bazaar dark theme for better readability.
+* Update SpacePanel and MobileBottomNav styling for Bazaar button integration.
+* Refine AgriculturePage card gradient overlays and box-shadow styles.
+
+## 🐛 Bug Fixes
+
+* Update the Bazaar API endpoint to `https://bots.agridemo.ir/api` for correct backend integration.
