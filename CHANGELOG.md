@@ -209,13 +209,9 @@ Changes in [1.14.0](https://github.com/agrino-project/web/releases/tag/v1.14.0) 
 
 * Improve authentication page responsiveness on mobile, including Setup Encryption, Auth Page, and Complete Security screens.
 * Improve message timestamp font size on mobile for better readability.
-* Dynamically resolve the Bazaar API base URL from the user's homeserver instead of using a hardcoded endpoint.
+* Dynamically resolve the Bazaar API base URL from the user's homeserver (`/_synapse/client/bots`) instead of using a hardcoded endpoint.
 * Refine BazaarPage layout, spacing, heading margins, and purchase list rendering.
 * Implement full Dark Mode support for BazaarPage using Agrino theme variables, consistent with other custom pages.
 * Improve selected submenu item text contrast in Bazaar dark theme for better readability.
 * Update SpacePanel and MobileBottomNav styling for Bazaar button integration.
 * Refine AgriculturePage card gradient overlays and box-shadow styles.
-
-## 🐛 Bug Fixes
-
-* Update the Bazaar API endpoint to `https://bots.agridemo.ir/api` for correct backend integration.
