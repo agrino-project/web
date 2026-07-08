@@ -6,18 +6,25 @@ Please see LICENSE files in the repository root for full details.
 */
 
 .mx_BazaarPage {
-    --bz-bg: #f5f7fb;
-    --bz-panel: #ffffff;
-    --bz-line: #e5e7eb;
-    --bz-text: #1f2937;
-    --bz-muted: #6b7280;
-    --bz-green: #2e7d32;
+    --bz-bg: var(--agrino-bg);
+    --bz-panel: var(--agrino-surface);
+    --bz-line: var(--agrino-surface-border);
+    --bz-text: var(--cpd-color-text-primary);
+    --bz-muted: var(--cpd-color-text-secondary);
+    --bz-green: var(--cpd-color-bg-action-primary-rest);
     --bz-green2: #43a047;
     --bz-blue: #2563eb;
-    --bz-red: #dc2626;
+    --bz-red: var(--cpd-color-text-critical-primary);
     --bz-orange: #f59e0b;
     --bz-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     --bz-radius: 18px;
+    --bz-hover-surface: var(--agrino-hover-bg);
+    --bz-selected-surface: var(--agrino-selected-bg);
+    --bz-subtle-bg: var(--agrino-surface-muted);
+    --bz-input-bg: var(--cpd-color-form-bg);
+    --bz-input-border: var(--cpd-color-form-border);
+    --bz-secondary-btn-bg: var(--agrino-surface-muted);
+    --bz-secondary-btn-text: var(--cpd-color-text-primary);
 
     display: flex;
     gap: 16px;
@@ -51,7 +58,7 @@ Please see LICENSE files in the repository root for full details.
 .mx_BazaarPage_sidebarHeader {
     padding: 16px;
     background: linear-gradient(135deg, var(--bz-green), var(--bz-green2));
-    color: #fff;
+    color: var(--cpd-color-text-on-solid-primary);
 
     h1 {
         margin: 0;
@@ -77,7 +84,7 @@ Please see LICENSE files in the repository root for full details.
 .mx_BazaarPage_menuMain {
     width: 100%;
     border: none;
-    background: #fff;
+    background: var(--bz-panel);
     padding: 14px 16px;
     text-align: inherit;
     font-size: 15px;
@@ -89,12 +96,13 @@ Please see LICENSE files in the repository root for full details.
     transition: background 0.2s;
 
     &:hover {
-        background: #f9fafb;
+        background: var(--bz-hover-surface);
     }
 
     &.active {
-        background: #ecfdf5;
-        color: var(--bz-green);
+        background: var(--bz-selected-surface);
+        color: var(--bz-text);
+        font-weight: 600;
     }
 }
 
@@ -108,12 +116,12 @@ Please see LICENSE files in the repository root for full details.
 
 .mx_BazaarPage_submenu {
     padding: 8px 12px 12px;
-    background: #fafafa;
+    background: var(--bz-subtle-bg);
 
     button {
         width: 100%;
         border: 1px solid var(--bz-line);
-        background: #fff;
+        background: var(--bz-panel);
         color: var(--bz-text);
         border-radius: 12px;
         padding: 10px 12px;
@@ -125,13 +133,14 @@ Please see LICENSE files in the repository root for full details.
 
         &:hover {
             border-color: var(--bz-green);
-            background: #f0fdf4;
+            background: var(--bz-selected-surface);
         }
 
         &.selected {
-            border-color: var(--bz-green);
-            background: #ecfdf5;
-            color: var(--bz-green);
+            border-color: var(--bz-green2);
+            background: var(--bz-selected-surface);
+            color: var(--bz-text);
+            font-weight: 600;
         }
     }
 }
@@ -165,6 +174,7 @@ Please see LICENSE files in the repository root for full details.
     h2 {
         margin: 0;
         font-size: 18px;
+        color: var(--bz-text);
     }
 
     span {
@@ -187,7 +197,7 @@ Please see LICENSE files in the repository root for full details.
     font-size: 14px;
     font-weight: 700;
     transition: 0.2s;
-    color: #fff;
+    color: var(--cpd-color-text-on-solid-primary);
 
     &:hover {
         transform: translateY(-1px);
@@ -203,8 +213,9 @@ Please see LICENSE files in the repository root for full details.
     }
 
     &.mx_BazaarPage_btn--secondary {
-        background: #e5e7eb;
-        color: #111827;
+        background: var(--bz-secondary-btn-bg);
+        color: var(--bz-secondary-btn-text);
+        border: 1px solid var(--bz-line);
     }
 
     &.mx_BazaarPage_btn--danger {
@@ -213,7 +224,7 @@ Please see LICENSE files in the repository root for full details.
 
     &.mx_BazaarPage_btn--warning {
         background: var(--bz-orange);
-        color: #111827;
+        color: var(--cpd-color-text-on-solid-primary);
     }
 }
 
@@ -227,11 +238,13 @@ Please see LICENSE files in the repository root for full details.
     h3 {
         margin: 0 0 12px;
         font-size: 18px;
+        color: var(--bz-text);
     }
 
     h4 {
         margin: 0 0 8px;
         font-size: 16px;
+        color: var(--bz-text);
     }
 }
 
@@ -255,11 +268,11 @@ Please see LICENSE files in the repository root for full details.
     select,
     textarea {
         width: 100%;
-        border: 1px solid var(--bz-line);
+        border: 1px solid var(--bz-input-border);
         border-radius: 12px;
         padding: 11px 12px;
         font-size: 14px;
-        background: #fff;
+        background: var(--bz-input-bg);
         outline: none;
         font-family: inherit;
         color: var(--bz-text);
@@ -328,7 +341,7 @@ Please see LICENSE files in the repository root for full details.
     border: 1px solid var(--bz-line);
     border-radius: 16px;
     padding: 12px;
-    background: #fff;
+    background: var(--bz-panel);
 
     img {
         width: 120px;
@@ -342,6 +355,7 @@ Please see LICENSE files in the repository root for full details.
     h4 {
         margin: 0 0 6px;
         font-size: 16px;
+        color: var(--bz-text);
     }
 
     p {
@@ -371,10 +385,11 @@ Please see LICENSE files in the repository root for full details.
     border: 1px solid var(--bz-line);
     border-radius: 14px;
     padding: 14px;
-    background: #fff;
+    background: var(--bz-panel);
 
     p {
         margin: 6px 0;
+        color: var(--bz-text);
     }
 }
 
@@ -388,6 +403,7 @@ Please see LICENSE files in the repository root for full details.
 .mx_BazaarPage_stepTitle {
     font-weight: 700;
     margin-bottom: 8px;
+    color: var(--bz-text);
 }
 
 .mx_BazaarPage_paymentPlaceholder {
@@ -397,7 +413,13 @@ Please see LICENSE files in the repository root for full details.
     margin: 12px 0;
     background:
         linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(67, 160, 71, 0.1)),
-        repeating-linear-gradient(45deg, #f1f5f9, #f1f5f9 10px, #e2e8f0 10px, #e2e8f0 20px);
+        repeating-linear-gradient(
+            45deg,
+            var(--bz-subtle-bg),
+            var(--bz-subtle-bg) 10px,
+            var(--bz-line) 10px,
+            var(--bz-line) 20px
+        );
 }
 
 .mx_BazaarPage_myAds,
@@ -414,8 +436,12 @@ Please see LICENSE files in the repository root for full details.
     border: 1px solid var(--bz-line);
     border-radius: 14px;
     padding: 12px 14px;
-    background: #fff;
+    background: var(--bz-panel);
     flex-wrap: wrap;
+
+    strong {
+        color: var(--bz-text);
+    }
 
     small {
         color: var(--bz-muted);
@@ -436,7 +462,8 @@ Please see LICENSE files in the repository root for full details.
 
     .mx_BazaarPage_btn.active {
         background: var(--bz-green);
-        color: #fff;
+        color: var(--cpd-color-text-on-solid-primary);
+        border-color: transparent;
     }
 }
 
@@ -445,39 +472,47 @@ Please see LICENSE files in the repository root for full details.
     padding: 14px;
 }
 
-.mx_BazaarPage_adActions {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+.mx_BazaarPage_badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
 }
 
-.mx_BazaarPage_adRowActions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+.mx_BazaarPage_badge--sold {
+    background: rgba(220, 38, 38, 0.15);
+    color: var(--bz-red);
+}
+
+.mx_BazaarPage_badge--active {
+    background: rgba(67, 160, 71, 0.18);
+    color: var(--bz-green2);
 }
 
 .mx_BazaarPage_previousAds {
     margin-top: 32px;
     padding-top: 24px;
-    border-top: 1px solid var(--cpd-border-color);
+    border-top: 1px solid var(--bz-line);
 }
 
 .mx_BazaarPage_previousAds h3 {
     margin-bottom: 16px;
+    color: var(--bz-text);
 }
 
 .mx_BazaarPage_editPanel {
     margin-top: 24px;
     padding: 24px;
     border-radius: 14px;
-    border: 1px solid var(--cpd-color-gray-300);
-    background: var(--cpd-color-bg-canvas);
+    border: 1px solid var(--bz-line);
+    background: var(--bz-subtle-bg);
     width: 100%;
 }
 
 .mx_BazaarPage_editPanel h3 {
     margin: 0 0 20px;
+    color: var(--bz-text);
 }
 
 .mx_BazaarPage_editGrid {
@@ -495,13 +530,16 @@ Please see LICENSE files in the repository root for full details.
 .mx_BazaarPage_editField label {
     font-size: 13px;
     font-weight: 600;
-    color: var(--cpd-color-text-secondary);
+    color: var(--bz-muted);
 }
 
 .mx_BazaarPage_editField input {
     height: 42px;
     padding: 0 12px;
     border-radius: 8px;
+    border: 1px solid var(--bz-input-border);
+    background: var(--bz-input-bg);
+    color: var(--bz-text);
 }
 
 .mx_BazaarPage_editActions {

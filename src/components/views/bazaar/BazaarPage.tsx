@@ -499,7 +499,7 @@ const BazaarPage: React.FC = () => {
         const label = (
             <label>
                 {q.field_name}
-                {q.is_required && <span style={{ color: "var(--bz-red, #dc2626)" }}> *</span>}
+                {q.is_required && <span style={{ color: "var(--cpd-color-text-critical-primary)" }}> *</span>}
             </label>
         );
 
@@ -576,7 +576,7 @@ const BazaarPage: React.FC = () => {
                     />
                 )}
                 {q.format_hint && q.field_type !== "text" && (
-                    <small style={{ color: "var(--bz-muted, #6b7280)", fontSize: 12 }}>{q.format_hint}</small>
+                    <small style={{ color: "var(--cpd-color-text-secondary)", fontSize: 12 }}>{q.format_hint}</small>
                 )}
             </div>
         );
