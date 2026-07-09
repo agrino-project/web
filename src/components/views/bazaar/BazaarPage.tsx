@@ -243,53 +243,29 @@ const BazaarPage: React.FC = () => {
         minPrice: null,
         maxPrice: null,
     });
-    const [filterProvince, setFilterProvince] = useState("");
-    const [filterCity, setFilterCity] = useState("");
-    const [filterActiveOnly, setFilterActiveOnly] = useState(false);
-    const [sortBy, setSortBy] = useState("");
-
     const [detail, setDetail] = useState<DetailState | null>(null);
     const [editingAd, setEditingAd] = useState<BazaarAd | null>(null);
     const [editFormData, setEditFormData] = useState<Record<string, string>>({});
 
     const filteredAds = useMemo<BazaarAd[]>(() => {
         const loc = activeFilters.location.trim();
-        return apiAds
-            .filter((ad) => {
-                if (
-                    selectedSub &&
-                    ad.product_type &&
-                    !ad.product_type.includes(selectedSub) &&
-                    !selectedSub.includes(ad.product_type)
-                )
-                    return false;
-                if (loc && !`${ad.province} ${ad.city}`.includes(loc)) return false;
-                const priceNum = Number(ad.price);
-                if (activeFilters.minPrice !== null && Number.isFinite(priceNum) && priceNum < activeFilters.minPrice)
-                    return false;
-                if (activeFilters.maxPrice !== null && Number.isFinite(priceNum) && priceNum > activeFilters.maxPrice)
-                    return false;
-                if (filterProvince && ad.province !== filterProvince) return false;
-                if (filterCity && ad.city !== filterCity) return false;
-                if (filterActiveOnly && ad.buyer_id) return false;
-                return true;
-            })
-            .sort((a, b) => {
-                if (sortBy === "priceAsc") return Number(a.price) - Number(b.price);
-                if (sortBy === "priceDesc") return Number(b.price) - Number(a.price);
-                return 0;
-            });
-    }, [
-        apiAds,
-        selectedSub,
-        filterLocation,
-        filterProvince,
-        filterCity,
-        filterMinPrice,
-        filterMaxPrice,
-        filterActiveOnly,
-        sortBy,
-    ]);
+        return apiAds.filter((ad) => {
+            if (
+                selectedSub &&
+                ad.product_type &&
+                !ad.product_type.includes(selectedSub) &&
+                !selectedSub.includes(ad.product_type)
+            )
+                return false;
+            if (loc && !`${ad.province} ${ad.city}`.includes(loc)) return false;
+            const priceNum = Number(ad.price);
+            if (activeFilters.minPrice !== null && Number.isFinite(priceNum) && priceNum < activeFilters.minPrice)
+                return false;
+            if (activeFilters.maxPrice !== null && Number.isFinite(priceNum) && priceNum > activeFilters.maxPrice)
+                return false;
+            return true;
+        });
+    }, [apiAds, activeFilters, selectedSub]);
 
     useEffect(() => {
         setEditingAd(null);
@@ -484,10 +460,6 @@ const BazaarPage: React.FC = () => {
         setFilterMinPrice("");
         setFilterMaxPrice("");
         setActiveFilters({ location: "", minPrice: null, maxPrice: null });
-        setFilterProvince("");
-        setFilterCity("");
-        setFilterActiveOnly(false);
-        setSortBy("");
     };
 
     const renderQuestion = (q: BazaarQuestion): React.ReactNode => {
@@ -760,40 +732,6 @@ const BazaarPage: React.FC = () => {
                                     placeholder={_t("custom_panels|bazaar_filter_price_placeholder")}
                                 />
                             </div>
-                            <div className="mx_BazaarPage_field">
-                                <label>{_t("custom_panels|bazaar_filter_province")}</label>
-                                <input
-                                    type="text"
-                                    value={filterProvince}
-                                    onChange={(e) => setFilterProvince(e.target.value)}
-                                    placeholder={_t("custom_panels|bazaar_filter_province_placeholder")}
-                                />
-                            </div>
-                            <div className="mx_BazaarPage_field">
-                                <label>{_t("custom_panels|bazaar_filter_city")}</label>
-                                <input
-                                    type="text"
-                                    value={filterCity}
-                                    onChange={(e) => setFilterCity(e.target.value)}
-                                    placeholder={_t("custom_panels|bazaar_filter_city_placeholder")}
-                                />
-                            </div>
-                            <div className="mx_BazaarPage_field">
-                                <label>{_t("custom_panels|bazaar_filter_active_only")}</label>
-                                <input
-                                    type="checkbox"
-                                    checked={filterActiveOnly}
-                                    onChange={(e) => setFilterActiveOnly(e.target.checked)}
-                                />
-                            </div>
-                            <div className="mx_BazaarPage_field">
-                                <label>{_t("custom_panels|bazaar_sort_by")}</label>
-                                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                                    <option value="">{_t("common|none")}</option>
-                                    <option value="priceAsc">{_t("custom_panels|bazaar_sort_price_asc")}</option>
-                                    <option value="priceDesc">{_t("custom_panels|bazaar_sort_price_desc")}</option>
-                                </select>
-                            </div>
                             <div className="mx_BazaarPage_filterButtons">
                                 <button
                                     className="mx_BazaarPage_btn mx_BazaarPage_btn--secondary"
@@ -829,8 +767,6 @@ const BazaarPage: React.FC = () => {
                                 const sellerName = ad.contact_name || ad.contact_phone;
                                 return (
                                     <div className="mx_BazaarPage_adCard" key={ad.id}>
-                                        {/* تصویر آگهی */}
-                                        {/* <img src={ad.image_url || "/default.jpg"} alt={ad.product_type} /> */}
                                         <div className="mx_BazaarPage_adMeta">
                                             <h4>{ad.product_type}</h4>
                                             <p>
@@ -851,17 +787,6 @@ const BazaarPage: React.FC = () => {
                                                         {priceLabel}
                                                     </>
                                                 ) : null}
-                                                {/* وضعیت آگهی */}
-                                                <br />
-                                                {ad.buyer_id ? (
-                                                    <span className="mx_BazaarPage_badge mx_BazaarPage_badge--sold">
-                                                        {_t("custom_panels|bazaar_status_sold")}
-                                                    </span>
-                                                ) : (
-                                                    <span className="mx_BazaarPage_badge mx_BazaarPage_badge--active">
-                                                        {_t("custom_panels|bazaar_status_active")}
-                                                    </span>
-                                                )}
                                             </p>
                                         </div>
                                         <div className="mx_BazaarPage_adActions">
@@ -870,19 +795,6 @@ const BazaarPage: React.FC = () => {
                                                 onClick={() => openDetail(ad)}
                                             >
                                                 {_t("custom_panels|bazaar_view")}
-                                            </button>
-                                            {/* دکمه تماس */}
-                                            <button
-                                                className="mx_BazaarPage_btn mx_BazaarPage_btn--buy"
-                                                onClick={() => window.open(`tel:${ad.contact_phone}`)}
-                                            >
-                                                {_t("custom_panels|bazaar_contact")}
-                                            </button>
-                                            <button
-                                                className="mx_BazaarPage_btn mx_BazaarPage_btn--buy"
-                                                onClick={() => navigator.clipboard.writeText(ad.contact_phone)}
-                                            >
-                                                {_t("custom_panels|bazaar_copy_phone")}
                                             </button>
                                         </div>
                                     </div>

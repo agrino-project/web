@@ -285,6 +285,25 @@ Please see LICENSE files in the repository root for full details.
     }
 }
 
+/* Element's global reset in _common.pcss uses a 3×:not() + descendant selector
+   which resolves to specificity 0,0,4,1 — higher than any reasonable chain of
+   our own classes. Use !important on the properties it steals (background,
+   padding, font) rather than escalating specificity further. */
+.mx_BazaarPage_field input[type="text"],
+.mx_BazaarPage_field input[type="password"],
+.mx_BazaarPage_field input[type="search"] {
+    background: var(--bz-input-bg) !important;
+    color: var(--bz-text) !important;
+    padding: 11px 12px !important;
+    font: inherit !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+    border: 1px solid var(--bz-input-border) !important;
+    border-radius: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
 .mx_BazaarPage_checkboxGroup {
     display: flex;
     flex-direction: column;
@@ -335,20 +354,13 @@ Please see LICENSE files in the repository root for full details.
 
 .mx_BazaarPage_adCard {
     display: grid;
-    grid-template-columns: 120px 1fr auto;
+    grid-template-columns: 1fr auto;
     gap: 14px;
     align-items: center;
     border: 1px solid var(--bz-line);
     border-radius: 16px;
     padding: 12px;
     background: var(--bz-panel);
-
-    img {
-        width: 120px;
-        height: 90px;
-        object-fit: cover;
-        border-radius: 12px;
-    }
 }
 
 .mx_BazaarPage_adMeta {
