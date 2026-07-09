@@ -22,6 +22,9 @@ interface DetailState {
     item: BazaarAd;
     stage: DetailStage;
     orderCode?: number;
+    returnPanel: ActivePanel;
+    historyTab?: HistoryTab;
+    readOnly?: boolean;
 }
 
 interface ActiveFilters {
@@ -202,8 +205,78 @@ const MyAdsList: React.FC<MyAdsListProps> = ({
     );
 };
 
+interface BazaarAdDetailGridProps {
+    item: BazaarAd;
+    categoryLabel?: string;
+}
+
+const BazaarAdDetailGrid: React.FC<BazaarAdDetailGridProps> = ({ item, categoryLabel }) => {
+    const priceNum = Number(item.price);
+    const priceLabel =
+        Number.isFinite(priceNum) && item.price
+            ? _t("custom_panels|bazaar_price_toman", { price: priceNum.toLocaleString() })
+            : null;
+
+    const rows: { label: string; value: string; highlight?: boolean }[] = [
+        { label: _t("custom_panels|bazaar_field_order"), value: String(item.id) },
+        {
+            label: _t("custom_panels|bazaar_field_product"),
+            value: item.product_type || _t("custom_panels|bazaar_field_not_set"),
+        },
+        {
+            label: _t("custom_panels|bazaar_field_category"),
+            value: categoryLabel ?? (item.category ? String(item.category) : _t("custom_panels|bazaar_field_not_set")),
+        },
+        {
+            label: _t("custom_panels|bazaar_field_amount"),
+            value:
+                item.amount && item.unit
+                    ? `${item.amount} ${item.unit}`
+                    : item.amount || item.unit || _t("custom_panels|bazaar_field_not_set"),
+        },
+        {
+            label: _t("custom_panels|bazaar_field_location"),
+            value: [item.province, item.city].filter(Boolean).join(" / ") || _t("custom_panels|bazaar_field_not_set"),
+        },
+        {
+            label: _t("custom_panels|bazaar_field_price"),
+            value: priceLabel ?? _t("custom_panels|bazaar_field_not_set"),
+            highlight: !!priceLabel,
+        },
+        {
+            label: _t("custom_panels|bazaar_field_seller"),
+            value: item.contact_name || _t("custom_panels|bazaar_field_not_set"),
+        },
+        {
+            label: _t("custom_panels|bazaar_field_phone"),
+            value: item.contact_phone || _t("custom_panels|bazaar_field_not_set"),
+        },
+        {
+            label: _t("custom_panels|bazaar_field_buyer"),
+            value: item.buyer_id || _t("custom_panels|bazaar_field_not_set"),
+        },
+    ];
+
+    return (
+        <dl className="mx_BazaarPage_detailGrid">
+            {rows.map((row) => (
+                <div className="mx_BazaarPage_detailRow" key={row.label}>
+                    <dt>{row.label}</dt>
+                    <dd className={row.highlight ? "mx_BazaarPage_adPrice" : undefined}>{row.value}</dd>
+                </div>
+            ))}
+        </dl>
+    );
+};
+
 const BazaarPage: React.FC = () => {
     const { categories: apiCategories, isLoading: categoriesLoading, error: categoriesError } = useBazaarCategories();
+
+    const categoryNameById = useMemo(() => {
+        const map = new Map<number, string>();
+        apiCategories.forEach((cat: BazaarCategory) => map.set(cat.id, cat.name));
+        return map;
+    }, [apiCategories]);
 
     const [openCategoryId, setOpenCategoryId] = useState<number | null>(null);
     const [selectedMain, setSelectedMain] = useState<string>("");
@@ -387,9 +460,28 @@ const BazaarPage: React.FC = () => {
         setMyAdsRefreshKey((k) => k + 1);
     };
 
-    const openDetail = (item: BazaarAd): void => {
-        setDetail({ item, stage: "info" });
+    const openDetail = (
+        item: BazaarAd,
+        options?: { returnPanel?: ActivePanel; historyTab?: HistoryTab; readOnly?: boolean },
+    ): void => {
+        setDetail({
+            item,
+            stage: "info",
+            returnPanel: options?.returnPanel ?? (activePanel === "history" ? "history" : "buy"),
+            historyTab: options?.historyTab,
+            readOnly: options?.readOnly ?? activePanel === "history",
+        });
         setActivePanel("detail");
+    };
+
+    const closeDetail = (): void => {
+        if (!detail) return;
+        if (detail.returnPanel === "history" && detail.historyTab) {
+            setHistoryTab(detail.historyTab);
+        }
+        const returnPanel = detail.returnPanel === "detail" ? "none" : detail.returnPanel;
+        setDetail(null);
+        setActivePanel(returnPanel);
     };
 
     const startPayment = (): void => {
@@ -419,8 +511,7 @@ const BazaarPage: React.FC = () => {
     };
 
     const backToBuyList = (): void => {
-        setDetail(null);
-        setActivePanel("buy");
+        closeDetail();
     };
 
     const handleDeleteAd = async (adId: number): Promise<void> => {
@@ -716,7 +807,9 @@ const BazaarPage: React.FC = () => {
                                 ads={myAds}
                                 loading={myAdsLoading}
                                 error={!!myAdsError}
-                                openDetail={openDetail}
+                                openDetail={(ad) =>
+                                    openDetail(ad, { returnPanel: "sell", readOnly: true })
+                                }
                                 onEdit={handleEditAd}
                                 onDelete={handleDeleteAd}
                                 editingAd={editingAd}
@@ -817,7 +910,7 @@ const BazaarPage: React.FC = () => {
                                         <div className="mx_BazaarPage_adActions">
                                             <button
                                                 className="mx_BazaarPage_btn mx_BazaarPage_btn--secondary"
-                                                onClick={() => openDetail(ad)}
+                                                onClick={() => openDetail(ad, { returnPanel: "buy", readOnly: false })}
                                             >
                                                 {_t("custom_panels|bazaar_view")}
                                             </button>
@@ -831,40 +924,38 @@ const BazaarPage: React.FC = () => {
 
                 {activePanel === "detail" && detail && (
                     <section className="mx_BazaarPage_panel">
-                        <h3>{_t("custom_panels|bazaar_detail_title")}</h3>
+                        <h3>
+                            {detail.historyTab === "purchases"
+                                ? _t("custom_panels|bazaar_purchase_detail_title")
+                                : _t("custom_panels|bazaar_detail_title")}
+                        </h3>
                         <div className="mx_BazaarPage_sectionUnderline" />
                         {detail.stage === "info" && (
                             <div className="mx_BazaarPage_buyFlow">
                                 <div className="mx_BazaarPage_step">
                                     <div className="mx_BazaarPage_stepTitle">
-                                        {_t("custom_panels|bazaar_detail_title")}
+                                        {detail.historyTab === "purchases"
+                                            ? _t("custom_panels|bazaar_purchase_detail_title")
+                                            : _t("custom_panels|bazaar_detail_title")}
                                     </div>
-                                    <p className="mx_BazaarPage_detailHighlight">{detail.item.product_type}</p>
-                                    <p>
-                                        {_t("custom_panels|bazaar_seller", {
-                                            name: detail.item.contact_name || detail.item.contact_phone,
-                                        })}
+                                    <p className="mx_BazaarPage_detailHighlight">
+                                        {detail.item.product_type || `#${detail.item.id}`}
                                     </p>
-                                    <p>{`${detail.item.amount} ${detail.item.unit}`}</p>
-                                    {[detail.item.province, detail.item.city].filter(Boolean).length > 0 && (
-                                        <p>{[detail.item.province, detail.item.city].filter(Boolean).join(" / ")}</p>
-                                    )}
-                                    {detail.item.price && Number.isFinite(Number(detail.item.price)) && (
-                                        <p className="mx_BazaarPage_adPrice">
-                                            {_t("custom_panels|bazaar_price_toman", {
-                                                price: Number(detail.item.price).toLocaleString(),
-                                            })}
-                                        </p>
-                                    )}
+                                    <BazaarAdDetailGrid
+                                        item={detail.item}
+                                        categoryLabel={categoryNameById.get(detail.item.category)}
+                                    />
                                 </div>
                                 <div className="mx_BazaarPage_step mx_BazaarPage_step--actions">
                                     <button
                                         className="mx_BazaarPage_btn mx_BazaarPage_btn--secondary"
                                         onClick={backToBuyList}
                                     >
-                                        {_t("custom_panels|bazaar_back_to_list")}
+                                        {detail.returnPanel === "history"
+                                            ? _t("custom_panels|bazaar_back_to_history")
+                                            : _t("custom_panels|bazaar_back_to_list")}
                                     </button>
-                                    {!myAds.some((ad) => ad.id === detail.item.id) && (
+                                    {!detail.readOnly && !myAds.some((ad) => ad.id === detail.item.id) && (
                                         <button
                                             className="mx_BazaarPage_btn mx_BazaarPage_btn--buy"
                                             onClick={startPayment}
@@ -956,7 +1047,13 @@ const BazaarPage: React.FC = () => {
                                 ads={myAds}
                                 loading={myAdsLoading}
                                 error={!!myAdsError}
-                                openDetail={openDetail}
+                                openDetail={(ad) =>
+                                    openDetail(ad, {
+                                        returnPanel: "history",
+                                        historyTab: "ads",
+                                        readOnly: true,
+                                    })
+                                }
                                 onEdit={handleEditAd}
                                 onDelete={handleDeleteAd}
                                 editingAd={editingAd}
@@ -972,7 +1069,6 @@ const BazaarPage: React.FC = () => {
 
                         {historyTab === "purchases" && (
                             <div className="mx_BazaarPage_myAds">
-                                <h4>{_t("custom_panels|bazaar_my_purchases")}</h4>
                                 {purchasesLoading && <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>}
                                 {purchasesError && !purchasesLoading && (
                                     <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_load_error")}</div>
@@ -982,16 +1078,41 @@ const BazaarPage: React.FC = () => {
                                 )}
                                 {myPurchases.map((p) => {
                                     const title = p.product_type || `#${p.id}`;
+                                    const priceNum = Number(p.price);
+                                    const priceLabel =
+                                        Number.isFinite(priceNum) && p.price
+                                            ? _t("custom_panels|bazaar_price_toman", {
+                                                  price: priceNum.toLocaleString(),
+                                              })
+                                            : null;
                                     const parts = [
                                         _t("custom_panels|bazaar_order_code", { code: p.id }),
                                         p.amount && p.unit ? `${p.amount} ${p.unit}` : null,
                                         [p.province, p.city].filter(Boolean).join(" / ") || null,
+                                        categoryNameById.get(p.category) ?? null,
                                     ].filter(Boolean);
                                     return (
                                         <div className="mx_BazaarPage_myAd" key={p.id}>
                                             <div className="mx_BazaarPage_myAdInfo">
                                                 <strong>{title}</strong>
                                                 <small>{parts.join(" | ")}</small>
+                                                {priceLabel ? (
+                                                    <span className="mx_BazaarPage_adPrice">{priceLabel}</span>
+                                                ) : null}
+                                            </div>
+                                            <div className="mx_BazaarPage_adRowActions">
+                                                <button
+                                                    className="mx_BazaarPage_btn mx_BazaarPage_btn--secondary"
+                                                    onClick={() =>
+                                                        openDetail(p, {
+                                                            returnPanel: "history",
+                                                            historyTab: "purchases",
+                                                            readOnly: true,
+                                                        })
+                                                    }
+                                                >
+                                                    {_t("custom_panels|bazaar_view")}
+                                                </button>
                                             </div>
                                         </div>
                                     );

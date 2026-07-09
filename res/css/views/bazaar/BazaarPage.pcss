@@ -62,7 +62,7 @@ Please see LICENSE files in the repository root for full details.
 
     h1 {
         margin: 0;
-        font-size: 22px;
+        font-size: 20px;
         font-weight: 800;
         letter-spacing: -0.02em;
     }
@@ -176,7 +176,7 @@ Please see LICENSE files in the repository root for full details.
 
     h2 {
         margin: 0;
-        font-size: 22px;
+        font-size: 20px;
         font-weight: 800;
         color: var(--bz-text);
         letter-spacing: -0.02em;
@@ -184,7 +184,7 @@ Please see LICENSE files in the repository root for full details.
 
     span {
         color: var(--bz-muted);
-        font-size: 15px;
+        font-size: 14px;
         line-height: 1.5;
     }
 }
@@ -202,26 +202,39 @@ Please see LICENSE files in the repository root for full details.
     cursor: pointer;
     font-size: 14px;
     font-weight: 600;
-    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    color: #ffffff;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
     white-space: nowrap;
     line-height: 1.4;
-
-    &:hover:not(:disabled) {
-        box-shadow: 0 3px 10px rgba(50, 100, 48, 0.2);
-    }
 
     &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
     }
 
-    &.mx_BazaarPage_btn--buy,
-    &.mx_BazaarPage_btn--sell {
+    /* خرید / پرداخت — اکشن اصلی */
+    &.mx_BazaarPage_btn--buy {
         background: var(--bz-green);
+        color: #ffffff;
+        border: 1.5px solid var(--bz-green);
 
         &:hover:not(:disabled) {
             background: var(--bz-green-hover);
+            border-color: var(--bz-green-hover);
+            box-shadow: 0 3px 10px rgba(50, 100, 48, 0.2);
+        }
+    }
+
+    /* فروش — outline سبز (پیش‌فرض) */
+    &.mx_BazaarPage_btn--sell {
+        background: var(--bz-panel);
+        color: var(--bz-green);
+        border: 1.5px solid var(--bz-green);
+        box-shadow: none;
+
+        &:hover:not(:disabled) {
+            background: var(--bz-hover-surface);
+            border-color: var(--bz-green-hover);
+            color: var(--bz-green-hover);
         }
     }
 
@@ -232,15 +245,17 @@ Please see LICENSE files in the repository root for full details.
         box-shadow: none;
 
         &:hover:not(:disabled) {
-            border-color: var(--bz-green);
+            border-color: var(--bz-line);
             background: var(--bz-hover-surface);
-            color: var(--bz-green);
+            color: var(--bz-text);
             box-shadow: none;
         }
     }
 
     &.mx_BazaarPage_btn--danger {
         background: var(--bz-red);
+        color: #ffffff;
+        border: 1.5px solid var(--bz-red);
 
         &:hover:not(:disabled) {
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
@@ -250,10 +265,25 @@ Please see LICENSE files in the repository root for full details.
     &.mx_BazaarPage_btn--warning {
         background: var(--bz-orange);
         color: #ffffff;
+        border: 1.5px solid var(--bz-orange);
 
         &:hover:not(:disabled) {
             box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
         }
+    }
+}
+
+/* ثبت فرم / ذخیره — فروش به‌صورت solid */
+.mx_BazaarPage_sectionActions .mx_BazaarPage_btn--sell,
+.mx_BazaarPage_editActions .mx_BazaarPage_btn--sell {
+    background: var(--bz-green);
+    color: #ffffff;
+    border-color: var(--bz-green);
+
+    &:hover:not(:disabled) {
+        background: var(--bz-green-hover);
+        border-color: var(--bz-green-hover);
+        box-shadow: 0 3px 10px rgba(50, 100, 48, 0.2);
     }
 }
 
@@ -488,6 +518,42 @@ Please see LICENSE files in the repository root for full details.
     font-size: 18px;
     font-weight: 700;
     color: var(--bz-text);
+    margin-bottom: 4px;
+}
+
+.mx_BazaarPage_detailGrid {
+    margin: 12px 0 0;
+    display: grid;
+    gap: 10px;
+}
+
+.mx_BazaarPage_detailRow {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--bz-line);
+
+    &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    dt {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--bz-muted);
+    }
+
+    dd {
+        margin: 0;
+        font-size: 15px;
+        color: var(--bz-text);
+        line-height: 1.5;
+        word-break: break-word;
+    }
 }
 
 .mx_BazaarPage_paymentPlaceholder {
@@ -564,9 +630,10 @@ Please see LICENSE files in the repository root for full details.
     }
 
     .mx_BazaarPage_btn.active {
-        background: var(--bz-green);
-        color: #ffffff;
-        border-color: transparent;
+        background: var(--bz-selected-surface);
+        color: var(--bz-green);
+        border: 1.5px solid var(--bz-green);
+        box-shadow: none;
     }
 }
 
@@ -712,5 +779,10 @@ Please see LICENSE files in the repository root for full details.
 
     .mx_BazaarPage_filters {
         grid-template-columns: 1fr;
+    }
+
+    .mx_BazaarPage_detailRow {
+        grid-template-columns: 1fr;
+        gap: 4px;
     }
 }
