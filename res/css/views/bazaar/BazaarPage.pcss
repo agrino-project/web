@@ -11,13 +11,14 @@ Please see LICENSE files in the repository root for full details.
     --bz-line: var(--agrino-surface-border);
     --bz-text: var(--cpd-color-text-primary);
     --bz-muted: var(--cpd-color-text-secondary);
-    --bz-green: var(--cpd-color-bg-action-primary-rest);
-    --bz-green2: #43a047;
-    --bz-blue: #2563eb;
+    --bz-green: var(--agrino-accent);
+    --bz-green-hover: #2a5428;
+    --bz-green-soft: var(--agrino-accent-light);
     --bz-red: var(--cpd-color-text-critical-primary);
     --bz-orange: #f59e0b;
-    --bz-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    --bz-radius: 18px;
+    --bz-shadow: 0 4px 16px rgba(50, 100, 48, 0.08);
+    --bz-shadow-hover: 0 6px 20px rgba(50, 100, 48, 0.15);
+    --bz-radius: 20px;
     --bz-hover-surface: var(--agrino-hover-bg);
     --bz-selected-surface: var(--agrino-selected-bg);
     --bz-subtle-bg: var(--agrino-surface-muted);
@@ -36,7 +37,6 @@ Please see LICENSE files in the repository root for full details.
     color: var(--bz-text);
     overflow-y: auto;
     font-family: inherit;
-    overflow-x: hidden;
 }
 
 .mx_BazaarPage_sidebar {
@@ -56,19 +56,22 @@ Please see LICENSE files in the repository root for full details.
 }
 
 .mx_BazaarPage_sidebarHeader {
-    padding: 16px;
-    background: linear-gradient(135deg, var(--bz-green), var(--bz-green2));
-    color: var(--cpd-color-text-on-solid-primary);
+    padding: 20px 18px;
+    background: var(--bz-green);
+    color: #ffffff;
 
     h1 {
         margin: 0;
-        font-size: 20px;
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
     }
 
     p {
         margin: 8px 0 0;
-        font-size: 13px;
-        opacity: 0.9;
+        font-size: 14px;
+        opacity: 0.92;
+        line-height: 1.5;
     }
 }
 
@@ -85,15 +88,15 @@ Please see LICENSE files in the repository root for full details.
     width: 100%;
     border: none;
     background: var(--bz-panel);
-    padding: 14px 16px;
+    padding: 15px 18px;
     text-align: inherit;
-    font-size: 15px;
+    font-size: 16px;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: var(--bz-text);
-    transition: background 0.2s;
+    transition: background 0.2s ease;
 
     &:hover {
         background: var(--bz-hover-surface);
@@ -101,8 +104,8 @@ Please see LICENSE files in the repository root for full details.
 
     &.active {
         background: var(--bz-selected-surface);
-        color: var(--bz-text);
-        font-weight: 600;
+        color: var(--bz-green);
+        font-weight: 700;
     }
 }
 
@@ -129,7 +132,7 @@ Please see LICENSE files in the repository root for full details.
         text-align: inherit;
         cursor: pointer;
         transition: 0.2s;
-        font-size: 14px;
+        font-size: 15px;
 
         &:hover {
             border-color: var(--bz-green);
@@ -137,10 +140,10 @@ Please see LICENSE files in the repository root for full details.
         }
 
         &.selected {
-            border-color: var(--bz-green2);
+            border-color: var(--bz-green);
             background: var(--bz-selected-surface);
-            color: var(--bz-text);
-            font-weight: 600;
+            color: var(--bz-green);
+            font-weight: 700;
         }
     }
 }
@@ -158,73 +161,99 @@ Please see LICENSE files in the repository root for full details.
     border: 1px solid var(--bz-line);
     border-radius: var(--bz-radius);
     box-shadow: var(--bz-shadow);
-    padding: 16px;
+    padding: 20px 22px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     flex-wrap: wrap;
 }
 
 .mx_BazaarPage_selectedInfo {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 
     h2 {
         margin: 0;
-        font-size: 18px;
+        font-size: 22px;
+        font-weight: 800;
         color: var(--bz-text);
+        letter-spacing: -0.02em;
     }
 
     span {
         color: var(--bz-muted);
-        font-size: 14px;
+        font-size: 15px;
+        line-height: 1.5;
     }
 }
 
 .mx_BazaarPage_actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
 .mx_BazaarPage_btn {
     border: none;
-    padding: 11px 18px;
+    padding: 10px 18px;
     border-radius: 12px;
     cursor: pointer;
     font-size: 14px;
-    font-weight: 700;
-    transition: 0.2s;
-    color: var(--cpd-color-text-on-solid-primary);
+    font-weight: 600;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    color: #ffffff;
+    white-space: nowrap;
+    line-height: 1.4;
 
-    &:hover {
-        transform: translateY(-1px);
-        opacity: 0.95;
+    &:hover:not(:disabled) {
+        box-shadow: 0 3px 10px rgba(50, 100, 48, 0.2);
     }
 
-    &.mx_BazaarPage_btn--buy {
-        background: var(--bz-blue);
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
     }
 
+    &.mx_BazaarPage_btn--buy,
     &.mx_BazaarPage_btn--sell {
         background: var(--bz-green);
+
+        &:hover:not(:disabled) {
+            background: var(--bz-green-hover);
+        }
     }
 
     &.mx_BazaarPage_btn--secondary {
         background: var(--bz-secondary-btn-bg);
         color: var(--bz-secondary-btn-text);
         border: 1px solid var(--bz-line);
+        box-shadow: none;
+
+        &:hover:not(:disabled) {
+            border-color: var(--bz-green);
+            background: var(--bz-hover-surface);
+            color: var(--bz-green);
+            box-shadow: none;
+        }
     }
 
     &.mx_BazaarPage_btn--danger {
         background: var(--bz-red);
+
+        &:hover:not(:disabled) {
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+        }
     }
 
     &.mx_BazaarPage_btn--warning {
         background: var(--bz-orange);
-        color: var(--cpd-color-text-on-solid-primary);
+        color: #ffffff;
+
+        &:hover:not(:disabled) {
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+        }
     }
 }
 
@@ -233,19 +262,31 @@ Please see LICENSE files in the repository root for full details.
     border: 1px solid var(--bz-line);
     border-radius: var(--bz-radius);
     box-shadow: var(--bz-shadow);
-    padding: 18px;
+    padding: 22px 24px;
+    box-sizing: border-box;
 
     h3 {
-        margin: 0 0 12px;
-        font-size: 18px;
+        margin: 0 0 6px;
+        font-size: 20px;
+        font-weight: 800;
         color: var(--bz-text);
+        letter-spacing: -0.02em;
     }
 
     h4 {
-        margin: 0 0 8px;
-        font-size: 16px;
+        margin: 0 0 10px;
+        font-size: 18px;
+        font-weight: 700;
         color: var(--bz-text);
     }
+}
+
+.mx_BazaarPage_sectionUnderline {
+    width: 40px;
+    height: 3px;
+    background-color: var(--bz-green);
+    border-radius: 2px;
+    margin-bottom: 18px;
 }
 
 .mx_BazaarPage_grid {
@@ -260,7 +301,8 @@ Please see LICENSE files in the repository root for full details.
     gap: 6px;
 
     label {
-        font-size: 13px;
+        font-size: 14px;
+        font-weight: 600;
         color: var(--bz-muted);
     }
 
@@ -270,13 +312,18 @@ Please see LICENSE files in the repository root for full details.
         width: 100%;
         border: 1px solid var(--bz-input-border);
         border-radius: 12px;
-        padding: 11px 12px;
-        font-size: 14px;
+        padding: 12px 14px;
+        font-size: 15px;
         background: var(--bz-input-bg);
         outline: none;
         font-family: inherit;
         color: var(--bz-text);
         box-sizing: border-box;
+
+        &:focus {
+            border-color: var(--bz-green);
+            box-shadow: 0 0 0 3px rgba(50, 100, 48, 0.12);
+        }
     }
 
     textarea {
@@ -294,9 +341,9 @@ Please see LICENSE files in the repository root for full details.
 .mx_BazaarPage_field input[type="search"] {
     background: var(--bz-input-bg) !important;
     color: var(--bz-text) !important;
-    padding: 11px 12px !important;
+    padding: 12px 14px !important;
     font: inherit !important;
-    font-size: 14px !important;
+    font-size: 15px !important;
     font-weight: normal !important;
     border: 1px solid var(--bz-input-border) !important;
     border-radius: 12px !important;
@@ -315,7 +362,7 @@ Please see LICENSE files in the repository root for full details.
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
+    font-size: 15px;
     color: var(--bz-text);
     cursor: pointer;
 
@@ -355,36 +402,52 @@ Please see LICENSE files in the repository root for full details.
 .mx_BazaarPage_adCard {
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: 14px;
+    gap: 16px;
     align-items: center;
     border: 1px solid var(--bz-line);
     border-radius: 16px;
-    padding: 12px;
+    padding: 16px 18px;
     background: var(--bz-panel);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+
+    &:hover {
+        border-color: var(--bz-green);
+        box-shadow: var(--bz-shadow-hover);
+    }
 }
 
 .mx_BazaarPage_adMeta {
     h4 {
-        margin: 0 0 6px;
-        font-size: 16px;
+        margin: 0 0 8px;
+        font-size: 18px;
+        font-weight: 700;
         color: var(--bz-text);
     }
 
     p {
         margin: 0;
         color: var(--bz-muted);
-        font-size: 13px;
-        line-height: 1.7;
+        font-size: 15px;
+        line-height: 1.75;
     }
+}
+
+.mx_BazaarPage_adPrice {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--bz-green);
 }
 
 .mx_BazaarPage_adActions {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 
     button {
-        min-width: 100px;
+        min-width: 88px;
     }
 }
 
@@ -395,13 +458,15 @@ Please see LICENSE files in the repository root for full details.
 
 .mx_BazaarPage_step {
     border: 1px solid var(--bz-line);
-    border-radius: 14px;
-    padding: 14px;
+    border-radius: 16px;
+    padding: 20px 22px;
     background: var(--bz-panel);
 
     p {
-        margin: 6px 0;
+        margin: 8px 0;
         color: var(--bz-text);
+        font-size: 16px;
+        line-height: 1.6;
     }
 }
 
@@ -413,18 +478,25 @@ Please see LICENSE files in the repository root for full details.
 }
 
 .mx_BazaarPage_stepTitle {
+    font-weight: 800;
+    font-size: 17px;
+    margin-bottom: 12px;
+    color: var(--bz-green);
+}
+
+.mx_BazaarPage_detailHighlight {
+    font-size: 18px;
     font-weight: 700;
-    margin-bottom: 8px;
     color: var(--bz-text);
 }
 
 .mx_BazaarPage_paymentPlaceholder {
     width: 100%;
     height: 200px;
-    border-radius: 12px;
-    margin: 12px 0;
+    border-radius: 14px;
+    margin: 14px 0;
     background:
-        linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(67, 160, 71, 0.1)),
+        linear-gradient(135deg, rgba(50, 100, 48, 0.06), rgba(50, 100, 48, 0.1)),
         repeating-linear-gradient(
             45deg,
             var(--bz-subtle-bg),
@@ -432,6 +504,7 @@ Please see LICENSE files in the repository root for full details.
             var(--bz-line) 10px,
             var(--bz-line) 20px
         );
+    border: 1px dashed var(--bz-green);
 }
 
 .mx_BazaarPage_myAds,
@@ -444,19 +517,29 @@ Please see LICENSE files in the repository root for full details.
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     border: 1px solid var(--bz-line);
     border-radius: 14px;
-    padding: 12px 14px;
+    padding: 16px 18px;
     background: var(--bz-panel);
     flex-wrap: wrap;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+
+    &:hover {
+        border-color: var(--bz-green);
+    }
 
     strong {
         color: var(--bz-text);
+        font-size: 17px;
+        font-weight: 700;
     }
 
     small {
         color: var(--bz-muted);
+        font-size: 14px;
+        line-height: 1.6;
     }
 }
 
@@ -468,20 +551,33 @@ Please see LICENSE files in the repository root for full details.
 
 .mx_BazaarPage_tabButtons {
     display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
+    gap: 8px;
+    margin-bottom: 18px;
     flex-wrap: wrap;
+    padding: 4px;
+    background: var(--bz-subtle-bg);
+    border-radius: 12px;
+    width: fit-content;
+
+    .mx_BazaarPage_btn {
+        border-radius: 8px;
+    }
 
     .mx_BazaarPage_btn.active {
         background: var(--bz-green);
-        color: var(--cpd-color-text-on-solid-primary);
+        color: #ffffff;
         border-color: transparent;
     }
 }
 
 .mx_BazaarPage_empty {
     color: var(--bz-muted);
-    padding: 14px;
+    padding: 20px;
+    font-size: 15px;
+    text-align: center;
+    background: var(--bz-subtle-bg);
+    border-radius: 12px;
+    border: 1px dashed var(--bz-line);
 }
 
 .mx_BazaarPage_badge {
@@ -498,8 +594,21 @@ Please see LICENSE files in the repository root for full details.
 }
 
 .mx_BazaarPage_badge--active {
-    background: rgba(67, 160, 71, 0.18);
-    color: var(--bz-green2);
+    background: var(--bz-green-soft);
+    color: var(--bz-green);
+}
+
+.mx_BazaarPage_myAdInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mx_BazaarPage_myAdMeta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .mx_BazaarPage_previousAds {
@@ -514,17 +623,20 @@ Please see LICENSE files in the repository root for full details.
 }
 
 .mx_BazaarPage_editPanel {
-    margin-top: 24px;
-    padding: 24px;
+    margin-top: 20px;
+    padding: 22px;
     border-radius: 14px;
     border: 1px solid var(--bz-line);
     background: var(--bz-subtle-bg);
     width: 100%;
+    box-sizing: border-box;
 }
 
 .mx_BazaarPage_editPanel h3 {
-    margin: 0 0 20px;
-    color: var(--bz-text);
+    margin: 0 0 18px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--bz-green);
 }
 
 .mx_BazaarPage_editGrid {
@@ -540,18 +652,19 @@ Please see LICENSE files in the repository root for full details.
 }
 
 .mx_BazaarPage_editField label {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--bz-muted);
 }
 
 .mx_BazaarPage_editField input {
-    height: 42px;
-    padding: 0 12px;
-    border-radius: 8px;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 10px;
     border: 1px solid var(--bz-input-border);
     background: var(--bz-input-bg);
     color: var(--bz-text);
+    font-size: 15px;
 }
 
 .mx_BazaarPage_editActions {

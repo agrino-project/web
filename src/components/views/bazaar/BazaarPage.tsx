@@ -12,6 +12,7 @@ import { editBazaarAd } from "./api/editBazaarAd";
 import { useMyBazaarAds } from "./api/useMyBazaarAds";
 import { useMyBazaarPurchases } from "./api/useMyBazaarPurchases";
 import ErrorDialog from "../dialogs/ErrorDialog";
+import QuestionDialog from "../dialogs/QuestionDialog";
 import Modal from "../../../Modal";
 import "../../../../res/css/views/bazaar/BazaarPage.pcss";
 
@@ -70,13 +71,23 @@ const MyAdsList: React.FC<MyAdsListProps> = ({
                 const parts = [
                     ad.amount && ad.unit ? `${ad.amount} ${ad.unit}` : null,
                     [ad.province, ad.city].filter(Boolean).join(" / ") || null,
-                    ad.buyer_id ? _t("custom_panels|bazaar_status_sold") : _t("custom_panels|bazaar_status_registered"),
                 ].filter(Boolean);
                 return (
                     <div className="mx_BazaarPage_myAd" key={ad.id}>
-                        <div>
+                        <div className="mx_BazaarPage_myAdInfo">
                             <strong>{title}</strong>
-                            <br />
+                            <div className="mx_BazaarPage_myAdMeta">
+                                <span
+                                    className={classNames("mx_BazaarPage_badge", {
+                                        "mx_BazaarPage_badge--sold": !!ad.buyer_id,
+                                        "mx_BazaarPage_badge--active": !ad.buyer_id,
+                                    })}
+                                >
+                                    {ad.buyer_id
+                                        ? _t("custom_panels|bazaar_status_sold")
+                                        : _t("custom_panels|bazaar_status_registered")}
+                                </span>
+                            </div>
                             <small>{parts.join(" | ")}</small>
                         </div>
                         <div className="mx_BazaarPage_adRowActions">
@@ -413,11 +424,29 @@ const BazaarPage: React.FC = () => {
     };
 
     const handleDeleteAd = async (adId: number): Promise<void> => {
+        const ad = myAds.find((a) => a.id === adId);
+        const adTitle = ad?.product_type || `#${adId}`;
+
+        const { finished } = Modal.createDialog(QuestionDialog, {
+            title: _t("custom_panels|bazaar_delete"),
+            description: (
+                <div>
+                    <p>{_t("custom_panels|bazaar_delete_confirm")}</p>
+                    <strong>{adTitle}</strong>
+                </div>
+            ),
+            button: _t("action|delete"),
+            danger: true,
+        });
+
+        const [accepted] = await finished;
+        if (!accepted) return;
+
         const result = await deleteBazaarAd(adId);
         if (!result.ok) {
             Modal.createDialog(ErrorDialog, {
                 title: _t("common|error"),
-                description: result.error.message,
+                description: result.error.message || _t("custom_panels|bazaar_delete_error"),
             });
             return;
         }
@@ -656,6 +685,7 @@ const BazaarPage: React.FC = () => {
                 {activePanel === "sell" && (
                     <section className="mx_BazaarPage_panel">
                         <h3>{_t("custom_panels|bazaar_form_title")}</h3>
+                        <div className="mx_BazaarPage_sectionUnderline" />
                         <form onSubmit={onSellSubmit}>
                             {sellQuestionsLoading && <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>}
                             {sellQuestionsError && !sellQuestionsLoading && (
@@ -680,6 +710,7 @@ const BazaarPage: React.FC = () => {
 
                         <div className="mx_BazaarPage_previousAds">
                             <h3>{_t("custom_panels|bazaar_my_ads")}</h3>
+                            <div className="mx_BazaarPage_sectionUnderline" />
 
                             <MyAdsList
                                 ads={myAds}
@@ -704,6 +735,7 @@ const BazaarPage: React.FC = () => {
                 {activePanel === "buy" && (
                     <section className="mx_BazaarPage_panel">
                         <h3>{_t("custom_panels|bazaar_related_ads")}</h3>
+                        <div className="mx_BazaarPage_sectionUnderline" />
                         <div className="mx_BazaarPage_filters">
                             <div className="mx_BazaarPage_field">
                                 <label>{_t("custom_panels|bazaar_filter_location")}</label>
@@ -775,19 +807,12 @@ const BazaarPage: React.FC = () => {
                                                 {`${ad.amount} ${ad.unit}`}
                                                 {ad.province || ad.city ? (
                                                     <>
-                                                        {" "}
                                                         <br />
                                                         {`${ad.province} / ${ad.city}`}
                                                     </>
                                                 ) : null}
-                                                {priceLabel ? (
-                                                    <>
-                                                        {" "}
-                                                        <br />
-                                                        {priceLabel}
-                                                    </>
-                                                ) : null}
                                             </p>
+                                            {priceLabel ? <span className="mx_BazaarPage_adPrice">{priceLabel}</span> : null}
                                         </div>
                                         <div className="mx_BazaarPage_adActions">
                                             <button
@@ -807,13 +832,14 @@ const BazaarPage: React.FC = () => {
                 {activePanel === "detail" && detail && (
                     <section className="mx_BazaarPage_panel">
                         <h3>{_t("custom_panels|bazaar_detail_title")}</h3>
+                        <div className="mx_BazaarPage_sectionUnderline" />
                         {detail.stage === "info" && (
                             <div className="mx_BazaarPage_buyFlow">
                                 <div className="mx_BazaarPage_step">
                                     <div className="mx_BazaarPage_stepTitle">
                                         {_t("custom_panels|bazaar_detail_title")}
                                     </div>
-                                    <p>{detail.item.product_type}</p>
+                                    <p className="mx_BazaarPage_detailHighlight">{detail.item.product_type}</p>
                                     <p>
                                         {_t("custom_panels|bazaar_seller", {
                                             name: detail.item.contact_name || detail.item.contact_phone,
@@ -824,7 +850,7 @@ const BazaarPage: React.FC = () => {
                                         <p>{[detail.item.province, detail.item.city].filter(Boolean).join(" / ")}</p>
                                     )}
                                     {detail.item.price && Number.isFinite(Number(detail.item.price)) && (
-                                        <p>
+                                        <p className="mx_BazaarPage_adPrice">
                                             {_t("custom_panels|bazaar_price_toman", {
                                                 price: Number(detail.item.price).toLocaleString(),
                                             })}
@@ -905,6 +931,7 @@ const BazaarPage: React.FC = () => {
                 {activePanel === "history" && (
                     <section className="mx_BazaarPage_panel">
                         <h3>{_t("custom_panels|bazaar_history")}</h3>
+                        <div className="mx_BazaarPage_sectionUnderline" />
                         <div className="mx_BazaarPage_tabButtons">
                             <button
                                 className={classNames("mx_BazaarPage_btn mx_BazaarPage_btn--secondary", {
@@ -962,9 +989,8 @@ const BazaarPage: React.FC = () => {
                                     ].filter(Boolean);
                                     return (
                                         <div className="mx_BazaarPage_myAd" key={p.id}>
-                                            <div>
+                                            <div className="mx_BazaarPage_myAdInfo">
                                                 <strong>{title}</strong>
-                                                <br />
                                                 <small>{parts.join(" | ")}</small>
                                             </div>
                                         </div>
