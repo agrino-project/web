@@ -215,3 +215,33 @@ Changes in [1.14.0](https://github.com/agrino-project/web/releases/tag/v1.14.0) 
 * Improve selected submenu item text contrast in Bazaar dark theme for better readability.
 * Update SpacePanel and MobileBottomNav styling for Bazaar button integration.
 * Refine AgriculturePage card gradient overlays and box-shadow styles.
+
+# Changes in [1.21.0](https://github.com/agrino-project/web/releases/tag/v1.21.0) (2026-07-12)
+
+## ✨ Features
+
+* Add a **Consultant FAQ** (`سوالات متداول`) button in agriculture consultant chat rooms.
+* Replace the static FAQ HTML/iframe with an interactive React FAQ chat dialog (multi-step category navigation, free-text input, back/restart).
+* Style the FAQ dialog with Agrino theme variables, responsive full-height layout inside the modal, and no horizontal overflow.
+* Show status badges on **My Ads** (registered / sold).
+* Add a confirmation dialog before deleting an ad.
+* Add a **View** action on the Purchases tab with a full server-backed ad detail view (order code, product, category, amount, location, price, seller, phone, buyer).
+* Restore correct navigation back to history/list after viewing an ad detail.
+
+## 🚀 Improvements
+
+* Simplify Bazaar ad filters to location and price range only.
+* Remove province/city filter fields, price sorting controls, and call/copy-phone action buttons from Bazaar listings.
+* Fix Bazaar input styles so they no longer conflict with global form styles.
+* Align Bazaar page visuals with the Agrino brand color (`#326430`).
+* Increase Bazaar font sizes and tidy card/form layouts.
+* Clarify Bazaar primary action hierarchy: Buy solid, Sell outline, History neutral.
+* Make the chat wallpaper tile seamless by removing baked-in rounded corners from the repeating background image.
+* Soften dark-theme incoming message bubble color so it is milder and more distinct from outgoing green bubbles.
+* Restyle bot question and category option lists as one continuous list instead of separate rounded cards.
+
+## 🐛 Bug Fixes
+
+* Fix FAQ button question-mark icon visibility (was white-on-white except on hover).
+* Fix FAQ dialog layout inside Matrix dialogs (dialog button chrome was collapsing option widths and causing overflow).
+* Fix empty vertical space in the FAQ dialog so the chat panel fills the modal height.
