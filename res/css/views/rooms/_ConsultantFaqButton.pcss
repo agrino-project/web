@@ -43,36 +43,393 @@ Please see LICENSE files in the repository root for full details.
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: currentColor;
-    color: var(--cpd-color-text-on-solid-primary);
+    background: var(--cpd-color-bg-action-primary-rest);
+    color: #ffffff;
     font-size: 11px;
     font-weight: 700;
     line-height: 1;
 }
 
 .mx_ConsultantFaqButton:hover .mx_ConsultantFaqButton_icon {
-    background: var(--cpd-color-text-on-solid-primary);
+    background: #ffffff;
     color: var(--cpd-color-bg-action-primary-rest);
 }
 
-/* Dialog wrapping the iframe */
+/* ========== Dialog shell ==========
+ * class is on both wrapper and FocusLock — target .mx_Dialog carefully.
+ */
 
-.mx_ConsultantFaqDialog {
-    width: min(880px, 95vw);
-    max-width: 95vw;
+.mx_Dialog_wrapper.mx_ConsultantFaqDialog {
+    align-items: center;
+    justify-content: center;
 }
 
-.mx_ConsultantFaqDialog_frameWrapper {
-    height: min(80vh, 720px);
-    border-radius: 12px;
+.mx_Dialog_wrapper.mx_ConsultantFaqDialog .mx_Dialog_border {
+    max-width: 80vw;
+    max-height: calc(100dvh - 48px) !important;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.mx_Dialog_wrapper.mx_ConsultantFaqDialog .mx_Dialog_border > .mx_Dialog {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.mx_Dialog_wrapper.mx_ConsultantFaqDialog .mx_Dialog {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    padding: 12px !important;
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    box-sizing: border-box;
+}
+
+/* FocusLock root inside .mx_Dialog */
+.mx_Dialog > .mx_ConsultantFaqDialog {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
     overflow: hidden;
-    background: var(--cpd-color-bg-canvas-default);
-    border: 1px solid var(--cpd-color-border-interactive-secondary);
+    box-sizing: border-box;
 }
 
-.mx_ConsultantFaqDialog_frame {
+.mx_Dialog > .mx_ConsultantFaqDialog > .mx_Dialog_header {
+    flex-shrink: 0;
+    margin: 0 0 8px;
+    padding-inline-end: 28px;
+    min-width: 0;
+}
+
+.mx_Dialog > .mx_ConsultantFaqDialog > .mx_Dialog_header .mx_Dialog_title {
+    font-size: 15px !important;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* Kill Matrix dialog button chrome inside this FAQ UI */
+.mx_Dialog_wrapper.mx_ConsultantFaqDialog .mx_Dialog button.mx_Dialog_nonDialogButton {
+    margin: 0 !important;
+    float: none !important;
+    display: flex !important;
+    width: auto;
+    background: transparent;
+    border: none;
+    color: inherit;
+    font: inherit;
+    font-weight: inherit;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* ========== Chat panel ========== */
+
+.mx_ConsultantFaqChat {
+    direction: rtl;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid var(--agrino-surface-border);
+    background: var(--agrino-bg);
+    box-sizing: border-box;
+}
+
+.mx_ConsultantFaqChat_header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    min-width: 0;
+    padding: 12px;
+    border-bottom: 1px solid var(--agrino-surface-border);
+    background: var(--agrino-surface);
+    box-sizing: border-box;
+}
+
+.mx_ConsultantFaqChat_logo {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cpd-color-bg-action-primary-rest);
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.mx_ConsultantFaqChat_headerText {
+    min-width: 0;
+    flex: 1;
+}
+
+.mx_ConsultantFaqChat_title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cpd-color-text-primary);
+    overflow-wrap: anywhere;
+}
+
+.mx_ConsultantFaqChat_subtitle {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--cpd-color-text-secondary);
+    overflow-wrap: anywhere;
+}
+
+.mx_ConsultantFaqChat_messages {
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
     width: 100%;
     height: 100%;
-    border: none;
-    display: block;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    box-sizing: border-box;
+}
+
+.mx_ConsultantFaqChat_bubble {
+    max-width: 100%;
+    width: fit-content;
+    min-width: 0;
+    padding: 10px 12px;
+    border-radius: 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    box-sizing: border-box;
+}
+
+.mx_ConsultantFaqChat_bubble_bot {
+    align-self: stretch;
+    width: 100%;
+    background: var(--agrino-bubble-incoming-bg);
+    color: var(--cpd-color-text-primary);
+    border: 1px solid var(--agrino-bubble-incoming-border);
+    border-end-start-radius: 4px;
+}
+
+.mx_ConsultantFaqChat_bubble_user {
+    align-self: flex-start; /* RTL: start = right */
+    background: var(--cpd-color-bg-action-primary-rest);
+    color: #ffffff;
+    border-end-end-radius: 4px;
+}
+
+.mx_ConsultantFaqChat_optionsBubble {
+    align-self: stretch;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.mx_ConsultantFaqChat_options {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    border: 1px solid var(--agrino-surface-border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--agrino-surface);
+    box-sizing: border-box;
+}
+
+.mx_Dialog_wrapper.mx_ConsultantFaqDialog .mx_Dialog button.mx_ConsultantFaqChat_option {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    border-bottom: 1px solid var(--agrino-surface-border) !important;
+    border-radius: 0 !important;
+    padding: 12px !important;
+    background: transparent !important;
+    color: var(--cpd-color-text-primary) !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    text-align: right !important;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+}
+
+.mx_Dialog_wrapper.mx_ConsultantFaqDialog .mx_Dialog button.mx_ConsultantFaqChat_option:last-child {
+    border-bottom: none !important;
+}
+
+.mx_Dialog_wrapper.mx_ConsultantFaqDialog .mx_Dialog button.mx_ConsultantFaqChat_option:hover:not(:disabled) {
+    background: var(--agrino-hover-bg) !important;
+}
+
+.mx_Dialog_wrapper.mx_ConsultantFaqDialog .mx_Dialog button.mx_ConsultantFaqChat_option:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+.mx_ConsultantFaqChat_footer {
+    flex-shrink: 0;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+    border-top: 1px solid var(--agrino-surface-border);
+    background: var(--agrino-surface);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-sizing: border-box;
+}
+
+.mx_ConsultantFaqChat_inputRow {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    min-width: 0;
+    width: 100%;
+}
+
+.mx_ConsultantFaqChat_input {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+    padding: 10px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--agrino-surface-border);
+    background: var(--agrino-surface-muted);
+    color: var(--cpd-color-text-primary);
+    font-size: 13.5px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.mx_ConsultantFaqChat_input:focus {
+    border-color: var(--cpd-color-bg-action-primary-rest);
+}
+
+.mx_Dialog_wrapper.mx_ConsultantFaqDialog .mx_Dialog button.mx_ConsultantFaqChat_send {
+    flex: 0 0 auto !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: auto !important;
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 999px !important;
+    padding: 10px 14px !important;
+    background: var(--cpd-color-bg-action-primary-rest) !important;
+    color: #ffffff !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    white-space: nowrap !important;
+    box-shadow: none !important;
+}
+
+.mx_ConsultantFaqChat_actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+}
+
+.mx_Dialog_wrapper.mx_ConsultantFaqDialog .mx_Dialog button.mx_ConsultantFaqChat_actionBtn {
+    flex: 0 1 auto !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: auto !important;
+    margin: 0 !important;
+    border: 1px solid var(--agrino-surface-border) !important;
+    border-radius: 999px !important;
+    padding: 8px 12px !important;
+    background: var(--agrino-surface-muted) !important;
+    color: var(--cpd-color-text-secondary) !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    cursor: pointer;
+    white-space: nowrap !important;
+    box-shadow: none !important;
+}
+
+.mx_Dialog_wrapper.mx_ConsultantFaqDialog .mx_Dialog button.mx_ConsultantFaqChat_actionBtn:hover {
+    background: var(--agrino-hover-bg) !important;
+    color: var(--cpd-color-text-primary) !important;
+}
+
+.mx_ConsultantFaqChat_srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 480px) {
+    .mx_Dialog_wrapper.mx_ConsultantFaqDialog .mx_Dialog_border {
+        width: calc(100vw - 16px);
+        max-width: calc(100vw - 16px);
+        height: calc(100dvh - 16px);
+        max-height: calc(100dvh - 16px);
+    }
+
+    .mx_Dialog_wrapper.mx_ConsultantFaqDialog .mx_Dialog {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        padding: 10px !important;
+        border-radius: 12px;
+    }
+
+    .mx_ConsultantFaqChat_title {
+        font-size: 14px;
+    }
+
+    .mx_ConsultantFaqChat_bubble,
+    .mx_Dialog_wrapper.mx_ConsultantFaqDialog .mx_Dialog button.mx_ConsultantFaqChat_option {
+        font-size: 13px !important;
+    }
 }
