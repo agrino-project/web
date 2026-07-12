@@ -3434,6 +3434,8 @@
         "bazaar_order_code": "Order code: %(code)s",
         "bazaar_load_error": "Failed to load categories",
         "bazaar_no_categories": "No categories available.",
+        "consultant_faq_title": "FAQ - Smart Agriculture Advisor",
+        "consultant_faq_short": "FAQ",
         "bazaar_submit_error": "Failed to submit ad",
         "bazaar_status_sold": "Sold",
         "bazaar_status_active": "Active",

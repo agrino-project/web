@@ -764,6 +764,8 @@
         "bazaar_order_code": "شماره سفارش: %(code)s",
         "bazaar_load_error": "خطا در بارگذاری دسته‌بندی‌ها",
         "bazaar_no_categories": "دسته‌بندی‌ای موجود نیست.",
+        "consultant_faq_title": "سوالات متداول - مشاور هوشمند کشاورز",
+        "consultant_faq_short": "سوالات متداول",
         "bazaar_submit_error": "خطا در ثبت آگهی",
         "bazaar_status_sold": "فروخته شده",
         "bazaar_status_active": "فعال",

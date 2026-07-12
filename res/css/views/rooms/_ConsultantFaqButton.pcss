@@ -1,0 +1,78 @@
+/*
+Copyright 2025 New Vector Ltd.
+
+SPDX-License-Identifier: AGPL-3.0-only OR GPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE files in the repository root for full details.
+*/
+
+.mx_ConsultantFaqButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    margin-inline-end: 8px;
+    border-radius: 999px;
+    border: 1px solid var(--cpd-color-bg-action-primary-rest);
+    background: transparent;
+    color: var(--cpd-color-bg-action-primary-rest);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+        background 0.15s,
+        color 0.15s,
+        transform 0.1s;
+    align-self: center;
+    flex-shrink: 0;
+
+    &:hover {
+        background: var(--cpd-color-bg-action-primary-rest);
+        color: var(--cpd-color-text-on-solid-primary);
+    }
+
+    &:active {
+        transform: scale(0.96);
+    }
+}
+
+.mx_ConsultantFaqButton_icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: currentColor;
+    color: var(--cpd-color-text-on-solid-primary);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.mx_ConsultantFaqButton:hover .mx_ConsultantFaqButton_icon {
+    background: var(--cpd-color-text-on-solid-primary);
+    color: var(--cpd-color-bg-action-primary-rest);
+}
+
+/* Dialog wrapping the iframe */
+
+.mx_ConsultantFaqDialog {
+    width: min(880px, 95vw);
+    max-width: 95vw;
+}
+
+.mx_ConsultantFaqDialog_frameWrapper {
+    height: min(80vh, 720px);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--cpd-color-bg-canvas-default);
+    border: 1px solid var(--cpd-color-border-interactive-secondary);
+}
+
+.mx_ConsultantFaqDialog_frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}

@@ -47,6 +47,7 @@ import RoomContext from "../../../contexts/RoomContext";
 import { type SettingUpdatedPayload } from "../../../dispatcher/payloads/SettingUpdatedPayload";
 import MessageComposerButtons from "./MessageComposerButtons";
 import { BotCommandsStrip } from "./BotQuickActionsButton";
+import ConsultantFaqButton from "./ConsultantFaqButton";
 import AccessibleButton, { type ButtonEvent } from "../elements/AccessibleButton";
 import { type ViewRoomPayload } from "../../../dispatcher/payloads/ViewRoomPayload";
 import { isLocalRoom } from "../../../utils/localRoom/isLocalRoom";
@@ -678,6 +679,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                             <BotCommandsStrip room={this.props.room} />
                         )}
                         <div className="mx_MessageComposer_row">
+                            <ConsultantFaqButton room={this.props.room} />
                             {composer}
                             <div className="mx_MessageComposer_actions">
                                 {controls}
