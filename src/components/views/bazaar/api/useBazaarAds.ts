@@ -24,6 +24,8 @@ export interface BazaarAd {
     price: string;
     contact_name: string;
     contact_phone: string;
+    /** Optional data-URL or remote URL returned by the ads API. */
+    image?: string | null;
 }
 
 interface State {

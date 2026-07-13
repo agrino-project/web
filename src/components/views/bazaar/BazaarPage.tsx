@@ -9,6 +9,7 @@ import { submitBazaarAd } from "./api/submitBazaarAd";
 import { buyBazaarAd } from "./api/buyBazaarAd";
 import { deleteBazaarAd } from "./api/deleteBazaarAd";
 import { editBazaarAd } from "./api/editBazaarAd";
+import { fileToDataUrl, isSidebarProductQuestion, pickEditableAdFields } from "./api/adPayload";
 import { useMyBazaarAds } from "./api/useMyBazaarAds";
 import { useMyBazaarPurchases } from "./api/useMyBazaarPurchases";
 import ErrorDialog from "../dialogs/ErrorDialog";
@@ -77,6 +78,11 @@ const MyAdsList: React.FC<MyAdsListProps> = ({
                 ].filter(Boolean);
                 return (
                     <div className="mx_BazaarPage_myAd" key={ad.id}>
+                        {ad.image ? (
+                            <img className="mx_BazaarPage_adThumb" src={ad.image} alt="" />
+                        ) : (
+                            <div className="mx_BazaarPage_adThumb mx_BazaarPage_adThumb--empty" aria-hidden="true" />
+                        )}
                         <div className="mx_BazaarPage_myAdInfo">
                             <strong>{title}</strong>
                             <div className="mx_BazaarPage_myAdMeta">
@@ -182,6 +188,46 @@ const MyAdsList: React.FC<MyAdsListProps> = ({
                                             }
                                         />
                                     </div>
+
+                                    <div className="mx_BazaarPage_editField mx_BazaarPage_editField--full">
+                                        <label>{_t("custom_panels|bazaar_field_image")}</label>
+                                        <div className="mx_BazaarPage_imageField">
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={async (e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (!file) {
+                                                        setEditFormData((p) => {
+                                                            const next = { ...p };
+                                                            delete next.image;
+                                                            return next;
+                                                        });
+                                                        return;
+                                                    }
+                                                    try {
+                                                        const dataUrl = await fileToDataUrl(file);
+                                                        setEditFormData((p) => ({ ...p, image: dataUrl }));
+                                                    } catch {
+                                                        Modal.createDialog(ErrorDialog, {
+                                                            title: _t("common|error"),
+                                                            description: _t("custom_panels|bazaar_image_error"),
+                                                        });
+                                                    }
+                                                }}
+                                            />
+                                            {(editFormData.image || editingAd?.image) && (
+                                                <img
+                                                    className="mx_BazaarPage_imagePreview"
+                                                    src={editFormData.image || editingAd?.image || ""}
+                                                    alt=""
+                                                />
+                                            )}
+                                            <small className="mx_BazaarPage_imageHint">
+                                                {_t("custom_panels|bazaar_image_edit_hint")}
+                                            </small>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className="mx_BazaarPage_editActions">
@@ -258,14 +304,21 @@ const BazaarAdDetailGrid: React.FC<BazaarAdDetailGridProps> = ({ item, categoryL
     ];
 
     return (
-        <dl className="mx_BazaarPage_detailGrid">
-            {rows.map((row) => (
-                <div className="mx_BazaarPage_detailRow" key={row.label}>
-                    <dt>{row.label}</dt>
-                    <dd className={row.highlight ? "mx_BazaarPage_adPrice" : undefined}>{row.value}</dd>
+        <div className="mx_BazaarPage_detailWrap">
+            {item.image ? (
+                <div className="mx_BazaarPage_detailImage">
+                    <img src={item.image} alt={item.product_type || ""} />
                 </div>
-            ))}
-        </dl>
+            ) : null}
+            <dl className="mx_BazaarPage_detailGrid">
+                {rows.map((row) => (
+                    <div className="mx_BazaarPage_detailRow" key={row.label}>
+                        <dt>{row.label}</dt>
+                        <dd className={row.highlight ? "mx_BazaarPage_adPrice" : undefined}>{row.value}</dd>
+                    </div>
+                ))}
+            </dl>
+        </div>
     );
 };
 
@@ -310,6 +363,7 @@ const BazaarPage: React.FC = () => {
     const [historyTab, setHistoryTab] = useState<HistoryTab>("ads");
 
     const [formData, setFormData] = useState<Record<string, string | string[]>>({});
+    const [adImageDataUrl, setAdImageDataUrl] = useState<string | null>(null);
     // Bumped after a successful submit / buy so the my-ads/purchases hooks refetch.
     const [myAdsRefreshKey, setMyAdsRefreshKey] = useState(0);
     const { ads: myAds, isLoading: myAdsLoading, error: myAdsError } = useMyBazaarAds(true, myAdsRefreshKey);
@@ -413,18 +467,40 @@ const BazaarPage: React.FC = () => {
 
     const onFinalSubmit = async (): Promise<void> => {
         if (openCategoryId == null || isSubmitting) return;
+
+        if (!selectedSub || selectedOptionId == null) {
+            Modal.createDialog(ErrorDialog, {
+                title: _t("common|error"),
+                description: _t("custom_panels|bazaar_select_first"),
+            });
+            return;
+        }
+
+        // Sidebar subcategory ("نوع محصول") is chosen from the menu, not the sell form.
+        // Re-inject it so validation / payload never ask for a hidden field.
+        const productQuestion = subQuestions.find((q) => q.field_type === "choice");
+        const answers: Record<string, string | string[]> = { ...formData };
+        if (productQuestion) {
+            answers[String(productQuestion.id)] = String(selectedOptionId);
+        }
+
         const allQuestions = [...subQuestions, ...sellQuestions];
         const missingFields = allQuestions
             .filter((q) => {
                 if (!q.is_required) return false;
-                if (!isQuestionVisible(q)) return false;
+                // Satisfied by sidebar selection — not shown on the form.
+                if (isSidebarProductQuestion(q, subQuestions)) return false;
 
-                const value = formData[String(q.id)];
-
-                if (Array.isArray(value)) {
-                    return value.length === 0;
+                if (q.depends_on != null) {
+                    const parentAnswer = answers[String(q.depends_on)];
+                    const parentFilled = Array.isArray(parentAnswer)
+                        ? parentAnswer.length > 0
+                        : parentAnswer != null && parentAnswer !== "";
+                    if (!parentFilled) return false;
                 }
 
+                const value = answers[String(q.id)];
+                if (Array.isArray(value)) return value.length === 0;
                 return value == null || value === "";
             })
             .map((q) => `• ${q.field_name}`);
@@ -438,7 +514,10 @@ const BazaarPage: React.FC = () => {
         }
 
         setIsSubmitting(true);
-        const result = await submitBazaarAd(openCategoryId, allQuestions, formData);
+        const result = await submitBazaarAd(openCategoryId, allQuestions, answers, {
+            imageDataUrl: adImageDataUrl,
+            productType: selectedSub,
+        });
         setIsSubmitting(false);
 
         if (!result.ok) {
@@ -456,7 +535,7 @@ const BazaarPage: React.FC = () => {
 
         setActivePanel("none");
         setFormData({});
-        // Trigger my-ads refetch (submitBazaarAd already cleared the cache).
+        setAdImageDataUrl(null);
         setMyAdsRefreshKey((k) => k + 1);
     };
 
@@ -549,7 +628,9 @@ const BazaarPage: React.FC = () => {
         const ad = myAds.find((a) => a.id === adId);
         if (!ad) return;
         setEditingAd(ad);
-        setEditFormData({ ...ad } as unknown as Record<string, string>);
+        // Do not preload `image` — server may return a URL, and PATCHing it
+        // back triggers "invalid base64" on the API.
+        setEditFormData(pickEditableAdFields({ ...ad }));
     };
 
     const handleEditSubmit = async (): Promise<void> => {
@@ -667,6 +748,39 @@ const BazaarPage: React.FC = () => {
                         onChange={(e) => setAnswer(q.id, e.target.value)}
                     />
                 )}
+                {(q.field_type === "image" || q.field_type === "file" || q.field_type === "photo") && (
+                    <div className="mx_BazaarPage_imageField">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) {
+                                    setAnswer(q.id, "");
+                                    setAdImageDataUrl(null);
+                                    return;
+                                }
+                                try {
+                                    const dataUrl = await fileToDataUrl(file);
+                                    setAnswer(q.id, dataUrl);
+                                    setAdImageDataUrl(dataUrl);
+                                } catch {
+                                    Modal.createDialog(ErrorDialog, {
+                                        title: _t("common|error"),
+                                        description: _t("custom_panels|bazaar_image_error"),
+                                    });
+                                }
+                            }}
+                        />
+                        {(stringValue || adImageDataUrl) && (
+                            <img
+                                className="mx_BazaarPage_imagePreview"
+                                src={stringValue || adImageDataUrl || ""}
+                                alt=""
+                            />
+                        )}
+                    </div>
+                )}
                 {q.format_hint && q.field_type !== "text" && (
                     <small style={{ color: "var(--cpd-color-text-secondary)", fontSize: 12 }}>{q.format_hint}</small>
                 )}
@@ -737,6 +851,7 @@ const BazaarPage: React.FC = () => {
                                                     setFormData(
                                                         seedKey != null ? { [String(seedKey)]: String(opt.id) } : {},
                                                     );
+                                                    setAdImageDataUrl(null);
                                                 }}
                                             >
                                                 {opt.value}
@@ -783,7 +898,50 @@ const BazaarPage: React.FC = () => {
                                 <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_load_error")}</div>
                             )}
                             {!sellQuestionsLoading && !sellQuestionsError && (
-                                <div className="mx_BazaarPage_grid">{sellQuestions.map(renderQuestion)}</div>
+                                <div className="mx_BazaarPage_grid">
+                                    {sellQuestions.map(renderQuestion)}
+                                    {!sellQuestions.some(
+                                        (q) =>
+                                            q.field_type === "image" ||
+                                            q.field_type === "file" ||
+                                            q.field_type === "photo" ||
+                                            q.field_name === "image" ||
+                                            q.field_name === "تصویر" ||
+                                            q.field_name === "عکس",
+                                    ) && (
+                                        <div className="mx_BazaarPage_field">
+                                            <label>{_t("custom_panels|bazaar_field_image")}</label>
+                                            <div className="mx_BazaarPage_imageField">
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (!file) {
+                                                            setAdImageDataUrl(null);
+                                                            return;
+                                                        }
+                                                        try {
+                                                            setAdImageDataUrl(await fileToDataUrl(file));
+                                                        } catch {
+                                                            Modal.createDialog(ErrorDialog, {
+                                                                title: _t("common|error"),
+                                                                description: _t("custom_panels|bazaar_image_error"),
+                                                            });
+                                                        }
+                                                    }}
+                                                />
+                                                {adImageDataUrl ? (
+                                                    <img
+                                                        className="mx_BazaarPage_imagePreview"
+                                                        src={adImageDataUrl}
+                                                        alt=""
+                                                    />
+                                                ) : null}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             )}
                             <div className="mx_BazaarPage_sectionActions">
                                 <button type="submit" className="mx_BazaarPage_btn mx_BazaarPage_btn--sell">
@@ -792,7 +950,16 @@ const BazaarPage: React.FC = () => {
                                 <button
                                     type="button"
                                     className="mx_BazaarPage_btn mx_BazaarPage_btn--secondary"
-                                    onClick={() => setFormData({})}
+                                    onClick={() => {
+                                        // Keep sidebar product selection; only clear sell-form answers.
+                                        const seedKey = subQuestions.find((q) => q.field_type === "choice")?.id;
+                                        setFormData(
+                                            seedKey != null && selectedOptionId != null
+                                                ? { [String(seedKey)]: String(selectedOptionId) }
+                                                : {},
+                                        );
+                                        setAdImageDataUrl(null);
+                                    }}
                                 >
                                     {_t("custom_panels|bazaar_reset_form")}
                                 </button>
@@ -892,6 +1059,14 @@ const BazaarPage: React.FC = () => {
                                 const sellerName = ad.contact_name || ad.contact_phone;
                                 return (
                                     <div className="mx_BazaarPage_adCard" key={ad.id}>
+                                        {ad.image ? (
+                                            <img className="mx_BazaarPage_adThumb" src={ad.image} alt="" />
+                                        ) : (
+                                            <div
+                                                className="mx_BazaarPage_adThumb mx_BazaarPage_adThumb--empty"
+                                                aria-hidden="true"
+                                            />
+                                        )}
                                         <div className="mx_BazaarPage_adMeta">
                                             <h4>{ad.product_type}</h4>
                                             <p>
@@ -905,12 +1080,16 @@ const BazaarPage: React.FC = () => {
                                                     </>
                                                 ) : null}
                                             </p>
-                                            {priceLabel ? <span className="mx_BazaarPage_adPrice">{priceLabel}</span> : null}
+                                            {priceLabel ? (
+                                                <span className="mx_BazaarPage_adPrice">{priceLabel}</span>
+                                            ) : null}
                                         </div>
                                         <div className="mx_BazaarPage_adActions">
                                             <button
                                                 className="mx_BazaarPage_btn mx_BazaarPage_btn--secondary"
-                                                onClick={() => openDetail(ad, { returnPanel: "buy", readOnly: false })}
+                                                onClick={() =>
+                                                    openDetail(ad, { returnPanel: "buy", readOnly: false })
+                                                }
                                             >
                                                 {_t("custom_panels|bazaar_view")}
                                             </button>
@@ -1093,6 +1272,14 @@ const BazaarPage: React.FC = () => {
                                     ].filter(Boolean);
                                     return (
                                         <div className="mx_BazaarPage_myAd" key={p.id}>
+                                            {p.image ? (
+                                                <img className="mx_BazaarPage_adThumb" src={p.image} alt="" />
+                                            ) : (
+                                                <div
+                                                    className="mx_BazaarPage_adThumb mx_BazaarPage_adThumb--empty"
+                                                    aria-hidden="true"
+                                                />
+                                            )}
                                             <div className="mx_BazaarPage_myAdInfo">
                                                 <strong>{title}</strong>
                                                 <small>{parts.join(" | ")}</small>

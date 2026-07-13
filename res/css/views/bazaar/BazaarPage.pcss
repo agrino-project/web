@@ -431,7 +431,7 @@ Please see LICENSE files in the repository root for full details.
 
 .mx_BazaarPage_adCard {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 72px 1fr auto;
     gap: 16px;
     align-items: center;
     border: 1px solid var(--bz-line);
@@ -445,6 +445,20 @@ Please see LICENSE files in the repository root for full details.
         border-color: var(--bz-green);
         box-shadow: var(--bz-shadow-hover);
     }
+}
+
+.mx_BazaarPage_adThumb {
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: var(--bz-subtle-bg);
+    flex-shrink: 0;
+    border: 1px solid var(--bz-line);
+}
+
+.mx_BazaarPage_adThumb--empty {
+    background: linear-gradient(135deg, var(--bz-subtle-bg), var(--bz-panel));
 }
 
 .mx_BazaarPage_adMeta {
@@ -607,6 +621,50 @@ Please see LICENSE files in the repository root for full details.
         font-size: 14px;
         line-height: 1.6;
     }
+
+    .mx_BazaarPage_adThumb {
+        width: 64px;
+        height: 64px;
+    }
+
+    .mx_BazaarPage_myAdInfo {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+.mx_BazaarPage_detailWrap {
+    display: grid;
+    gap: 16px;
+}
+
+.mx_BazaarPage_detailImage {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--bz-line);
+    background: var(--bz-subtle-bg);
+
+    img {
+        display: block;
+        width: 100%;
+        max-height: 280px;
+        object-fit: cover;
+    }
+}
+
+.mx_BazaarPage_imageField {
+    display: grid;
+    gap: 10px;
+}
+
+.mx_BazaarPage_imagePreview {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--bz-line);
 }
 
 .mx_BazaarPage_adRowActions {
@@ -734,6 +792,21 @@ Please see LICENSE files in the repository root for full details.
     font-size: 15px;
 }
 
+.mx_BazaarPage_editField--full {
+    grid-column: 1 / -1;
+}
+
+.mx_BazaarPage_editField input[type="file"] {
+    height: auto;
+    padding: 10px 12px;
+}
+
+.mx_BazaarPage_imageHint {
+    color: var(--bz-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
 .mx_BazaarPage_editActions {
     display: flex;
     justify-content: flex-end;
@@ -764,11 +837,23 @@ Please see LICENSE files in the repository root for full details.
     }
 
     .mx_BazaarPage_adCard {
-        grid-template-columns: 1fr;
+        grid-template-columns: 64px 1fr;
+        grid-template-areas:
+            "thumb meta"
+            "actions actions";
 
-        img {
-            width: 100%;
-            height: auto;
+        .mx_BazaarPage_adThumb {
+            grid-area: thumb;
+            width: 64px;
+            height: 64px;
+        }
+
+        .mx_BazaarPage_adMeta {
+            grid-area: meta;
+        }
+
+        .mx_BazaarPage_adActions {
+            grid-area: actions;
         }
     }
 

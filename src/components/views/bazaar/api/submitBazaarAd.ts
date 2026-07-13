@@ -7,6 +7,7 @@ Please see LICENSE files in the repository root for full details.
 
 import { MatrixClientPeg } from "../../../../MatrixClientPeg";
 
+import { bazaarApiUserId, resolveAdApiFieldKey } from "./adPayload";
 import { bazaarAuthHeader, bazaarBaseUrl } from "./config";
 import { invalidateBazaarCache } from "./cache";
 import { type BazaarQuestion } from "./useBazaarSubcategories";
@@ -14,8 +15,7 @@ import { type BazaarQuestion } from "./useBazaarSubcategories";
 /**
  * Resolve a single question's answer into the value shape the server wants.
  * Choice fields store option IDs in `formData`, but the backend expects the
- * option's display `value`. Numeric fields come through as strings and get
- * coerced to real numbers. Multi-choice becomes an array of option values.
+ * option's display `value`. Amount/price stay strings to match the ads API.
  */
 function resolveAnswer(q: BazaarQuestion, raw: string | string[] | undefined): unknown {
     if (raw === undefined || raw === "" || (Array.isArray(raw) && raw.length === 0)) return undefined;
@@ -31,41 +31,50 @@ function resolveAnswer(q: BazaarQuestion, raw: string | string[] | undefined): u
         return q.options.find((o) => String(o.id) === id)?.value ?? id;
     }
 
-    if (q.field_type === "number" || q.field_type === "integer") {
-        const num = Number(raw);
-        return Number.isFinite(num) ? num : undefined;
-    }
-
     if (q.field_type === "boolean") {
         return raw === "true";
     }
 
-    return raw;
+    // Ads API samples send amount/price as strings.
+    return Array.isArray(raw) ? raw[0] : raw;
 }
 
 /**
  * POST {{base_url}}/categories/{categoryId}/ads — create a new ad.
- * Body is keyed by each question's `field_name`, plus a `user_id` from the
- * current Matrix session. On success the ads cache is invalidated so the
- * next fetch reflects the new ad.
+ * Body uses only English keys from the ads API contract.
  */
 export async function submitBazaarAd(
     categoryId: number,
     questions: BazaarQuestion[],
     answers: Record<string, string | string[]>,
+    options?: { imageDataUrl?: string | null; productType?: string | null },
 ): Promise<{ ok: true } | { ok: false; error: Error }> {
     try {
         const cli = MatrixClientPeg.safeGet();
-        const userId = cli.getSafeUserId();
+        const body: Record<string, unknown> = {
+            user_id: bazaarApiUserId(cli.getSafeUserId()),
+            category: categoryId,
+        };
 
-        const body: Record<string, unknown> = { user_id: userId };
         for (const q of questions) {
+            const apiKey = resolveAdApiFieldKey(q);
+            if (!apiKey) continue;
+            // product_type comes from the sidebar selection below.
+            if (apiKey === "product_type") continue;
             const value = resolveAnswer(q, answers[String(q.id)]);
             if (value === undefined) continue;
-            body[q.field_name] = value;
+            body[apiKey] = Array.isArray(value) ? value.join(", ") : value;
         }
 
-        const res = await fetch(`${bazaarBaseUrl()}/categories/${categoryId}/ads/`, {
+        if (options?.productType) {
+            body.product_type = options.productType;
+        }
+
+        if (options?.imageDataUrl) {
+            body.image = options.imageDataUrl;
+        }
+
+        const res = await fetch(`${bazaarBaseUrl()}/categories/${categoryId}/ads`, {
             method: "POST",
             headers: { ...bazaarAuthHeader(), "Content-Type": "application/json" },
             body: JSON.stringify(body),
@@ -76,8 +85,6 @@ export async function submitBazaarAd(
             return { ok: false, error: new Error(`HTTP ${res.status}: ${text}`) };
         }
 
-        // Reads may have changed for this user — clear cache so buy list &
-        // "my ads" refetch on next open.
         invalidateBazaarCache();
         return { ok: true };
     } catch (e) {
