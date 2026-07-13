@@ -3441,6 +3441,7 @@
         "consultant_faq_back": "Back",
         "consultant_faq_input_label": "Question",
         "consultant_faq_input_placeholder": "Type your question...",
+        "consultant_faq_load_error": "Failed to load FAQ. Please try again.",
         "bazaar_submit_error": "Failed to submit ad",
         "bazaar_status_sold": "Sold",
         "bazaar_status_active": "Active",

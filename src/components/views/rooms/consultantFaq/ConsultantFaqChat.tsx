@@ -5,46 +5,173 @@ SPDX-License-Identifier: AGPL-3.0-only OR GPL-3.0-only OR LicenseRef-Element-Com
 Please see LICENSE files in the repository root for full details.
 */
 
-import React, { useCallback, useEffect, useId, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { _t } from "../../../../languageHandler";
+import { useConsultantFaqs } from "./api/useConsultantFaqs";
+import { type ConsultantFaqCategory } from "./api/types";
 import {
-    CONSULTANT_FAQ_DB,
     FAQ_FALLBACK_ANSWER,
     FAQ_FREE_TEXT_REPLY,
     FAQ_HEADER_SUBTITLE,
     FAQ_HEADER_TITLE,
     FAQ_WELCOME,
-    type FaqOption,
 } from "./consultantFaqData";
+import {
+    findFaqCategory,
+    findFaqOption,
+    findFaqQuestion,
+    findRootFaqQuestion,
+    type FaqHistoryStep,
+    type FaqUiOption,
+} from "./faqNavigation";
 
-type TextItem =
+type ChatItem =
     | { key: string; kind: "text"; role: "bot" | "user"; text: string }
-    | { key: string; kind: "options"; options: FaqOption[]; active: boolean };
-
-function buildWelcome(): TextItem[] {
-    return [
-        { key: "welcome", kind: "text", role: "bot", text: FAQ_WELCOME },
-        {
-            key: "main-options",
-            kind: "options",
-            options: CONSULTANT_FAQ_DB.mainCategories,
-            active: true,
-        },
-    ];
-}
+    | { key: string; kind: "options"; options: FaqUiOption[]; active: boolean };
 
 function deactivateOptions(items: ChatItem[]): ChatItem[] {
     return items.map((item) => (item.kind === "options" ? { ...item, active: false } : item));
 }
 
+function categoryUiOptions(categories: ConsultantFaqCategory[]): FaqUiOption[] {
+    return categories.map((c) => ({ kind: "category", id: c.id, label: c.title }));
+}
+
+function questionUiOptions(category: ConsultantFaqCategory, questionId: number): FaqUiOption[] {
+    const question = findFaqQuestion(category, questionId);
+    if (!question) return [];
+    return question.options.map((o) => ({
+        kind: "answer_option",
+        id: o.id,
+        label: o.title,
+        categoryId: category.id,
+    }));
+}
+
+/**
+ * Append the next bot turn after selecting a category:
+ * nested children → list them; otherwise show the root question + options.
+ */
+function appendAfterCategory(
+    category: ConsultantFaqCategory,
+    prev: ChatItem[],
+    nextKey: (prefix: string) => string,
+): ChatItem[] {
+    const children = category.children ?? [];
+    if (children.length > 0) {
+        return [
+            ...prev,
+            {
+                key: nextKey("opts"),
+                kind: "options",
+                options: categoryUiOptions(children),
+                active: true,
+            },
+        ];
+    }
+
+    const root = findRootFaqQuestion(category);
+    if (!root) {
+        return [...prev, { key: nextKey("ans"), kind: "text", role: "bot", text: FAQ_FALLBACK_ANSWER }];
+    }
+
+    return [
+        ...prev,
+        { key: nextKey("q"), kind: "text", role: "bot", text: root.title },
+        {
+            key: nextKey("opts"),
+            kind: "options",
+            options: questionUiOptions(category, root.id),
+            active: true,
+        },
+    ];
+}
+
+/**
+ * Append the next bot turn after selecting a question option
+ * (`next_question` → follow-up question, else `answer.content`).
+ */
+function appendAfterOption(
+    category: ConsultantFaqCategory,
+    optionId: number,
+    prev: ChatItem[],
+    nextKey: (prefix: string) => string,
+): ChatItem[] {
+    const found = findFaqOption(category, optionId);
+    if (!found) {
+        return [...prev, { key: nextKey("ans"), kind: "text", role: "bot", text: FAQ_FALLBACK_ANSWER }];
+    }
+
+    const { option } = found;
+    if (option.next_question != null) {
+        const nextQ = findFaqQuestion(category, option.next_question);
+        if (!nextQ) {
+            return [...prev, { key: nextKey("ans"), kind: "text", role: "bot", text: FAQ_FALLBACK_ANSWER }];
+        }
+        return [
+            ...prev,
+            { key: nextKey("q"), kind: "text", role: "bot", text: nextQ.title },
+            {
+                key: nextKey("opts"),
+                kind: "options",
+                options: questionUiOptions(category, nextQ.id),
+                active: true,
+            },
+        ];
+    }
+
+    const content = option.answer?.content?.trim() || FAQ_FALLBACK_ANSWER;
+    return [...prev, { key: nextKey("ans"), kind: "text", role: "bot", text: content }];
+}
+
+function rebuildFromHistory(
+    categories: ConsultantFaqCategory[],
+    history: FaqHistoryStep[],
+    nextKey: (prefix: string) => string,
+): ChatItem[] {
+    let items: ChatItem[] = [
+        { key: "welcome", kind: "text", role: "bot", text: FAQ_WELCOME },
+        {
+            key: "main-options",
+            kind: "options",
+            options: categoryUiOptions(categories),
+            active: history.length === 0,
+        },
+    ];
+
+    for (const step of history) {
+        items = deactivateOptions(items);
+        if (step.kind === "category") {
+            const category = findFaqCategory(categories, step.categoryId);
+            if (!category) continue;
+            items = [
+                ...items,
+                { key: nextKey("user"), kind: "text", role: "user", text: category.title },
+            ];
+            items = appendAfterCategory(category, items, nextKey);
+            continue;
+        }
+
+        const category = findFaqCategory(categories, step.categoryId);
+        if (!category) continue;
+        const found = findFaqOption(category, step.optionId);
+        const label = found?.option.title ?? String(step.optionId);
+        items = [...items, { key: nextKey("user"), kind: "text", role: "user", text: label }];
+        items = appendAfterOption(category, step.optionId, items, nextKey);
+    }
+
+    return items;
+}
+
 /**
  * Interactive FAQ chat for the agriculture banking consultant.
- * Port of the former static HTML guide into themed React UI.
+ * Content is loaded from GET `/_synapse/client/bots/faqs`.
  */
 export const ConsultantFaqChat: React.FC = () => {
-    const [items, setItems] = useState<ChatItem[]>(() => buildWelcome());
-    const [history, setHistory] = useState<string[]>([]);
+    const { categories, isLoading, error } = useConsultantFaqs();
+    const [items, setItems] = useState<ChatItem[]>([]);
+    const [history, setHistory] = useState<FaqHistoryStep[]>([]);
     const [draft, setDraft] = useState("");
     const listRef = useRef<HTMLDivElement>(null);
     const inputId = useId();
@@ -54,6 +181,29 @@ export const ConsultantFaqChat: React.FC = () => {
         keySeq.current += 1;
         return `${prefix}-${keySeq.current}`;
     }, []);
+
+    const hasData = categories.length > 0;
+
+    const welcomeItems = useMemo((): ChatItem[] => {
+        if (!hasData) return [];
+        return [
+            { key: "welcome", kind: "text", role: "bot", text: FAQ_WELCOME },
+            {
+                key: "main-options",
+                kind: "options",
+                options: categoryUiOptions(categories),
+                active: true,
+            },
+        ];
+    }, [categories, hasData]);
+
+    useEffect(() => {
+        if (!hasData) return;
+        keySeq.current = 0;
+        setHistory([]);
+        setDraft("");
+        setItems(welcomeItems);
+    }, [hasData, welcomeItems]);
 
     useEffect(() => {
         const el = listRef.current;
@@ -65,47 +215,40 @@ export const ConsultantFaqChat: React.FC = () => {
         keySeq.current = 0;
         setHistory([]);
         setDraft("");
-        setItems(buildWelcome());
-    }, []);
-
-    const appendLayer = useCallback(
-        (categoryId: string, prevItems: ChatItem[]): ChatItem[] => {
-            const layer2 = CONSULTANT_FAQ_DB.layer2[categoryId];
-            if (layer2) {
-                return [
-                    ...prevItems,
-                    { key: nextKey("q"), kind: "text", role: "bot", text: layer2.question },
-                    { key: nextKey("opts"), kind: "options", options: layer2.options, active: true },
-                ];
-            }
-
-            const layer3 = CONSULTANT_FAQ_DB.layer3[categoryId];
-            if (layer3) {
-                return [
-                    ...prevItems,
-                    { key: nextKey("q"), kind: "text", role: "bot", text: layer3.question },
-                    { key: nextKey("opts"), kind: "options", options: layer3.options, active: true },
-                ];
-            }
-
-            const answer = CONSULTANT_FAQ_DB.answers[categoryId] ?? FAQ_FALLBACK_ANSWER;
-            return [...prevItems, { key: nextKey("ans"), kind: "text", role: "bot", text: answer }];
-        },
-        [nextKey],
-    );
+        setItems(welcomeItems);
+    }, [welcomeItems]);
 
     const onSelectOption = useCallback(
-        (option: FaqOption): void => {
+        (option: FaqUiOption): void => {
+            if (option.kind === "category") {
+                const category = findFaqCategory(categories, option.id);
+                if (!category) return;
+                setHistory((prev) => [...prev, { kind: "category", categoryId: option.id }]);
+                setItems((prev) => {
+                    const withUser: ChatItem[] = [
+                        ...deactivateOptions(prev),
+                        { key: nextKey("user"), kind: "text", role: "user", text: option.label },
+                    ];
+                    return appendAfterCategory(category, withUser, nextKey);
+                });
+                return;
+            }
+
+            const category = findFaqCategory(categories, option.categoryId);
+            if (!category) return;
+            setHistory((prev) => [
+                ...prev,
+                { kind: "option", categoryId: option.categoryId, optionId: option.id },
+            ]);
             setItems((prev) => {
                 const withUser: ChatItem[] = [
                     ...deactivateOptions(prev),
                     { key: nextKey("user"), kind: "text", role: "user", text: option.label },
                 ];
-                return appendLayer(option.id, withUser);
+                return appendAfterOption(category, option.id, withUser, nextKey);
             });
-            setHistory((prev) => [...prev, option.id]);
         },
-        [appendLayer, nextKey],
+        [categories, nextKey],
     );
 
     const goBack = useCallback((): void => {
@@ -113,30 +256,11 @@ export const ConsultantFaqChat: React.FC = () => {
             resetChat();
             return;
         }
-
         const nextHistory = history.slice(0, -1);
         keySeq.current = 0;
-        let nextItems = buildWelcome();
-        for (const id of nextHistory) {
-            const label =
-                CONSULTANT_FAQ_DB.mainCategories.find((c) => c.id === id)?.label ??
-                Object.values(CONSULTANT_FAQ_DB.layer2)
-                    .flatMap((l) => l.options)
-                    .find((o) => o.id === id)?.label ??
-                Object.values(CONSULTANT_FAQ_DB.layer3)
-                    .flatMap((l) => l.options)
-                    .find((o) => o.id === id)?.label ??
-                id;
-            nextItems = deactivateOptions(nextItems);
-            nextItems = [
-                ...nextItems,
-                { key: nextKey("user"), kind: "text", role: "user", text: label },
-            ];
-            nextItems = appendLayer(id, nextItems);
-        }
         setHistory(nextHistory);
-        setItems(nextItems);
-    }, [appendLayer, history, nextKey, resetChat]);
+        setItems(rebuildFromHistory(categories, nextHistory, nextKey));
+    }, [categories, history, nextKey, resetChat]);
 
     const sendFreeText = useCallback((): void => {
         const text = draft.trim();
@@ -148,6 +272,22 @@ export const ConsultantFaqChat: React.FC = () => {
             { key: nextKey("bot"), kind: "text", role: "bot", text: FAQ_FREE_TEXT_REPLY },
         ]);
     }, [draft, nextKey]);
+
+    if (isLoading) {
+        return (
+            <div className="mx_ConsultantFaqChat mx_ConsultantFaqChat--status">
+                <p>{_t("common|loading")}</p>
+            </div>
+        );
+    }
+
+    if (error || !hasData) {
+        return (
+            <div className="mx_ConsultantFaqChat mx_ConsultantFaqChat--status">
+                <p>{_t("custom_panels|consultant_faq_load_error")}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="mx_ConsultantFaqChat">
@@ -178,7 +318,7 @@ export const ConsultantFaqChat: React.FC = () => {
                             <div className="mx_ConsultantFaqChat_options">
                                 {item.options.map((opt) => (
                                     <button
-                                        key={opt.id}
+                                        key={`${opt.kind}-${opt.id}`}
                                         type="button"
                                         className="mx_ConsultantFaqChat_option mx_Dialog_nonDialogButton"
                                         disabled={!item.active}
