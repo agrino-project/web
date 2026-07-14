@@ -9,7 +9,7 @@ import { submitBazaarAd } from "./api/submitBazaarAd";
 import { buyBazaarAd } from "./api/buyBazaarAd";
 import { deleteBazaarAd } from "./api/deleteBazaarAd";
 import { editBazaarAd } from "./api/editBazaarAd";
-import { fileToDataUrl, isSidebarProductQuestion, pickEditableAdFields } from "./api/adPayload";
+import { fileToDataUrl, getSellFormSubQuestions, isSidebarProductQuestion, pickEditableAdFields, resolveAdProductType } from "./api/adPayload";
 import { useMyBazaarAds } from "./api/useMyBazaarAds";
 import { useMyBazaarPurchases } from "./api/useMyBazaarPurchases";
 import ErrorDialog from "../dialogs/ErrorDialog";
@@ -381,6 +381,16 @@ const BazaarPage: React.FC = () => {
         error: sellQuestionsError,
     } = useBazaarQuestions(openCategoryId);
 
+    const sellFormSubQuestions = useMemo(
+        () => getSellFormSubQuestions(subQuestions),
+        [subQuestions],
+    );
+
+    const sellFormQuestions = useMemo(
+        () => [...sellFormSubQuestions, ...sellQuestions],
+        [sellFormSubQuestions, sellQuestions],
+    );
+
     // Available ads within the open category (endpoint #4). Client filters
     // by selected subcategory + location + price on top of this list.
     const { ads: apiAds, isLoading: adsLoading, error: adsError } = useBazaarAds(openCategoryId);
@@ -494,23 +504,23 @@ const BazaarPage: React.FC = () => {
     const onFinalSubmit = async (): Promise<void> => {
         if (openCategoryId == null || isSubmitting) return;
 
-        if (!selectedSub || selectedOptionId == null) {
+        // Sidebar subcategory ("نوع محصول") is chosen from the menu, or typed
+        // as "عنوان محصول" for categories without a choice subcategory.
+        const productQuestion = subQuestions.find((q) => q.field_type === "choice");
+        const answers: Record<string, string | string[]> = { ...formData };
+        if (productQuestion && selectedOptionId != null) {
+            answers[String(productQuestion.id)] = String(selectedOptionId);
+        }
+
+        const allQuestions = [...subQuestions, ...sellQuestions];
+        const productType = resolveAdProductType(subQuestions, allQuestions, answers, selectedSub);
+        if (!productType) {
             Modal.createDialog(ErrorDialog, {
                 title: _t("common|error"),
                 description: _t("custom_panels|bazaar_select_first"),
             });
             return;
         }
-
-        // Sidebar subcategory ("نوع محصول") is chosen from the menu, not the sell form.
-        // Re-inject it so validation / payload never ask for a hidden field.
-        const productQuestion = subQuestions.find((q) => q.field_type === "choice");
-        const answers: Record<string, string | string[]> = { ...formData };
-        if (productQuestion) {
-            answers[String(productQuestion.id)] = String(selectedOptionId);
-        }
-
-        const allQuestions = [...subQuestions, ...sellQuestions];
         const missingFields = allQuestions
             .filter((q) => {
                 if (!q.is_required) return false;
@@ -542,7 +552,7 @@ const BazaarPage: React.FC = () => {
         setIsSubmitting(true);
         const result = await submitBazaarAd(openCategoryId, allQuestions, answers, {
             imageDataUrl: adImageDataUrl,
-            productType: selectedSub,
+            productType,
         });
         setIsSubmitting(false);
 
@@ -925,7 +935,7 @@ const BazaarPage: React.FC = () => {
                             )}
                             {!sellQuestionsLoading && !sellQuestionsError && (
                                 <div className="mx_BazaarPage_grid">
-                                    {sellQuestions.map(renderQuestion)}
+                                    {sellFormQuestions.map(renderQuestion)}
                                     {!sellQuestions.some(
                                         (q) =>
                                             q.field_type === "image" ||
