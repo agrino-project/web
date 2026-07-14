@@ -189,6 +189,32 @@ const MyAdsList: React.FC<MyAdsListProps> = ({
                                         />
                                     </div>
 
+                                    <div className="mx_BazaarPage_editField">
+                                        <label>{_t("custom_panels|bazaar_field_contact_name")}</label>
+                                        <input
+                                            value={editFormData.contact_name || ""}
+                                            onChange={(e) =>
+                                                setEditFormData((p) => ({
+                                                    ...p,
+                                                    contact_name: e.target.value,
+                                                }))
+                                            }
+                                        />
+                                    </div>
+
+                                    <div className="mx_BazaarPage_editField">
+                                        <label>{_t("custom_panels|bazaar_field_contact_phone")}</label>
+                                        <input
+                                            value={editFormData.contact_phone || ""}
+                                            onChange={(e) =>
+                                                setEditFormData((p) => ({
+                                                    ...p,
+                                                    contact_phone: e.target.value,
+                                                }))
+                                            }
+                                        />
+                                    </div>
+
                                     <div className="mx_BazaarPage_editField mx_BazaarPage_editField--full">
                                         <label>{_t("custom_panels|bazaar_field_image")}</label>
                                         <div className="mx_BazaarPage_imageField">

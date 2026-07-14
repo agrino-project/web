@@ -68,6 +68,7 @@ const FIELD_NAME_TO_API_KEY: Record<string, Exclude<BazaarAdApiKey, "user_id" | 
     حجم: "amount",
     قیمت: "price",
     نام: "contact_name",
+    "نام و نام خانوادگی": "contact_name",
     "نام تماس": "contact_name",
     "نام فروشنده": "contact_name",
     تلفن: "contact_phone",
@@ -87,6 +88,7 @@ export function resolveAdApiFieldKey(q: BazaarQuestion): Exclude<BazaarAdApiKey,
     if (type === "province") return "province";
     if (type === "city") return "city";
     if (type === "phone") return "contact_phone";
+    if (type === "name" || type === "contact_name") return "contact_name";
     if (type === "image" || type === "file" || type === "photo") return "image";
 
     const rawName = (q.field_name || "").trim();
@@ -106,6 +108,7 @@ export function resolveAdApiFieldKey(q: BazaarQuestion): Exclude<BazaarAdApiKey,
         return "contact_phone";
     }
     if (rawName.includes("نام تماس") || rawName.includes("نام فروشنده")) return "contact_name";
+    if (rawName.includes("نام و نام") || rawName.includes("نام خانوادگی")) return "contact_name";
     if (rawName.includes("تصویر") || rawName.includes("عکس")) return "image";
 
     // Do NOT map every choice field to product_type (e.g. quality grade).

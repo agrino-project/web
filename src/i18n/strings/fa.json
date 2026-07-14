@@ -810,6 +810,8 @@
         "bazaar_field_price": "قیمت",
         "bazaar_field_seller": "فروشنده",
         "bazaar_field_phone": "شماره تماس",
+        "bazaar_field_contact_name": "نام و نام خانوادگی",
+        "bazaar_field_contact_phone": "شماره تماس",
         "bazaar_field_buyer": "خریدار",
         "bazaar_field_image": "تصویر آگهی",
         "bazaar_field_not_set": "ثبت نشده",

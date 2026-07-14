@@ -3477,6 +3477,8 @@
         "bazaar_field_price": "Price",
         "bazaar_field_seller": "Seller",
         "bazaar_field_phone": "Contact phone",
+        "bazaar_field_contact_name": "Full name",
+        "bazaar_field_contact_phone": "Contact phone",
         "bazaar_field_buyer": "Buyer",
         "bazaar_field_image": "Ad image",
         "bazaar_field_not_set": "Not set",
