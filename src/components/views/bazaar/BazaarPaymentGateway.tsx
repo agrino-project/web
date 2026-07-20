@@ -226,6 +226,7 @@ const BazaarPaymentGateway: React.FC<Props> = ({ item, isProcessing, onPay, onCa
 
                 <form
                     className="mx_BazaarPaymentGateway_form"
+                    autoComplete="off"
                     onSubmit={(e) => {
                         e.preventDefault();
                         handlePay();
@@ -293,7 +294,7 @@ const BazaarPaymentGateway: React.FC<Props> = ({ item, isProcessing, onPay, onCa
                             <div className="mx_BazaarPaymentGateway_cvvWrap">
                                 <input
                                     ref={cvv2Ref}
-                                    type="password"
+                                    type="text"
                                     value={cvv2}
                                     onChange={(e) => handleCardInput(e.target.value, setCvv2, 4)}
                                     maxLength={4}

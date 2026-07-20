@@ -196,15 +196,29 @@ Please see LICENSE files in the repository root for full details.
         box-sizing: border-box;
         border: 1px solid #dbe3ea;
         border-radius: 10px;
-        background: #f8fafc;
+        /* Override Element global input reset (_common.pcss) and browser autofill tint */
+        background: #f8fafc !important;
+        background-color: #f8fafc !important;
         padding: 10px 12px;
         font-size: 15px;
-        color: #0f172a;
+        color: #0f172a !important;
         outline: none;
+        -webkit-text-fill-color: #0f172a;
 
         &:focus {
-            border-color: #16a34a;
+            border-color: var(--agrino-accent);
             box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+        }
+
+        &:-webkit-autofill,
+        &:-webkit-autofill:hover,
+        &:-webkit-autofill:focus,
+        &:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px #f8fafc inset !important;
+            box-shadow: 0 0 0 1000px #f8fafc inset !important;
+            -webkit-text-fill-color: #0f172a !important;
+            caret-color: #0f172a;
+            transition: background-color 99999s ease-out;
         }
     }
 }
@@ -286,13 +300,7 @@ Please see LICENSE files in the repository root for full details.
     min-width: 88px;
     height: 40px;
     border-radius: 8px;
-    background: repeating-linear-gradient(
-        -12deg,
-        #eef2ff,
-        #eef2ff 6px,
-        #e0e7ff 6px,
-        #e0e7ff 12px
-    );
+    background: repeating-linear-gradient(-12deg, #eef2ff, #eef2ff 6px, #e0e7ff 6px, #e0e7ff 12px);
     border: 1px solid #c7d2fe;
     display: flex;
     align-items: center;
@@ -354,7 +362,7 @@ Please see LICENSE files in the repository root for full details.
 .mx_BazaarPaymentGateway_payBtn {
     border: none;
     border-radius: 12px;
-    background: #16a34a;
+    background: var(--agrino-accent);
     color: #fff;
     font-size: 16px;
     font-weight: 800;
