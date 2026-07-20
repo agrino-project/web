@@ -15,6 +15,7 @@ import { useMyBazaarPurchases } from "./api/useMyBazaarPurchases";
 import ErrorDialog from "../dialogs/ErrorDialog";
 import QuestionDialog from "../dialogs/QuestionDialog";
 import Modal from "../../../Modal";
+import BazaarPaymentGateway from "./BazaarPaymentGateway";
 import "../../../../res/css/views/bazaar/BazaarPage.pcss";
 
 type DetailStage = "info" | "payment" | "success";
@@ -1187,24 +1188,12 @@ const BazaarPage: React.FC = () => {
                                     <div className="mx_BazaarPage_stepTitle">
                                         {_t("custom_panels|bazaar_payment_gateway")}
                                     </div>
-                                    <div className="mx_BazaarPage_paymentPlaceholder" />
-                                    <div className="mx_BazaarPage_step--actions">
-                                        <button
-                                            className="mx_BazaarPage_btn mx_BazaarPage_btn--buy"
-                                            onClick={confirmPayment}
-                                            disabled={isBuying}
-                                        >
-                                            {isBuying
-                                                ? _t("custom_panels|submitting")
-                                                : _t("custom_panels|bazaar_confirm_payment")}
-                                        </button>
-                                        <button
-                                            className="mx_BazaarPage_btn mx_BazaarPage_btn--danger"
-                                            onClick={backToBuyList}
-                                        >
-                                            {_t("custom_panels|bazaar_cancel")}
-                                        </button>
-                                    </div>
+                                    <BazaarPaymentGateway
+                                        item={detail.item}
+                                        isProcessing={isBuying}
+                                        onPay={confirmPayment}
+                                        onCancel={backToBuyList}
+                                    />
                                 </div>
                             </div>
                         )}

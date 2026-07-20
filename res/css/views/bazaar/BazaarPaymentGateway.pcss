@@ -1,0 +1,415 @@
+/*
+Copyright 2025 New Vector Ltd.
+
+SPDX-License-Identifier: AGPL-3.0-only OR GPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE files in the repository root for full details.
+*/
+
+.mx_BazaarPaymentGateway {
+    direction: rtl;
+    width: 100%;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid #e4e7eb;
+    background: #f3f4f6;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    margin: 14px 0;
+    font-family: inherit;
+}
+
+.mx_BazaarPaymentGateway_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #fff;
+    border-bottom: 3px solid #e53935;
+}
+
+.mx_BazaarPaymentGateway_headerTitle {
+    flex: 1;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.mx_BazaarPaymentGateway_logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 88px;
+}
+
+.mx_BazaarPaymentGateway_logo--ap {
+    justify-content: flex-start;
+}
+
+.mx_BazaarPaymentGateway_logo--shaparak {
+    justify-content: flex-end;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.mx_BazaarPaymentGateway_logoMark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ff5252, #e53935);
+    color: #fff;
+    font-weight: 800;
+    font-size: 18px;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.mx_BazaarPaymentGateway_shaparakIcon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 30% 30%, #4caf50 0 35%, transparent 36%),
+        radial-gradient(circle at 70% 30%, #2196f3 0 35%, transparent 36%),
+        radial-gradient(circle at 50% 70%, #ffc107 0 35%, transparent 36%);
+    border: 1px solid #dbeafe;
+}
+
+.mx_BazaarPaymentGateway_shaparakText {
+    font-size: 10px;
+    color: #64748b;
+    line-height: 1.3;
+    max-width: 92px;
+    text-align: left;
+}
+
+.mx_BazaarPaymentGateway_body {
+    display: grid;
+    grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+    gap: 14px;
+    padding: 14px;
+}
+
+.mx_BazaarPaymentGateway_sidebar,
+.mx_BazaarPaymentGateway_form {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e8edf2;
+    padding: 16px;
+}
+
+.mx_BazaarPaymentGateway_timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 16px;
+}
+
+.mx_BazaarPaymentGateway_timerIcon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #64748b;
+    position: relative;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 50%;
+        width: 2px;
+        height: 6px;
+        background: #64748b;
+        transform: translateX(-50%);
+    }
+}
+
+.mx_BazaarPaymentGateway_amountBlock {
+    margin-bottom: 18px;
+}
+
+.mx_BazaarPaymentGateway_amountRial {
+    font-size: 24px;
+    font-weight: 800;
+    color: #16a34a;
+    line-height: 1.3;
+}
+
+.mx_BazaarPaymentGateway_amountToman {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.6;
+}
+
+.mx_BazaarPaymentGateway_merchantInfo {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+
+    div {
+        display: grid;
+        gap: 4px;
+    }
+
+    dt {
+        margin: 0;
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    dd {
+        margin: 0;
+        font-size: 14px;
+        color: #0f172a;
+        font-weight: 600;
+        word-break: break-word;
+    }
+}
+
+.mx_BazaarPaymentGateway_form {
+    display: grid;
+    gap: 14px;
+}
+
+.mx_BazaarPaymentGateway_field {
+    display: grid;
+    gap: 8px;
+
+    label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    input {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #dbe3ea;
+        border-radius: 10px;
+        background: #f8fafc;
+        padding: 10px 12px;
+        font-size: 15px;
+        color: #0f172a;
+        outline: none;
+
+        &:focus {
+            border-color: #16a34a;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+        }
+    }
+}
+
+.mx_BazaarPaymentGateway_cardRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mx_BazaarPaymentGateway_cardInputs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+
+    input {
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+        padding: 10px 6px;
+    }
+
+    span {
+        color: #94a3b8;
+        font-weight: 700;
+    }
+}
+
+.mx_BazaarPaymentGateway_row {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 12px;
+}
+
+.mx_BazaarPaymentGateway_cvvWrap {
+    position: relative;
+
+    input {
+        padding-left: 36px;
+    }
+}
+
+.mx_BazaarPaymentGateway_keypadIcon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background:
+        linear-gradient(#cbd5e1 0 0) 2px 2px / 4px 4px no-repeat,
+        linear-gradient(#cbd5e1 0 0) 8px 2px / 4px 4px no-repeat,
+        linear-gradient(#cbd5e1 0 0) 14px 2px / 4px 4px no-repeat,
+        linear-gradient(#cbd5e1 0 0) 2px 8px / 4px 4px no-repeat,
+        linear-gradient(#cbd5e1 0 0) 8px 8px / 4px 4px no-repeat,
+        linear-gradient(#cbd5e1 0 0) 14px 8px / 4px 4px no-repeat;
+}
+
+.mx_BazaarPaymentGateway_expiryInputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.mx_BazaarPaymentGateway_captchaRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    input {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+.mx_BazaarPaymentGateway_captchaImage {
+    min-width: 88px;
+    height: 40px;
+    border-radius: 8px;
+    background: repeating-linear-gradient(
+        -12deg,
+        #eef2ff,
+        #eef2ff 6px,
+        #e0e7ff 6px,
+        #e0e7ff 12px
+    );
+    border: 1px solid #c7d2fe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: #4338ca;
+    transform: skewX(-8deg);
+}
+
+.mx_BazaarPaymentGateway_iconBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid #dbe3ea;
+    background: #fff;
+    color: #475569;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    &:hover {
+        background: #f8fafc;
+    }
+}
+
+.mx_BazaarPaymentGateway_otpRow {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.mx_BazaarPaymentGateway_getOtpBtn {
+    border: none;
+    border-radius: 10px;
+    background: #dcfce7;
+    color: #166534;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 10px 14px;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+}
+
+.mx_BazaarPaymentGateway_actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.mx_BazaarPaymentGateway_payBtn {
+    border: none;
+    border-radius: 12px;
+    background: #16a34a;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 12px 16px;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+}
+
+.mx_BazaarPaymentGateway_cancelBtn {
+    border: 1px solid #ef4444;
+    border-radius: 12px;
+    background: #fff;
+    color: #ef4444;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 12px 16px;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+}
+
+.mx_BazaarPaymentGateway_receiptOpt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #64748b;
+    cursor: pointer;
+
+    input {
+        width: auto;
+    }
+}
+
+@media (max-width: 900px) {
+    .mx_BazaarPaymentGateway_body {
+        grid-template-columns: 1fr;
+    }
+
+    .mx_BazaarPaymentGateway_row {
+        grid-template-columns: 1fr;
+    }
+
+    .mx_BazaarPaymentGateway_otpRow {
+        grid-template-columns: 1fr;
+    }
+
+    .mx_BazaarPaymentGateway_actions {
+        grid-template-columns: 1fr;
+    }
+}
