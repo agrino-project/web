@@ -3517,7 +3517,9 @@
         "for_iranian_agricultural_communities": "For Iranian Agricultural Communities",
         "articles": "Latest short articles",
         "faq": "custom_panels|faq",
-        "contact": "custom_panels|contact"
+        "contact": "custom_panels|contact",
+        "insurance_load_error": "Failed to load agricultural insurance services",
+        "no_insurance_services": "No insurance services found"
     },
     "user_menu": {
         "switch_theme_light": "Switch to light mode",

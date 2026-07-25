@@ -43,6 +43,7 @@ import { RightPanelPhases } from "../../../stores/right-panel/RightPanelStorePha
 import defaultDispatcher from "../../../dispatcher/dispatcher";
 import { Action } from "../../../dispatcher/actions";
 import { type ViewRoomPayload } from "../../../dispatcher/payloads/ViewRoomPayload";
+import { InsuranceView } from "./insurance/InsuranceView";
 
 interface AgricultureCardProps {
     title: string;
@@ -148,6 +149,7 @@ const AgriculturePage: React.FC = () => {
     const { navigate } = useMobileNav();
     const bannerScrollRef = useRef<HTMLDivElement>(null);
     const [activeSlide, setActiveSlide] = useState(0);
+    const [showInsurance, setShowInsurance] = useState(false);
 
     const scrollToSlide = (index: number) => {
         if (bannerScrollRef.current) {
@@ -230,6 +232,10 @@ const AgriculturePage: React.FC = () => {
         navigate("bazaar");
     }, [navigate, exitAgricultureView]);
 
+    const handleInsuranceClick = useCallback((): void => {
+        setShowInsurance(true);
+    }, []);
+
     const bannerSlides = [
         {
             title: "بهترین قیمت نهاده‌ها در آگرینو",
@@ -261,6 +267,10 @@ const AgriculturePage: React.FC = () => {
             category: "مقاله",
         }
     ];
+
+    if (showInsurance) {
+        return <InsuranceView onBack={() => setShowInsurance(false)} />;
+    }
 
     return (
         <div className="mx_AgriculturePage">
@@ -315,7 +325,7 @@ const AgriculturePage: React.FC = () => {
                     <AgricultureCard
                         title={_t("custom_panels|agriculture_insurance")}
                         icon={InsuranceIcon}
-                        onClick={() => handleMarketClick("#insurance:agridemo.ir")}
+                        onClick={handleInsuranceClick}
                         variant="small"
                     />
                     <AgricultureCard

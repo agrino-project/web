@@ -1,0 +1,177 @@
+/*
+Copyright 2025 New Vector Ltd.
+
+SPDX-License-Identifier: AGPL-3.0-only OR GPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE files in the repository root for full details.
+*/
+
+.mx_InsuranceView {
+    background-color: var(--agrino-bg, #f5f6f5);
+    min-height: 100%;
+}
+
+.mx_InsuranceView_header {
+    position: relative;
+    width: 100%;
+    height: 76px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #e6e6e6;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+.mx_InsuranceView_title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #374151;
+}
+
+.mx_InsuranceView_back {
+    position: absolute;
+    inset-inline-start: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 50%;
+    color: #6b7280;
+    transition: background 0.2s;
+
+    &:hover {
+        background: #f3f4f6;
+    }
+}
+
+.mx_InsuranceView_list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px 16px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.mx_InsuranceView_card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    padding: 18px 16px;
+    border: none;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    text-align: start;
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+    font: inherit;
+    color: inherit;
+
+    &:hover {
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    }
+
+    &:active {
+        transform: scale(0.99);
+    }
+}
+
+.mx_InsuranceView_card_text {
+    flex: 1;
+    min-width: 0;
+}
+
+.mx_InsuranceView_card_title {
+    margin: 0 0 6px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1.4;
+}
+
+.mx_InsuranceView_card_desc {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 400;
+    color: #6b7280;
+    line-height: 1.65;
+}
+
+.mx_InsuranceView_card_icon {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mx_InsuranceView_iconImg {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.mx_InsuranceView_iconFallback {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #326430 0%, #4a9e47 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.mx_InsuranceView_status {
+    padding: 32px 24px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.mx_InsuranceView_status_error {
+    color: #d60000;
+}
+
+.mx_InsuranceView_formScroll {
+    margin: 0 auto;
+    width: 100%;
+    overflow-y: auto;
+    flex: 1;
+    box-sizing: border-box;
+    min-height: 0;
+}
+
+.mx_InsuranceView_banner {
+    margin: 16px 24px 0;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.mx_InsuranceView_banner_success {
+    color: #15803d;
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.mx_InsuranceView_banner_error {
+    color: #d60000;
+    background: rgba(214, 0, 0, 0.08);
+    border: 1px solid rgba(214, 0, 0, 0.35);
+}

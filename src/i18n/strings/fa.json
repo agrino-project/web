@@ -985,6 +985,8 @@
         "unknown_field_type": "نوع فیلد ناشناخته: %(type)s",
         "great_shops_load_error": "خطا در دریافت لیست کسب‌وکارها",
         "no_shops": "کسب‌وکاری یافت نشد",
+        "insurance_load_error": "خطا در دریافت خدمات بیمه کشاورزی",
+        "no_insurance_services": "خدمت بیمه‌ای یافت نشد",
         "validation_required": "این فیلد الزامی است",
         "validation_invalid_number": "عدد نامعتبر",
         "validation_min_length": "حداقل %(count)s کاراکتر",
