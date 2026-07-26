@@ -245,3 +245,28 @@ Changes in [1.14.0](https://github.com/agrino-project/web/releases/tag/v1.14.0) 
 * Fix FAQ button question-mark icon visibility (was white-on-white except on hover).
 * Fix FAQ dialog layout inside Matrix dialogs (dialog button chrome was collapsing option widths and causing overflow).
 * Fix empty vertical space in the FAQ dialog so the chat panel fills the modal height.
+
+# Changes in [1.22.0](https://github.com/agrino-project/web/releases/tag/v1.22.0) (2026-07-26)
+
+## ✨ Features
+
+* Add ad image upload, preview, and display across Bazaar listings, detail views, and the edit form.
+* Align Bazaar create/update ad payloads with the ads API English keys (`province`, `city`, `product_type`, `unit`, `amount`, `price`, `contact_name`, `contact_phone`, `image`).
+* Load Consultant FAQ content dynamically from `GET /_synapse/client/bots/faqs` instead of static local data.
+* Add contact name and phone fields to the Bazaar ad edit form.
+* Add a Bazaar payment gateway for ad purchases (card input, OTP verification, and captcha).
+* Add the **Agricultural Insurance** page with dynamic form, subcategories, and API submission.
+* Add `BotPinnedCategories` with horizontally scrollable pinned category pills above the chat timeline.
+* Add an admin login section on the OTP phone login page with links for bots and form-builder admin access.
+
+## 🚀 Improvements
+
+* Make the Consultant FAQ dialog responsive on mobile.
+* Improve Bazaar sell-form question handling, including `product_type` resolution from sidebar selection or free-text fields such as «عنوان محصول».
+* Theme the Insurance page with Agrino CSS variables and add Jalali (Shamsi) date support in DynamicForm.
+* Style the Bazaar payment gateway to match Agrino theme colors (including the pay button).
+
+## 🐛 Bug Fixes
+
+* Fix missing `contact_name` in create-ad requests when the form label is «نام و نام خانوادگی».
+* Remove the unintended blue background on the CVV2 field in the Bazaar payment gateway.
