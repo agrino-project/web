@@ -1,0 +1,104 @@
+/*
+Copyright 2025 New Vector Ltd.
+
+SPDX-License-Identifier: AGPL-3.0-only OR GPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE files in the repository root for full details.
+*/
+
+.mx_BotPinnedCategories {
+    position: relative;
+    background: var(--cpd-color-bg-canvas-default);
+    border-bottom: 1px solid var(--agrino-surface-border, var(--cpd-color-gray-300));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.mx_BotPinnedCategories_row {
+    display: flex;
+    gap: 10px;
+    padding: 8px 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Only reserve space for arrows when they are actually shown */
+    &.mx_BotPinnedCategories_row--padStart {
+        padding-inline-start: 36px;
+    }
+
+    &.mx_BotPinnedCategories_row--padEnd {
+        padding-inline-end: 36px;
+    }
+}
+
+.mx_BotPinnedCategories_pill {
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background: var(--agrino-surface-muted, var(--agrino-bg));
+    color: var(--cpd-color-text-primary);
+    font-weight: 600;
+    font: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        background: var(--agrino-hover-bg);
+    }
+}
+
+.mx_BotPinnedCategories_pill_active {
+    border-color: var(--agrino-accent, #326430);
+    background: var(--agrino-accent, #326430);
+    color: var(--cpd-color-text-on-solid-primary, #fff);
+
+    &:hover {
+        transform: none;
+        box-shadow: none;
+        background: var(--agrino-accent, #326430);
+    }
+}
+
+.mx_BotPinnedCategories_arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 50%;
+    background: var(--agrino-accent, #326430);
+    color: var(--cpd-color-text-on-solid-primary, #fff);
+    z-index: 2;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    &:hover {
+        opacity: 0.9;
+    }
+}
+
+.mx_BotPinnedCategories_arrowStart {
+    inset-inline-start: 6px;
+}
+
+.mx_BotPinnedCategories_arrowEnd {
+    inset-inline-end: 6px;
+}

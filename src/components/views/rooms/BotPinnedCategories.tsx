@@ -5,12 +5,13 @@ SPDX-License-Identifier: AGPL-3.0-only OR GPL-3.0-only OR LicenseRef-Element-Com
 Please see LICENSE files in the repository root for full details.
 */
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { EventType, MsgType, type Room, RoomEvent } from "matrix-js-sdk/src/matrix";
 import { logger } from "matrix-js-sdk/src/logger";
 
 import { MatrixClientPeg } from "../../../MatrixClientPeg";
 import { useEventEmitterState } from "../../../hooks/useEventEmitter";
+import "../../../../res/css/views/rooms/BotPinnedCategories.pcss";
 
 interface PinnedCategory {
     id: number;
@@ -43,10 +44,54 @@ function findLatestPinned(room: Room): PinnedCategory[] | null {
  * Horizontally-scrollable strip of "pinned category" pills shown above the timeline
  * when the latest bot message contains `pinned_categories`. Clicking a pill sends
  * the category's `name` as a plain text message — the bot then drives the next turn.
+ *
+ * Mouse users get left/right arrow buttons when the row overflows (scrollbar is hidden).
  */
 export function BotPinnedCategories({ room }: Props): React.JSX.Element | null {
     const categories = useEventEmitterState(room, RoomEvent.Timeline, () => findLatestPinned(room));
     const [activeId, setActiveId] = useState<number | null>(null);
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [canScrollStart, setCanScrollStart] = useState(false);
+    const [canScrollEnd, setCanScrollEnd] = useState(false);
+
+    const checkScroll = useCallback((): void => {
+        const el = scrollRef.current;
+        if (!el) return;
+
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        if (maxScroll <= 5) {
+            setCanScrollStart(false);
+            setCanScrollEnd(false);
+            return;
+        }
+
+        const current = Math.abs(el.scrollLeft);
+        setCanScrollStart(current > 5);
+        setCanScrollEnd(current < maxScroll - 5);
+    }, []);
+
+    const scroll = useCallback((direction: "start" | "end"): void => {
+        const el = scrollRef.current;
+        if (!el) return;
+
+        const isRTL = getComputedStyle(el).direction === "rtl";
+        const amount = 200;
+        const left = direction === "start" ? (isRTL ? amount : -amount) : isRTL ? -amount : amount;
+        el.scrollBy({ left, behavior: "smooth" });
+    }, []);
+
+    useEffect(() => {
+        checkScroll();
+        const el = scrollRef.current;
+        if (!el) return;
+
+        el.addEventListener("scroll", checkScroll);
+        window.addEventListener("resize", checkScroll);
+        return () => {
+            el.removeEventListener("scroll", checkScroll);
+            window.removeEventListener("resize", checkScroll);
+        };
+    }, [checkScroll, categories]);
 
     if (!categories) return null;
 
@@ -71,59 +116,73 @@ export function BotPinnedCategories({ room }: Props): React.JSX.Element | null {
     };
 
     return (
-        <div
-            style={{
-                display: "flex",
-                gap: 10,
-                padding: "8px 12px",
-                overflowX: "auto",
-                overflowY: "hidden",
-                background: "var(--cpd-color-bg-canvas-default)",
-                borderBottom: "1px solid var(--cpd-color-gray-300)",
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
-            }}
-            // Hide scrollbar on Webkit too — the row scrolls via touch / drag / wheel.
-            // eslint-disable-next-line react/no-unknown-property
-            data-bot-pinned-categories="true"
-        >
-            {categories.map((cat) => {
-                const active = activeId === cat.id;
-                return (
-                    <button
-                        key={cat.id}
-                        onClick={() => onPick(cat)}
-                        title={cat.name}
-                        style={{
-                            flex: "0 0 auto",
-                            padding: "8px 12px",
-                            borderRadius: "999px",
-                            border: active ? "1px solid #326430" : "1px solid transparent",
-                            background: active ? "#326430" : "var(--agrino-bg)",
-                            color: active ? "#fff" : "var(--cpd-color-text-primary)",
-                            fontWeight: 600,
-                            cursor: "pointer",
-                            whiteSpace: "nowrap",
-                            transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            if (!active) {
-                                e.currentTarget.style.transform = "translateY(-1px)";
-                                e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.12)";
+        <div className="mx_BotPinnedCategories">
+            {canScrollStart && (
+                <button
+                    type="button"
+                    className="mx_BotPinnedCategories_arrow mx_BotPinnedCategories_arrowStart"
+                    onClick={() => scroll("start")}
+                    aria-label="اسکرول به ابتدا"
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path
+                            d="M9 6L15 12L9 18"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                </button>
+            )}
+            {canScrollEnd && (
+                <button
+                    type="button"
+                    className="mx_BotPinnedCategories_arrow mx_BotPinnedCategories_arrowEnd"
+                    onClick={() => scroll("end")}
+                    aria-label="اسکرول به انتها"
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path
+                            d="M15 6L9 12L15 18"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                </button>
+            )}
+            <div
+                ref={scrollRef}
+                className={[
+                    "mx_BotPinnedCategories_row",
+                    canScrollStart ? "mx_BotPinnedCategories_row--padStart" : "",
+                    canScrollEnd ? "mx_BotPinnedCategories_row--padEnd" : "",
+                ]
+                    .filter(Boolean)
+                    .join(" ")}
+                data-bot-pinned-categories="true"
+            >
+                {categories.map((cat) => {
+                    const active = activeId === cat.id;
+                    return (
+                        <button
+                            key={cat.id}
+                            type="button"
+                            className={
+                                active
+                                    ? "mx_BotPinnedCategories_pill mx_BotPinnedCategories_pill_active"
+                                    : "mx_BotPinnedCategories_pill"
                             }
-                        }}
-                        onMouseLeave={(e) => {
-                            if (!active) {
-                                e.currentTarget.style.transform = "translateY(0)";
-                                e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.08)";
-                            }
-                        }}
-                    >
-                        {cat.name}
-                    </button>
-                );
-            })}
+                            onClick={() => onPick(cat)}
+                            title={cat.name}
+                        >
+                            {cat.name}
+                        </button>
+                    );
+                })}
+            </div>
         </div>
     );
 }

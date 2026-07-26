@@ -120,7 +120,7 @@ export function InsuranceView({ onBack }: InsuranceViewProps): JSX.Element {
                     )}
                     <DynamicForm
                         form={form}
-                        jalaliDates
+                        // jalaliDates
                         onSubmit={async (values: FormValues) => {
                             setSubmitMessage(null);
                             try {
