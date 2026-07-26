@@ -194,6 +194,26 @@ export default class OTPPhoneLogin extends React.Component<IProps, IState> {
                         {submitButtonOrSpinner}
                     </div>
                 </form>
+
+                <div className="mx_AuthBody_adminLogin">
+                    <div className="mx_AuthBody_adminLogin_title">{_t("auth|admin_login")}</div>
+                    <a
+                        className="mx_AuthBody_adminLogin_link"
+                        href="https://bots.agridemo.ir/admin"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {_t("auth|admin_login_bots")}
+                    </a>
+                    <a
+                        className="mx_AuthBody_adminLogin_link"
+                        href="https://forms.agridemo.ir/admin"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {_t("auth|admin_login_forms")}
+                    </a>
+                </div>
                 {/* {this.renderAlternativeLoginOptions()} */}
             </div>
         );

@@ -348,6 +348,54 @@ Please see LICENSE files in the repository root for full details.
     font-size: 15px;
 }
 
+.mx_AuthBody_adminLogin {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--cpd-color-form-border, #e5e7eb);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.mx_AuthBody_adminLogin_title {
+    font-size: 15px;
+    font-weight: 700;
+    color: $authpage-primary-color;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.mx_AuthBody_adminLogin_link {
+    display: block;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--agrino-accent, #326430) !important;
+    text-decoration: none !important;
+    padding: 7px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--agrino-accent, #326430);
+    background: transparent;
+    transition:
+        background 0.15s ease,
+        color 0.15s ease;
+
+    &:link,
+    &:visited {
+        color: var(--agrino-accent, #326430) !important;
+        background: transparent;
+        text-decoration: none !important;
+    }
+
+    &:hover,
+    &:focus-visible {
+        text-decoration: none !important;
+        background: var(--agrino-accent, #326430);
+        color: #fff !important;
+    }
+}
+
 .otp_sent_to {
     margin: 0 0 8px 0;
     color: #334155;
