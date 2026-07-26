@@ -6,7 +6,8 @@ Please see LICENSE files in the repository root for full details.
 */
 
 .mx_InsuranceView {
-    background-color: var(--agrino-bg, #f5f6f5);
+    background-color: var(--agrino-bg);
+    color: var(--cpd-color-text-primary);
     min-height: 100%;
 }
 
@@ -17,8 +18,8 @@ Please see LICENSE files in the repository root for full details.
     display: flex;
     justify-content: center;
     align-items: center;
-    border-bottom: 1px solid #e6e6e6;
-    background: #fff;
+    border-bottom: 1px solid var(--agrino-surface-border);
+    background: var(--agrino-surface);
     flex-shrink: 0;
 }
 
@@ -26,7 +27,7 @@ Please see LICENSE files in the repository root for full details.
     margin: 0;
     font-size: 18px;
     font-weight: 700;
-    color: #374151;
+    color: var(--cpd-color-text-primary);
 }
 
 .mx_InsuranceView_back {
@@ -42,11 +43,11 @@ Please see LICENSE files in the repository root for full details.
     cursor: pointer;
     padding: 0;
     border-radius: 50%;
-    color: #6b7280;
+    color: var(--cpd-color-text-secondary);
     transition: background 0.2s;
 
     &:hover {
-        background: #f3f4f6;
+        background: var(--agrino-hover-bg);
     }
 }
 
@@ -69,18 +70,24 @@ Please see LICENSE files in the repository root for full details.
     gap: 16px;
     width: 100%;
     padding: 18px 16px;
-    border: none;
+    border: 1px solid var(--agrino-surface-border);
     border-radius: 16px;
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    background: var(--agrino-surface);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     cursor: pointer;
     text-align: start;
-    transition: box-shadow 0.2s ease, transform 0.15s ease;
+    transition:
+        box-shadow 0.2s ease,
+        transform 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
     font: inherit;
     color: inherit;
 
     &:hover {
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+        background: var(--agrino-hover-bg);
+        border-color: var(--agrino-accent, #326430);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
     }
 
     &:active {
@@ -97,7 +104,7 @@ Please see LICENSE files in the repository root for full details.
     margin: 0 0 6px;
     font-size: 16px;
     font-weight: 700;
-    color: #1f2937;
+    color: var(--cpd-color-text-primary);
     line-height: 1.4;
 }
 
@@ -105,7 +112,7 @@ Please see LICENSE files in the repository root for full details.
     margin: 0;
     font-size: 13px;
     font-weight: 400;
-    color: #6b7280;
+    color: var(--cpd-color-text-secondary);
     line-height: 1.65;
 }
 
@@ -128,11 +135,11 @@ Please see LICENSE files in the repository root for full details.
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #326430 0%, #4a9e47 100%);
+    background: var(--agrino-accent, #326430);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: var(--cpd-color-text-on-solid-primary, #fff);
     font-size: 22px;
     font-weight: 700;
 }
@@ -140,11 +147,11 @@ Please see LICENSE files in the repository root for full details.
 .mx_InsuranceView_status {
     padding: 32px 24px;
     text-align: center;
-    color: #6b7280;
+    color: var(--cpd-color-text-secondary);
 }
 
 .mx_InsuranceView_status_error {
-    color: #d60000;
+    color: var(--cpd-color-text-critical-primary, #d60000);
 }
 
 .mx_InsuranceView_formScroll {
@@ -165,13 +172,21 @@ Please see LICENSE files in the repository root for full details.
 }
 
 .mx_InsuranceView_banner_success {
-    color: #15803d;
-    background: rgba(34, 197, 94, 0.08);
-    border: 1px solid rgba(34, 197, 94, 0.35);
+    color: var(--cpd-color-text-success-primary, #15803d);
+    background: var(--cpd-color-bg-success-subtle, rgba(34, 197, 94, 0.12));
+    border: 1px solid var(--cpd-color-border-success-subtle, rgba(34, 197, 94, 0.35));
 }
 
 .mx_InsuranceView_banner_error {
-    color: #d60000;
-    background: rgba(214, 0, 0, 0.08);
-    border: 1px solid rgba(214, 0, 0, 0.35);
+    color: var(--cpd-color-text-critical-primary, #d60000);
+    background: var(--cpd-color-bg-critical-subtle, rgba(214, 0, 0, 0.12));
+    border: 1px solid var(--cpd-color-border-critical-subtle, rgba(214, 0, 0, 0.35));
+}
+
+.mx_DynamicForm_jalaliDate {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    color: var(--cpd-color-text-primary) !important;
+    background-color: var(--cpd-color-form-bg) !important;
+    border: 1px solid var(--cpd-color-form-border) !important;
 }

@@ -6,6 +6,9 @@ Please see LICENSE files in the repository root for full details.
 */
 
 import React, { type JSX, useMemo, useState } from "react";
+import DatePicker from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
 
 import { _t, type TranslationKey } from "../../../../../languageHandler";
 import {
@@ -30,6 +33,15 @@ import {
     type FormStructure,
     type FormValues,
 } from "./formTypes";
+
+/** Jalali date string sent to the backend (e.g. 1403/04/01). */
+const JALALI_DATE_FORMAT = "YYYY/MM/DD";
+
+function toEnglishDigits(value: string): string {
+    return value
+        .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)))
+        .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)));
+}
 
 // ----- Condition evaluation -----
 
@@ -117,6 +129,7 @@ interface FieldProps {
     value: FieldValue;
     error?: string;
     onChange: (v: FieldValue) => void;
+    jalaliDates?: boolean;
 }
 
 function TextFieldView({ field, value, error, onChange }: FieldProps): JSX.Element {
@@ -181,7 +194,31 @@ function MultiChoiceView({ field, value, onChange }: FieldProps): JSX.Element {
     );
 }
 
-function DateFieldView({ field, value, error, onChange }: FieldProps): JSX.Element {
+function DateFieldView({ field, value, error, onChange, jalaliDates }: FieldProps): JSX.Element {
+    if (jalaliDates) {
+        const str = typeof value === "string" ? value : "";
+        return (
+            <DatePicker
+                calendar={persian}
+                locale={persian_fa}
+                format={JALALI_DATE_FORMAT}
+                calendarPosition="bottom-right"
+                containerStyle={{ width: "100%" }}
+                style={error ? inputErrorStyle : inputStyle}
+                inputClass="mx_DynamicForm_jalaliDate"
+                placeholder={field.placeholder || "مثال: ۱۴۰۳/۰۱/۱۵"}
+                value={str || undefined}
+                onChange={(date) => {
+                    if (!date || Array.isArray(date)) {
+                        onChange(null);
+                        return;
+                    }
+                    onChange(toEnglishDigits(date.format(JALALI_DATE_FORMAT)));
+                }}
+            />
+        );
+    }
+
     return (
         <input
             type="date"
@@ -276,9 +313,11 @@ function FieldView(props: FieldProps): JSX.Element {
 interface Props {
     form: FormStructure;
     onSubmit: (values: FormValues) => void | Promise<void>;
+    /** When true, date fields use a Jalali picker and submit Shamsi strings (YYYY/MM/DD). */
+    jalaliDates?: boolean;
 }
 
-export function DynamicForm({ form, onSubmit }: Props): JSX.Element {
+export function DynamicForm({ form, onSubmit, jalaliDates = false }: Props): JSX.Element {
     const [stepIdx, setStepIdx] = useState(0);
     const [values, setValues] = useState<FormValues>({});
     const [errors, setErrors] = useState<FormErrors>({});
@@ -355,6 +394,7 @@ export function DynamicForm({ form, onSubmit }: Props): JSX.Element {
                                 field={f}
                                 value={values[f.id] ?? null}
                                 error={err}
+                                jalaliDates={jalaliDates}
                                 onChange={(v) => setValue(f.id, v)}
                             />
                             {err && <div style={errorTextStyle}>{err}</div>}

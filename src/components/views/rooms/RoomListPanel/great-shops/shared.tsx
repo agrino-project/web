@@ -9,10 +9,10 @@ export const greatShopWrapperStyle: React.CSSProperties = { display: "flex", fle
 
 // ---------- Brand tokens ----------
 
-export const green = "#326430";
+export const green = "var(--agrino-accent, #326430)";
 export const neutralBg = "var(--cpd-color-form-bg)";
-export const neutralText = "#9ca3af";
-export const errorColor = "#d60000";
+export const neutralText = "var(--cpd-color-text-secondary)";
+export const errorColor = "var(--cpd-color-text-critical-primary, #d60000)";
 
 // ---------- Form-control styles ----------
 
@@ -22,6 +22,7 @@ export const inputStyle: React.CSSProperties = {
     borderRadius: 12,
     border: "1px solid var(--cpd-color-form-border)",
     backgroundColor: "var(--cpd-color-form-bg)",
+    color: "var(--cpd-color-text-primary)",
     fontSize: 14,
     outline: "none",
     boxSizing: "border-box",
@@ -41,14 +42,14 @@ export const labelStyle: React.CSSProperties = {
     display: "block",
     fontSize: 14,
     fontWeight: 500,
-    color: "#6b7280",
+    color: "var(--cpd-color-text-secondary)",
     marginBottom: 8,
     textAlign: "start",
 };
 
 export const descriptionStyle: React.CSSProperties = {
     fontSize: 12,
-    color: "#9ca3af",
+    color: "var(--cpd-color-text-secondary)",
     marginTop: 4,
     marginBottom: 8,
     textAlign: "start",
@@ -73,9 +74,9 @@ export const bodyStyle: React.CSSProperties = {
 
 export const sectionStyle: React.CSSProperties = {
     padding: 16,
-    backgroundColor: "var(--cpd-color-form-bg)",
+    backgroundColor: "var(--agrino-surface)",
     borderRadius: 12,
-    border: "1px solid var(--cpd-color-form-border)",
+    border: "1px solid var(--agrino-surface-border)",
     display: "flex",
     flexDirection: "column",
     gap: 16,
@@ -85,7 +86,7 @@ export const buttonStyle: React.CSSProperties = {
     flex: 1,
     height: 44,
     backgroundColor: green,
-    color: "white",
+    color: "var(--cpd-color-text-on-solid-primary, #ffffff)",
     border: "none",
     borderRadius: 12,
     fontSize: 14,
@@ -95,9 +96,9 @@ export const buttonStyle: React.CSSProperties = {
 
 export const secondaryButtonStyle: React.CSSProperties = {
     ...buttonStyle,
-    backgroundColor: "#fff",
-    color: green,
-    border: `1px solid ${green}`,
+    backgroundColor: "var(--agrino-surface-muted)",
+    color: "var(--cpd-color-text-primary)",
+    border: "1px solid var(--agrino-surface-border)",
 };
 
 // ---------- StepIndicator (from the old static forms) ----------
@@ -137,7 +138,7 @@ export function StepIndicator({ current, steps }: { current: number; steps: stri
                                 fontSize: 12,
                                 fontWeight: "bold",
                                 backgroundColor: i <= current ? green : neutralBg,
-                                color: i <= current ? "white" : neutralText,
+                                color: i <= current ? "var(--cpd-color-text-on-solid-primary, #ffffff)" : neutralText,
                                 flexShrink: 0,
                                 zIndex: 2,
                             }}
