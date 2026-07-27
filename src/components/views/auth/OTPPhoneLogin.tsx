@@ -213,6 +213,14 @@ export default class OTPPhoneLogin extends React.Component<IProps, IState> {
                     >
                         {_t("auth|admin_login_forms")}
                     </a>
+                    <a
+                        className="mx_AuthBody_adminLogin_link"
+                        href="https://forms.agridemo.ir/admin"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {_t("auth|admin_login_users")}
+                    </a>
                 </div>
                 {/* {this.renderAlternativeLoginOptions()} */}
             </div>

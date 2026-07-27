@@ -721,6 +721,7 @@
         "admin_login": "Admin login",
         "admin_login_bots": "Bots admin login",
         "admin_login_forms": "Form builder admin login",
+        "admin_login_users": "Users admin login",
         "phone_number_label": "Phone Number",
         "phone_number_placeholder": "Enter your phone number",
         "otp_verification_failed": "Invalid OTP code. Please try again.",
