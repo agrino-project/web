@@ -215,7 +215,7 @@ export default class OTPPhoneLogin extends React.Component<IProps, IState> {
                     </a>
                     <a
                         className="mx_AuthBody_adminLogin_link"
-                        href="https://forms.agridemo.ir/admin"
+                        href="https://agridemo.ir/_admin_panel"
                         target="_blank"
                         rel="noopener noreferrer"
                     >

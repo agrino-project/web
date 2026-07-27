@@ -6,11 +6,15 @@ import { RightPanelPhases } from "../../../../stores/right-panel/RightPanelStore
 import { UPDATE_EVENT } from "../../../../stores/AsyncStore";
 import { useGreatShopSubcategories } from "./great-shops/useGreatShopSubcategories";
 import { useGreatShopForm } from "./great-shops/useGreatShopForm";
-import { greatShopWrapperStyle } from "./great-shops/shared";
+import { useGreatShopHistory } from "./great-shops/useGreatShopHistory";
+import { GreatShopHistoryList } from "./great-shops/GreatShopHistoryList";
+import { errorColor, greatShopWrapperStyle, green, neutralText } from "./great-shops/shared";
 import { DynamicForm } from "./great-shops/DynamicForm";
 import { type FormValues } from "./great-shops/formTypes";
 import { submitGreatShopForm } from "./great-shops/submitGreatShopForm";
 import { _t, type TranslationKey } from "../../../../languageHandler";
+
+type ShopTab = "new" | "history";
 
 /** Header that delegates back navigation to the supplied handler. */
 function Header({ title, onBack }: { title: string; onBack: () => void }): JSX.Element {
@@ -19,13 +23,14 @@ function Header({ title, onBack }: { title: string; onBack: () => void }): JSX.E
             style={{
                 position: "relative",
                 fontWeight: "bold",
-                color: "#6b7280",
+                color: neutralText,
                 width: "100%",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                borderBottom: "1px solid #e6e6e6",
+                borderBottom: "1px solid var(--agrino-surface-border)",
                 height: 76,
+                flexShrink: 0,
             }}
         >
             <button
@@ -44,10 +49,12 @@ function Header({ title, onBack }: { title: string; onBack: () => void }): JSX.E
                     cursor: "pointer",
                     padding: 0,
                     borderRadius: "50%",
-                    color: "#6b7280",
+                    color: neutralText,
                     transition: "background 0.2s",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#f3f4f6")}
+                onMouseEnter={(e) =>
+                    (e.currentTarget.style.background = "var(--agrino-surface-muted, rgba(128,128,128,0.15))")
+                }
                 onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             >
                 <svg
@@ -68,6 +75,62 @@ function Header({ title, onBack }: { title: string; onBack: () => void }): JSX.E
     );
 }
 
+function ShopTabs({
+    active,
+    onChange,
+}: {
+    active: ShopTab;
+    onChange: (tab: ShopTab) => void;
+}): JSX.Element {
+    const tabStyle = (isActive: boolean): React.CSSProperties => ({
+        flex: 1,
+        height: 40,
+        border: "none",
+        borderRadius: 10,
+        fontSize: 13,
+        fontWeight: isActive ? 700 : 500,
+        cursor: "pointer",
+        background: isActive ? "var(--agrino-surface)" : "transparent",
+        color: isActive ? "var(--cpd-color-text-primary)" : neutralText,
+        boxShadow: isActive ? "0 1px 3px rgba(0,0,0,0.18)" : "none",
+        transition: "background 0.15s, box-shadow 0.15s, color 0.15s",
+    });
+
+    return (
+        <div
+            style={{
+                display: "flex",
+                gap: 4,
+                margin: "12px 16px 4px",
+                padding: 4,
+                borderRadius: 12,
+                background: "var(--agrino-surface-muted, var(--cpd-color-form-bg))",
+                flexShrink: 0,
+            }}
+            role="tablist"
+        >
+            <button
+                type="button"
+                role="tab"
+                aria-selected={active === "new"}
+                onClick={() => onChange("new")}
+                style={tabStyle(active === "new")}
+            >
+                {_t("custom_panels|history_tab_new_request" as TranslationKey)}
+            </button>
+            <button
+                type="button"
+                role="tab"
+                aria-selected={active === "history"}
+                onClick={() => onChange("history")}
+                style={tabStyle(active === "history")}
+            >
+                {_t("custom_panels|history_tab_history" as TranslationKey)}
+            </button>
+        </div>
+    );
+}
+
 export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
     const title = useEventEmitterState(RightPanelStore.instance, UPDATE_EVENT, () => {
         const card = RightPanelStore.instance.currentCard;
@@ -79,11 +142,21 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
     const [selectedSub, setSelectedSub] = useState<{ id: string; name: string } | null>(null);
     const { form, isLoading: isFormLoading, error: formError } = useGreatShopForm(selectedSub?.id ?? null);
     const [submitMessage, setSubmitMessage] = useState<{ kind: "success" | "error"; text: string } | null>(null);
+    const [activeTab, setActiveTab] = useState<ShopTab>("new");
 
-    // Reset the inner selection and submission feedback when the parent category changes.
+    const historyEnabled = page !== null && !selectedSub && activeTab === "history";
+    const {
+        items: historyItems,
+        isLoading: historyLoading,
+        error: historyError,
+        refresh: refreshHistory,
+    } = useGreatShopHistory(historyEnabled, page);
+
+    // Reset the inner selection, tab, and submission feedback when the parent category changes.
     useEffect(() => {
         setSelectedSub(null);
         setSubmitMessage(null);
+        setActiveTab("new");
     }, [page]);
 
     // Also reset the submission banner whenever a new sub-form is opened.
@@ -99,7 +172,7 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    color: "#6b7280",
+                    color: neutralText,
                     padding: 24,
                     textAlign: "center",
                 }}
@@ -114,19 +187,19 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
         let formBody: JSX.Element;
         if (isFormLoading) {
             formBody = (
-                <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>
+                <div style={{ padding: 24, textAlign: "center", color: neutralText }}>
                     {_t("custom_panels|form_loading" as TranslationKey)}
                 </div>
             );
         } else if (formError) {
             formBody = (
-                <div style={{ padding: 24, textAlign: "center", color: "#d60000" }}>
+                <div style={{ padding: 24, textAlign: "center", color: errorColor }}>
                     {_t("custom_panels|form_load_error" as TranslationKey)}
                 </div>
             );
         } else if (!form || !form.steps || form.steps.length === 0) {
             formBody = (
-                <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>
+                <div style={{ padding: 24, textAlign: "center", color: neutralText }}>
                     {_t("custom_panels|form_not_configured" as TranslationKey)}
                 </div>
             );
@@ -174,6 +247,7 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                                     kind: "success",
                                     text: _t("custom_panels|form_submitted" as TranslationKey),
                                 });
+                                refreshHistory();
                                 // After a short delay, return to the subcategory list so the user
                                 // sees the success banner before navigation.
                                 window.setTimeout(() => setSelectedSub(null), 1500);
@@ -199,23 +273,27 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
         );
     }
 
-    // ---- Subcategory list view ----
+    // ---- Subcategory list / History tabs ----
     let body: JSX.Element;
-    if (isLoading) {
+    if (activeTab === "history") {
         body = (
-            <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>
+            <GreatShopHistoryList items={historyItems} isLoading={historyLoading} error={historyError} />
+        );
+    } else if (isLoading) {
+        body = (
+            <div style={{ padding: 24, textAlign: "center", color: neutralText }}>
                 {_t("custom_panels|loading" as TranslationKey)}
             </div>
         );
     } else if (error) {
         body = (
-            <div style={{ padding: 24, textAlign: "center", color: "#d60000" }}>
+            <div style={{ padding: 24, textAlign: "center", color: errorColor }}>
                 {_t("custom_panels|subcategories_error" as TranslationKey)}
             </div>
         );
     } else if (subcategories.length === 0) {
         body = (
-            <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>
+            <div style={{ padding: 24, textAlign: "center", color: neutralText }}>
                 {_t("custom_panels|no_subcategory" as TranslationKey)}
             </div>
         );
@@ -229,6 +307,7 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                     gap: 24,
                     height: "100%",
                     overflowY: "auto",
+                    minHeight: 0,
                 }}
             >
                 {[...subcategories]
@@ -243,11 +322,12 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                                     display: "flex",
                                     alignItems: "flex-start",
                                     gap: 16,
-                                    border: "1px solid #e6e6e6",
+                                    border: "1px solid var(--agrino-surface-border)",
                                     boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                                     borderRadius: 12,
                                     padding: 16,
                                     cursor: "pointer",
+                                    background: "var(--agrino-surface)",
                                 }}
                                 onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.15)")}
                                 onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)")}
@@ -261,7 +341,7 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                                         alignItems: "center",
                                         justifyContent: "center",
                                         flexShrink: 0,
-                                        backgroundColor: "#326430",
+                                        backgroundColor: green,
                                     }}
                                 >
                                     {icon ? (
@@ -276,15 +356,24 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
                                             }}
                                         />
                                     ) : (
-                                        <span style={{ color: "#fff", fontSize: 18, fontWeight: 700 }}>
+                                        <span style={{ color: "var(--cpd-color-text-on-solid-primary, #fff)", fontSize: 18, fontWeight: 700 }}>
                                             {sub.name.charAt(0)}
                                         </span>
                                     )}
                                 </div>
                                 <div style={{ flex: 1 }}>
-                                    <h3 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 4px 0" }}>{sub.name}</h3>
+                                    <h3
+                                        style={{
+                                            fontSize: 16,
+                                            fontWeight: 600,
+                                            margin: "0 0 4px 0",
+                                            color: "var(--cpd-color-text-primary)",
+                                        }}
+                                    >
+                                        {sub.name}
+                                    </h3>
                                     {sub.description && (
-                                        <p style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.6, margin: 0 }}>
+                                        <p style={{ fontSize: 14, color: neutralText, lineHeight: 1.6, margin: 0 }}>
                                             {sub.description}
                                         </p>
                                     )}
@@ -306,7 +395,8 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
     return (
         <div style={greatShopWrapperStyle}>
             <Header title={title ?? ""} onBack={backToShopList} />
-            {body}
+            <ShopTabs active={activeTab} onChange={setActiveTab} />
+            <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>{body}</div>
         </div>
     );
 }

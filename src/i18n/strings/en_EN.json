@@ -3523,7 +3523,16 @@
         "faq": "custom_panels|faq",
         "contact": "custom_panels|contact",
         "insurance_load_error": "Failed to load agricultural insurance services",
-        "no_insurance_services": "No insurance services found"
+        "no_insurance_services": "No insurance services found",
+        "history_tab_new_request": "New request",
+        "history_tab_history": "History",
+        "history_this_week": "This week",
+        "history_this_month": "This month",
+        "history_last_month": "Last month",
+        "history_older": "Older",
+        "history_empty": "No requests yet.",
+        "history_load_error": "Failed to load request history",
+        "history_scroll_hint": "Scroll to see older requests"
     },
     "user_menu": {
         "switch_theme_light": "Switch to light mode",
