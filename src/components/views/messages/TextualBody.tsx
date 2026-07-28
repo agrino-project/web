@@ -33,6 +33,8 @@ import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import SearchResultPaymentDialog from "../dialogs/SearchResultPaymentDialog";
+import { CitySelect, ProvinceSelect } from "../elements/ProvinceCitySelect";
+import { isCityFieldTitle } from "../../../utils/iranLocations";
 
 interface IState {
     // the URLs (if any) to be previewed with a LinkPreviewWidget inside this TextualBody.
@@ -41,6 +43,8 @@ interface IState {
     // track whether the preview widget is hidden
     widgetHidden: boolean;
     selectedDate?: string;
+    botProvince?: string;
+    botCity?: string;
 }
 
 export default class TextualBody extends React.Component<IBodyProps, IState> {
@@ -82,6 +86,89 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
 
     private sendNullAnswer = (): void => {
         this.sendBotAnswer("<<<USER_SKIPED_MESSAGE::EMPTY_INPUT::7XQ9-K2LM-P0R4>>>");
+    };
+
+    private isBotCityQuestion = (field: any, content: any): boolean => {
+        if (!field) return false;
+        if (field.ui_type === "city_input" || field.key === "city" || field.field_type === "city") return true;
+        const label = String(field.name || field.label || field.title || "");
+        if (field.ui_type === "text_input" && isCityFieldTitle(label)) return true;
+        return false;
+    };
+
+    private resolveBotProvinceFromMeta = (field: any, content: any): string => {
+        const data = content?.custom_meta_data?.data;
+        const raw = field?.province || data?.province || data?.selected_province || data?.answers?.province || "";
+        return typeof raw === "string" ? raw : "";
+    };
+
+    private renderBotCityPicker = (field: any, content: any): JSX.Element => {
+        const provinceFromMeta = this.resolveBotProvinceFromMeta(field, content);
+        const province = provinceFromMeta || this.state.botProvince || "";
+        const city = this.state.botCity || "";
+        const needsProvincePicker = !provinceFromMeta;
+
+        // Province names come from the bot field options (or a dedicated province_options list).
+        const rawOptions: unknown[] = Array.isArray(field?.province_options)
+            ? field.province_options
+            : needsProvincePicker && Array.isArray(field?.options)
+              ? field.options
+              : [];
+        const provinceOptions = rawOptions
+            .map((item, index) => {
+                if (typeof item === "string") return { id: index, value: item, label: item };
+                if (item && typeof item === "object") {
+                    const rec = item as Record<string, unknown>;
+                    const value = String(rec.value ?? rec.name ?? rec.label ?? "");
+                    if (!value) return null;
+                    return {
+                        id: (rec.id as number | string) ?? index,
+                        value,
+                        label: String(rec.label ?? rec.name ?? value),
+                    };
+                }
+                return null;
+            })
+            .filter((o): o is { id: number | string; value: string; label: string } => o !== null);
+
+        return (
+            <div className="mx_BotQuestion_inputWrapper" style={{ flexDirection: "column", alignItems: "stretch" }}>
+                {needsProvincePicker && (
+                    <ProvinceSelect
+                        value={province}
+                        options={provinceOptions}
+                        onChange={(value) => this.setState({ botProvince: value, botCity: "" })}
+                    />
+                )}
+                <CitySelect
+                    value={city}
+                    province={province}
+                    source="bots"
+                    onChange={(value) => this.setState({ botCity: value })}
+                />
+                <button
+                    className="mx_BotQuestion_submit"
+                    onClick={() => {
+                        if (!city.trim()) return;
+                        // If the bot already knows the province, send only the city;
+                        // otherwise send "province, city" so the bot has both.
+                        const answer = needsProvincePicker && province ? `${province}، ${city}` : city;
+                        this.sendBotAnswer(answer);
+                        this.setState({
+                            botCity: "",
+                            botProvince: needsProvincePicker ? "" : this.state.botProvince,
+                        });
+                    }}
+                >
+                    ارسال
+                </button>
+                {field?.required === false && (
+                    <button className="mx_BotQuestion_submit mx_BotQuestion_skip" onClick={this.sendNullAnswer}>
+                        بعدی
+                    </button>
+                )}
+            </div>
+        );
     };
 
     private toggleOption = (option: string): void => {
@@ -315,7 +402,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 )}
 
                 {/* TEXT INPUT */}
-                {field?.ui_type === "text_input" && (!field?.options || field.options.length === 0) && (
+                {field?.ui_type === "text_input" &&
+                    (!field?.options || field.options.length === 0) &&
+                    !this.isBotCityQuestion(field, content) && (
                     <div className="mx_BotQuestion_inputWrapper">
                         <input
                             ref={(el) => {
@@ -345,6 +434,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         )}
                     </div>
                 )}
+
+                {/* CITY DROPDOWN (bots/cities) */}
+                {this.isBotCityQuestion(field, content) && this.renderBotCityPicker(field, content)}
 
                 {/* DATE INPUT */}
                 {field?.ui_type === "date_input" && (

@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR GPL-3.0-only OR LicenseRef-Element-Com
 Please see LICENSE files in the repository root for full details.
 */
 
-import React, { type JSX, useMemo, useState } from "react";
+import React, { type JSX, useEffect, useMemo, useState } from "react";
 import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
@@ -33,6 +33,7 @@ import {
     type FormStructure,
     type FormValues,
 } from "./formTypes";
+import { fetchCities, isCityFieldTitle, isProvinceFieldTitle } from "../../../../../utils/iranLocations";
 
 /** Jalali date string sent to the backend (e.g. 1403/04/01). */
 const JALALI_DATE_FORMAT = "YYYY/MM/DD";
@@ -41,6 +42,44 @@ function toEnglishDigits(value: string): string {
     return value
         .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)))
         .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)));
+}
+
+function isProvinceField(field: Field): boolean {
+    return isProvinceFieldTitle(field.title) || (field.type as string) === "province";
+}
+
+function isCityField(field: Field): boolean {
+    return isCityFieldTitle(field.title) || (field.type as string) === "city";
+}
+
+function findProvinceField(fields: Field[]): Field | undefined {
+    return fields.find((f) => isProvinceField(f));
+}
+
+/**
+ * Cities API expects the Persian province *name*.
+ * Province fields store option value/id (numeric); resolve back to `label`.
+ */
+function resolveProvinceName(provinceField: Field | undefined, provinceValue: FieldValue): string | null {
+    if (!provinceField || provinceValue == null || provinceValue === "") return null;
+    const raw = String(provinceValue).trim();
+    if (!raw) return null;
+
+    const match = provinceField.options.find(
+        (o) => o.value === raw || String(o.id) === raw || o.label === raw,
+    );
+    if (match) {
+        // Prefer label (نام استان) for GET .../locations/cities?province=
+        const name = (match.label || match.value || "").trim();
+        return name || raw;
+    }
+
+    // Already a name, or options not loaded yet.
+    return raw;
+}
+
+function allFormFields(form: FormStructure): Field[] {
+    return form.steps.flatMap((s) => s.fields);
 }
 
 // ----- Condition evaluation -----
@@ -130,6 +169,8 @@ interface FieldProps {
     error?: string;
     onChange: (v: FieldValue) => void;
     jalaliDates?: boolean;
+    /** Persian province name for cascading city dropdowns. */
+    provinceName?: string | null;
 }
 
 function TextFieldView({ field, value, error, onChange }: FieldProps): JSX.Element {
@@ -171,6 +212,77 @@ function SingleChoiceView({ field, value, error, onChange }: FieldProps): JSX.El
             {field.options.map((opt) => (
                 <option key={opt.id} value={opt.value}>
                     {opt.label}
+                </option>
+            ))}
+        </select>
+    );
+}
+
+/**
+ * City / شهرستان dropdown: empty until a province is chosen, then loads
+ * counties from `GET /_synapse/client/forms/locations/cities?province=…`.
+ */
+function CityFieldView({
+    value,
+    error,
+    onChange,
+    provinceName,
+}: FieldProps & { provinceName: string | null }): JSX.Element {
+    const [cities, setCities] = useState<string[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [loadError, setLoadError] = useState(false);
+
+    useEffect(() => {
+        if (!provinceName) {
+            setCities([]);
+            setLoading(false);
+            setLoadError(false);
+            return;
+        }
+
+        let cancelled = false;
+        setLoading(true);
+        setLoadError(false);
+        fetchCities(provinceName, "forms")
+            .then((list) => {
+                if (cancelled) return;
+                setCities(list);
+                setLoading(false);
+            })
+            .catch(() => {
+                if (cancelled) return;
+                setCities([]);
+                setLoading(false);
+                setLoadError(true);
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [provinceName]);
+
+    const disabled = !provinceName || loading;
+    const placeholder = !provinceName
+        ? _t("custom_panels|select_province_first" as TranslationKey)
+        : loading
+          ? _t("custom_panels|loading_cities" as TranslationKey)
+          : loadError
+            ? _t("custom_panels|cities_load_error" as TranslationKey)
+            : _t("custom_panels|select_city" as TranslationKey);
+
+    return (
+        <select
+            style={error ? { ...selectStyle, borderColor: "#d60000" } : selectStyle}
+            value={typeof value === "string" ? value : ""}
+            disabled={disabled || loadError || cities.length === 0}
+            onChange={(e) => onChange(e.target.value)}
+        >
+            <option value="" disabled>
+                {placeholder}
+            </option>
+            {cities.map((name) => (
+                <option key={name} value={name}>
+                    {name}
                 </option>
             ))}
         </select>
@@ -282,6 +394,17 @@ function GeoFieldView({ field, value, error, onChange }: FieldProps): JSX.Elemen
 
 function FieldView(props: FieldProps): JSX.Element {
     const { field } = props;
+
+    // شهرستان / شهر → cascading city dropdown (loads after province is chosen).
+    if (isCityField(field)) {
+        return <CityFieldView {...props} provinceName={props.provinceName ?? null} />;
+    }
+
+    // استان → always a select when the server sent options (even if type is still "text").
+    if (isProvinceField(field) && field.options?.length > 0) {
+        return <SingleChoiceView {...props} />;
+    }
+
     switch (field.type) {
         case "text":
             return <TextFieldView {...props} />;
@@ -325,10 +448,22 @@ export function DynamicForm({ form, onSubmit, jalaliDates = false }: Props): JSX
 
     const stepTitles = useMemo(() => form.titles.map((t) => t.title), [form.titles]);
     const currentStep = form.steps[stepIdx];
+    const fields = useMemo(() => allFormFields(form), [form]);
+    const provinceField = useMemo(() => findProvinceField(fields), [fields]);
+    const provinceName = resolveProvinceName(provinceField, provinceField ? (values[provinceField.id] ?? null) : null);
 
     const setValue = (id: number, v: FieldValue): void => {
-        setValues((prev) => ({ ...prev, [id]: v }));
-        // Clear the field's error as soon as it's edited.
+        setValues((prev) => {
+            const next: FormValues = { ...prev, [id]: v };
+            const changed = fields.find((f) => f.id === id);
+            // Changing province clears any selected city/county.
+            if (changed && isProvinceField(changed)) {
+                for (const f of fields) {
+                    if (isCityField(f)) next[f.id] = null;
+                }
+            }
+            return next;
+        });
         setErrors((prev) => ({ ...prev, [id]: undefined }));
     };
 
@@ -395,6 +530,7 @@ export function DynamicForm({ form, onSubmit, jalaliDates = false }: Props): JSX
                                 value={values[f.id] ?? null}
                                 error={err}
                                 jalaliDates={jalaliDates}
+                                provinceName={provinceName}
                                 onChange={(v) => setValue(f.id, v)}
                             />
                             {err && <div style={errorTextStyle}>{err}</div>}

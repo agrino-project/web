@@ -3532,7 +3532,12 @@
         "history_older": "Older",
         "history_empty": "No requests yet.",
         "history_load_error": "Failed to load request history",
-        "history_scroll_hint": "Scroll to see older requests"
+        "history_scroll_hint": "Scroll to see older requests",
+        "select_province": "Select province",
+        "select_province_first": "Select a province first",
+        "select_city": "Select city",
+        "loading_cities": "Loading cities...",
+        "cities_load_error": "Failed to load cities"
     },
     "user_menu": {
         "switch_theme_light": "Switch to light mode",

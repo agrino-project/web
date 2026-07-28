@@ -9,13 +9,15 @@ import { submitBazaarAd } from "./api/submitBazaarAd";
 import { buyBazaarAd } from "./api/buyBazaarAd";
 import { deleteBazaarAd } from "./api/deleteBazaarAd";
 import { editBazaarAd } from "./api/editBazaarAd";
-import { fileToDataUrl, getSellFormSubQuestions, isSidebarProductQuestion, pickEditableAdFields, resolveAdProductType } from "./api/adPayload";
+import { fileToDataUrl, getSellFormSubQuestions, isSidebarProductQuestion, pickEditableAdFields, resolveAdApiFieldKey, resolveAdProductType } from "./api/adPayload";
 import { useMyBazaarAds } from "./api/useMyBazaarAds";
 import { useMyBazaarPurchases } from "./api/useMyBazaarPurchases";
 import ErrorDialog from "../dialogs/ErrorDialog";
 import QuestionDialog from "../dialogs/QuestionDialog";
 import Modal from "../../../Modal";
 import BazaarPaymentGateway from "./BazaarPaymentGateway";
+import { CitySelect, ProvinceSelect } from "../elements/ProvinceCitySelect";
+import { isCityFieldTitle, isProvinceFieldTitle } from "../../../utils/iranLocations";
 import "../../../../res/css/views/bazaar/BazaarPage.pcss";
 
 type DetailStage = "info" | "payment" | "success";
@@ -50,6 +52,8 @@ interface MyAdsListProps {
     setEditFormData: React.Dispatch<React.SetStateAction<Record<string, string>>>;
     onSave: () => void;
     onCancel: () => void;
+    /** Province options from the bazaar questions API (server-provided). */
+    provinceOptions: ReadonlyArray<{ id: number | string; value: string; label?: string }>;
 }
 
 const MyAdsList: React.FC<MyAdsListProps> = ({
@@ -64,6 +68,7 @@ const MyAdsList: React.FC<MyAdsListProps> = ({
     setEditFormData,
     onSave,
     onCancel,
+    provinceOptions,
 }) => {
     if (loading) return <div className="mx_BazaarPage_empty">{_t("common|loading")}</div>;
     if (error) return <div className="mx_BazaarPage_empty">{_t("custom_panels|bazaar_load_error")}</div>;
@@ -166,12 +171,14 @@ const MyAdsList: React.FC<MyAdsListProps> = ({
 
                                     <div className="mx_BazaarPage_editField">
                                         <label>استان</label>
-                                        <input
+                                        <ProvinceSelect
                                             value={editFormData.province || ""}
-                                            onChange={(e) =>
+                                            options={provinceOptions}
+                                            onChange={(province) =>
                                                 setEditFormData((p) => ({
                                                     ...p,
-                                                    province: e.target.value,
+                                                    province,
+                                                    city: "",
                                                 }))
                                             }
                                         />
@@ -179,12 +186,14 @@ const MyAdsList: React.FC<MyAdsListProps> = ({
 
                                     <div className="mx_BazaarPage_editField">
                                         <label>شهر</label>
-                                        <input
+                                        <CitySelect
                                             value={editFormData.city || ""}
-                                            onChange={(e) =>
+                                            province={editFormData.province || ""}
+                                            source="bots"
+                                            onChange={(city) =>
                                                 setEditFormData((p) => ({
                                                     ...p,
-                                                    city: e.target.value,
+                                                    city,
                                                 }))
                                             }
                                         />
@@ -391,6 +400,16 @@ const BazaarPage: React.FC = () => {
         () => [...sellFormSubQuestions, ...sellQuestions],
         [sellFormSubQuestions, sellQuestions],
     );
+
+    const provinceOptions = useMemo(() => {
+        const provinceQ = sellFormQuestions.find((item) => {
+            const k = resolveAdApiFieldKey(item);
+            return (
+                item.field_type === "province" || k === "province" || isProvinceFieldTitle(item.field_name)
+            );
+        });
+        return (provinceQ?.options ?? []).map((o) => ({ id: o.id, value: o.value, label: o.value }));
+    }, [sellFormQuestions]);
 
     // Available ads within the open category (endpoint #4). Client filters
     // by selected subcategory + location + price on top of this list.
@@ -716,6 +735,23 @@ const BazaarPage: React.FC = () => {
         const isMultiChoice = q.field_type === "choice" && q.allow_multiple;
         const isSingleChoice = q.field_type === "choice" && !q.allow_multiple;
         const isNumeric = q.field_type === "number" || q.field_type === "integer";
+        const apiKey = resolveAdApiFieldKey(q);
+        const isProvince =
+            q.field_type === "province" || apiKey === "province" || isProvinceFieldTitle(q.field_name);
+        const isCity = q.field_type === "city" || apiKey === "city" || isCityFieldTitle(q.field_name);
+
+        const provinceQuestion = sellFormQuestions.find((item) => {
+            const k = resolveAdApiFieldKey(item);
+            return (
+                item.field_type === "province" || k === "province" || isProvinceFieldTitle(item.field_name)
+            );
+        });
+        const provinceValue =
+            provinceQuestion != null
+                ? typeof formData[String(provinceQuestion.id)] === "string"
+                    ? (formData[String(provinceQuestion.id)] as string)
+                    : ""
+                : "";
 
         return (
             <div className="mx_BazaarPage_field" key={q.id}>
@@ -774,10 +810,35 @@ const BazaarPage: React.FC = () => {
                         onChange={(e) => setAnswer(q.id, e.target.checked ? "true" : "false")}
                     />
                 )}
-                {(q.field_type === "text" ||
-                    q.field_type === "phone" ||
-                    q.field_type === "province" ||
-                    q.field_type === "city") && (
+                {isProvince && !isSingleChoice && (
+                    <ProvinceSelect
+                        value={stringValue}
+                        options={q.options.map((o) => ({ id: o.id, value: o.value, label: o.value }))}
+                        onChange={(province) => {
+                            setAnswer(q.id, province);
+                            // Clear dependent city answers when province changes.
+                            for (const item of sellFormQuestions) {
+                                const k = resolveAdApiFieldKey(item);
+                                if (
+                                    item.field_type === "city" ||
+                                    k === "city" ||
+                                    isCityFieldTitle(item.field_name)
+                                ) {
+                                    setAnswer(item.id, "");
+                                }
+                            }
+                        }}
+                    />
+                )}
+                {isCity && !isSingleChoice && (
+                    <CitySelect
+                        value={stringValue}
+                        province={provinceValue}
+                        source="bots"
+                        onChange={(city) => setAnswer(q.id, city)}
+                    />
+                )}
+                {(q.field_type === "text" || q.field_type === "phone") && !isProvince && !isCity && (
                     <input
                         type={q.field_type === "phone" ? "tel" : "text"}
                         value={stringValue}
@@ -1024,6 +1085,7 @@ const BazaarPage: React.FC = () => {
                                     setEditingAd(null);
                                     setEditFormData({});
                                 }}
+                                provinceOptions={provinceOptions}
                             />
                         </div>
                     </section>
@@ -1268,6 +1330,7 @@ const BazaarPage: React.FC = () => {
                                     setEditingAd(null);
                                     setEditFormData({});
                                 }}
+                                provinceOptions={provinceOptions}
                             />
                         )}
 
