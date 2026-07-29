@@ -395,7 +395,7 @@ export function GreatShopsForm({ page }: { page: string | null }): JSX.Element {
     return (
         <div style={greatShopWrapperStyle}>
             <Header title={title ?? ""} onBack={backToShopList} />
-            <ShopTabs active={activeTab} onChange={setActiveTab} />
+            {/* <ShopTabs active={activeTab} onChange={setActiveTab} /> */}
             <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>{body}</div>
         </div>
     );
