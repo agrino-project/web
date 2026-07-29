@@ -101,12 +101,17 @@ export function normalizeHistoryItem(raw: unknown, index: number): GreatShopHist
     const subcategory = rec.subcategory ?? rec.sub_category ?? rec.form;
     const category = rec.category;
 
+    // `sub_category` may be a plain string label directly, or a nested object.
+    const subCategoryDirect =
+        typeof subcategory === "string" && subcategory.trim() ? subcategory : null;
+
     const title =
         pickString(
             rec.title,
             rec.name,
             rec.subcategory_name,
             rec.sub_category_name,
+            subCategoryDirect,
             nestedName(subcategory),
             nestedName(category),
         ) ?? `درخواست ${index + 1}`;
